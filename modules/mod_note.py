@@ -34,7 +34,7 @@ def notes():
 
 
 @mod_note.route("/create",methods=['POST'])
-def create_note():
+def createnote():
 
     try:
         # Checking provided data
