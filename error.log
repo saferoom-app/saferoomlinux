@@ -1,0 +1,144 @@
+2016-08-08 14:27:31,003 - __main__ - ERROR - Exception on /list/notebooks [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 40, in notebooks
+    start = 1/0
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 14:27:31,007 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 14:29:47,121 - __main__ - ERROR - Exception on /list/notebooks [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 40, in notebooks
+    for notebook in response:
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 14:29:47,127 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 14:34:56,628 - __main__ - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 18, in index
+    return render_template('index.html',configFile=app.config['ACCESS_TOKEN'])
+  File "C:\Python27\lib\site-packages\flask\templating.py", line 133, in render_template
+    return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 851, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 812, in get_template
+    return self._load_template(name, self.make_globals(globals))
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 786, in _load_template
+    template = self.loader.load(self, name, globals)
+  File "C:\Python27\lib\site-packages\jinja2\loaders.py", line 125, in load
+    code = environment.compile(source, name, filename)
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 565, in compile
+    self.handle_exception(exc_info, source_hint=source_hint)
+  File "C:\Python27\lib\site-packages\jinja2\environment.py", line 754, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\My\Development\server\templates\index.html", line 7, in template
+    {%block scripts}
+TemplateSyntaxError: unexpected '}'
+2016-08-08 14:34:56,637 - __main__ - ERROR - unexpected '}'
+2016-08-08 16:20:25,509 - __main__ - ERROR - Exception on /user [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 70, in user
+    start = 1/0
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 16:20:25,522 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 16:24:13,493 - __main__ - ERROR - Exception on /user [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 70, in user
+    start = 1/0
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 16:24:13,496 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 16:24:54,727 - __main__ - ERROR - Exception on /user [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 70, in user
+    start = 1/0
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 16:24:54,730 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 16:30:57,002 - __main__ - ERROR - Exception on /user [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 70, in user
+    
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 16:30:57,006 - __main__ - ERROR - integer division or modulo by zero
+2016-08-08 16:31:33,990 - __main__ - ERROR - Exception on /user [GET]
+Traceback (most recent call last):
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1988, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1641, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1544, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1639, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Python27\lib\site-packages\flask\app.py", line 1625, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "hello.py", line 70, in user
+    
+ZeroDivisionError: integer division or modulo by zero
+2016-08-08 16:31:33,993 - __main__ - ERROR - integer division or modulo by zero
