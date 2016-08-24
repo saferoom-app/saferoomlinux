@@ -122,15 +122,15 @@ def decrypt_note():
 
         # Getting note content (within <en-note> tag)
         tree = ET.fromstring(note.get('content'))
-        noteContent = "".join( [ tree.text ] + [ ET.tostring(e) for e in tree.getchildren() ]);
+        noteContent = "".join( [ tree.text ] + [ ET.tostring(e) for e in tree.getchildren() ])
         noteContent = decryptNote(noteContent,"testtest")
         noteContent.replace("></en-media>","/>")
-      
         # Finding all <en-media> tags within the note content       
         soup = BeautifulSoup(noteContent,"html.parser")
         tag = None
         matches =  soup.find_all('en-media')
         for match in matches:
+            print match
             for resource in resources:
                 if resource['hash'] == match['hash'] or resource['hash'].upper() == match['hash'].upper():
 
@@ -139,7 +139,7 @@ def decrypt_note():
                     elif "application" in match['type']:
                         tag = soup.new_tag('a',href="/static/tmp/"+resource['name'])
                         tag.string = resource['name']
-                    match.replaceWith(tag)        
+                    #match.replaceWith(tag)        
         return soup.prettify()
 
     except Exception as e:

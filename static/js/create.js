@@ -75,6 +75,7 @@ $(document).ready(function(){
 
 $(document).on("change","input#txtFiles",function(){
 	selectedFiles = $(this)[0].files;
+	console.log(selectedFiles);
 	if (selectedFiles.length == 0){
 		return;
 	}
@@ -134,7 +135,7 @@ function insertFile(file,fileHash){
 			node.innerHTML = TPL_IMAGE_ATTACH.replace("::filename::",file.name).replace("::filename::",file.name).replace("::fileType::",file.type).replace("::fileHash::",fileHash);
 			break;
 		default:
-			node.innerHTML = TPL_ATTACH.replace("::filename::",file.name).replace("::filename::",file.name).replace("::filename::",file.name).replace("::fileicon::",getIcon(file.type)).replace("::filesize::",file.size).replace("::fileType::",file.type).replace("::fileHash::",fileHash);
+			node.innerHTML = TPL_ATTACH.replace("::filename::",file.name).replace("::filename::",file.name).replace("::filename::",file.name).replace("::fileicon::",getIcon(file.type)).replace("::filesize::",humanFileSize(file.size,true)).replace("::fileType::",file.type).replace("::fileHash::",fileHash);
 			break;
 	}
 	
