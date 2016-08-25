@@ -145,7 +145,7 @@ http://127.0.0.1:5000/
 You should see Saferoom main page
 
 ## Getting developer token
-To interact with Evernote API Saferoom app needs the developer token. This token can be generated for your specific account can be generated [here](https://www.evernote.com/api/DeveloperToken.action)
+To interact with Evernote API Saferoom app needs the developer token. This token for your specific account can be generated [here](https://www.evernote.com/api/DeveloperToken.action)
 
 If you're not logged in, you need to login with your account. After you receive the developer token, open **config.py** file in application root folder and paste it instead of **<developer_token>**
 ```
