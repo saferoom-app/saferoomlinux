@@ -318,7 +318,6 @@ def create_note(accessToken,title,content,notebookGuid,files,tags):
                 data.size = len(binaryData)
                 data.bodyHash = hash
                 data.body = binaryData
-                print binascii.hexlify(hash)
 
                 # Creating resource
                 resource = Resource()

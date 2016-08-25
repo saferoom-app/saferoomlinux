@@ -1,7 +1,7 @@
 linkRows = ""
 link = ""
-$(document).bind('keypress', function(event) { 
-    if (event.which == 81 && event.shiftKey){
+$(document).bind('keydown', function(event) { 
+    if (event.which == 81 && event.ctrlKey){
         event.preventDefault();
         initModal("modalQuick");
         CreateAJAX("/favourites/quick/add","GET","html",{})
@@ -14,7 +14,8 @@ $(document).bind('keypress', function(event) {
             displayModal("modalQuick","Add to Quick Links",xhr.responseText,false);
         });
     }
-    if( event.which === 76 && event.shiftKey ) {
+    if( event.which === 76 && event.ctrlKey ) {
+        event.preventDefault();
         initModal("modalQuick");
         CreateAJAX("/favourites/quick/list","GET","html",{"format":"select"})
         .done(function(response){

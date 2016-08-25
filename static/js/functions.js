@@ -6,7 +6,7 @@ var FINISHED = false;
 
 TPL_ATTACH = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-10\" style=\"display:inline-block\"><span style=\"margin-left:10px\"><img src=\"/static/images/::fileicon::\"/></span><span style=\"margin-left:10px\"><a href=\"/tmp/::filename::\">::filename:: (Size: ::filesize::)</a></span><span id='enml'><en-media type=\"::fileType::\" hash=\"::fileHash::\" /></span></div><div class=\"col-md-2\"><span id='txtFilename' style='display:none'>::filename::</span><span class=\"pull-right\" style=\"margin-right:10px\"><span id='removeAttach' class=\"glyphicon glyphicon-remove link\" aria-hidden=\"true\"></span></span></div></div></div><br/>";
 
-TPL_IMAGE_ATTACH = "<img src=\"/static/tmp/::filename::\"/><span id='enml'><en-media type=\"::fileType::\" hash=\"::fileHash::\" /></span><span id='txtFilename'>::filename::</span>";
+TPL_IMAGE_ATTACH = "<img width=\"100%\" src=\"/static/tmp/::filename::\"/><span id='enml'><en-media type=\"::fileType::\" hash=\"::fileHash::\" /></span><span style=\"display:none\" id='txtFilename'>::filename::</span>";
 
 // Type of alerts
 LEVEL_INFO = 0;

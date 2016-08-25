@@ -1,6 +1,6 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
-import libs.FavouritesManager
+from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links
 import config
 
 
@@ -27,7 +27,7 @@ def add_favourite():
     item = {"guid":request.form['guid'],"title":request.form['title'],"service":request.form['service'],"updated":request.form['updated'],"created":request.form['created']}
     
     # Saving to favourites
-    FavouritesManager.add_to_favourites(item)
+    add_to_favourites(item)
 
     # Sending response
     return jsonify(status=200,msg="")
@@ -40,12 +40,12 @@ def remove_favourites():
         abort(400)
 
     # Removing from favourites
-    FavouritesManager.remove_from_favourites(request.form['guid'])
+    remove_from_favourites(request.form['guid'])
 
     return jsonify(status=200,msg="")
 
 @mod_favourites.route("/quick/list",methods=['GET'])
-def list_quick_links():
+def list_qlinks():
 
     responseType = ""
     if request.args.get('format'):
@@ -53,7 +53,7 @@ def list_quick_links():
 
 
     # Getting links
-    links = FavouritesManager.list_quick_links()
+    links = list_quick_links()
 
     if (responseType == config.TYPE_TABLE):
         return ""
@@ -82,7 +82,7 @@ def create_quick_link():
     try:
 
         # Creating a link
-        FavouritesManager.add_quick_link(request.form['name'],request.form['link'])
+        add_quick_link(request.form['name'],request.form['link'])
         return jsonify(status=200,msg=config.MSG_LINKCREATE_OK)
 
     except:

@@ -58,7 +58,9 @@ def createnote():
 
         # Filtering data
         content = content.replace("<p id=\"evernoteAttach\"><br></p>","").replace("<br>","").replace("id=\"evernoteAttach\"","").replace("></en-media>","/>")
-   
+        #print fileList
+        #return ""
+
         # Creating a note
         create_note(config.ACCESS_TOKEN,title,content,guid,fileList,tags)
 
@@ -107,6 +109,7 @@ def decrypt_note():
                 data = decryptFileData(data,"testtest")
 
                 # Writing data to temporary file
+                filename = filename.replace("%20","")
                 with open(tmp_path+filename,"wb") as f:
                     f.write(data)
 
@@ -125,22 +128,60 @@ def decrypt_note():
         noteContent = "".join( [ tree.text ] + [ ET.tostring(e) for e in tree.getchildren() ])
         noteContent = decryptNote(noteContent,"testtest")
         noteContent.replace("></en-media>","/>")
+        
         # Finding all <en-media> tags within the note content       
         soup = BeautifulSoup(noteContent,"html.parser")
         tag = None
         matches =  soup.find_all('en-media')
         for match in matches:
-            print match
             for resource in resources:
                 if resource['hash'] == match['hash'] or resource['hash'].upper() == match['hash'].upper():
 
                     if "image" in match['type']:
                         tag = soup.new_tag('img',style="width:100%",src="/static/tmp/"+resource['name'])
+
+                    elif config.MIME_PDF in match['type']:
+                        
+                        tag = soup.new_tag("embed",width="100%", height="500",src="/static/tmp/"+resource['name']+"#page=1&zoom=50")
+
                     elif "application" in match['type']:
-                        tag = soup.new_tag('a',href="/static/tmp/"+resource['name'])
-                        tag.string = resource['name']
-                    #match.replaceWith(tag)        
-        return soup.prettify()
+                        
+                        # Creating root div
+                        tag = soup.new_tag("div",**{"class":"attachment"})
+
+                        # Creating ICON span tag
+                        icon_span_tag = soup.new_tag("span",style="margin-left:10px")
+                        icon_img_tag = soup.new_tag("img",src="/static/images/"+getIcon(resource['mime']))
+                        icon_span_tag.append(icon_img_tag)
+
+                        # Creating text tag
+                        text_span_tag = soup.new_tag("span",style="margin-left:10px")
+                        text_a_tag = soup.new_tag("a",href="/static/tmp/"+resource['name'])
+                        text_a_tag.string = resource['name']
+                        text_span_tag.append(text_a_tag)
+
+                        # Creating DIV with two spans
+                        div_col_10 = soup.new_tag("div",style="display:inline-block",**{"class":"col-md-10"})
+                        div_col_10.append(icon_span_tag)
+                        div_col_10.append(text_span_tag)
+
+                        # Creating div(col-md-2)
+                        div_col_2 = soup.new_tag("div",**{"class":"col-md-2"})
+
+                        # Creating div row
+                        div_row = soup.new_tag("div",**{"class":"row"})
+                        div_row.append(div_col_10)
+                        div_row.append(div_col_2)
+
+                        # Combining all together
+                        tag.append(div_row)
+                        
+                    match.replaceWith(tag)
+        
+        noteContent = soup.prettify()
+        noteContent = noteContent.replace("></embed>","/>")
+        print noteContent
+        return noteContent
 
     except Exception as e:
     	raise
@@ -161,3 +202,9 @@ def note(GUID):
             return jsonify(note)
     except:
         raise
+
+
+@mod_note.route("/save",methods=["GET"])
+def save_note_as():
+
+    return request.args.get("format")

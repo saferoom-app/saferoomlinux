@@ -95,7 +95,13 @@ def getMime(fileName):
 
 def getIcon(mime):
 
-    if mime == "application/pdf":
+    if mime == config.MIME_PDF:
         return "icon_pdf.png"
+    elif mime == config.MIME_DOC or mime == config.MIME_DOCX:
+        return "icon_word.png"
+    elif mime == config.MIME_XLS or mime == config.MIME_XLSX:
+        return "icon_excel.png"
+    elif mime == config.MIME_PPT or mime == config.MIME_PPTX:
+        return "icon_ppt.png"
     else:
         return "icon_doc.png"

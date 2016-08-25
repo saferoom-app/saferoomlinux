@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalDecrypted">
-	<div class="modal-dialog">
+	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -7,7 +7,20 @@
 			</div>
 			<div class="modal-body" id="decryptedContent"></div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Save note in <span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						<li><a href="/note/save?format=enex">ENEX format</a></li>
+						<li><a href="/note/save?format=json">JSON format</a></li>
+						<li><a href="/note/save?format=onenote">Onenote format</a></li>
+						<li><a href="/note/save?format=saferoom">Saferoom format</a></li>
+						<li><a href="/note/save?format=zip">ZIP format</a></li>
+
+					</ul>
+				</div>
+				<button type="button" class="btn btn-default"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</button>
+				<button type="button" class="btn btn-default"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Print</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Close</button>
 			</div>
 		</div>
 	</div>

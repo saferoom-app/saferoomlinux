@@ -12,6 +12,7 @@ import os
 # Custom imports
 import config
 from libs.functions import fileMD5
+from bs4 import BeautifulSoup, Tag
 
 # Blueprint imports
 from modules.test import blueprint
@@ -103,6 +104,45 @@ def upload():
         hashes.append(fileMD5("static/tmp/"+file.filename))
 
     return jsonify(hashes)
+
+
+
+'''
+============================================
+    Route for testing
+============================================
+'''
+
+@app.route("/demo",methods=['GET'])
+def demo():
+    #return "<embed src=\"static/tmp/sample.doc\" width=\"100%\" height=\"500\">"
+    soup = BeautifulSoup("<div class=\"attachment\"></div>")
+    root_div = soup.div
+    
+    # Creating ICON span tag
+    icon_span_tag = soup.new_tag("span",style="margin-left:10px")
+    icon_img_tag = soup.new_tag("img",src="static/images/icon_pdf.png")
+    icon_span_tag.append(icon_img_tag)
+    
+    # Creating text tag
+    text_span_tag = soup.new_tag("span",style="margin-left:10px")
+    text_a_tag = soup.new_tag("a",href="/static/tmp/apache.pdf")
+    text_a_tag.string = "apache.pdf"
+    text_span_tag.append(text_a_tag)
+
+    # Creating DIV with two spans
+    div_col_10 = soup.new_tag("div",style="display:inline-block",**{"class":"col-md-10"})
+    div_col_10.append(icon_span_tag)
+    div_col_10.append(text_span_tag)
+
+    # Creating div(col-md-2)
+    div_col_2 = soup.new_tag("div",**{"class":"col-md-2"})
+    root_div.append(div_col_10)
+    root_div.append(div_col_2)
+
+
+    # Combining all together
+    return soup.prettify()
 
 
 '''
