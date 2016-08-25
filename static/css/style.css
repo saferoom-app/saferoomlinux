@@ -50,3 +50,6 @@ html, body, .container-table {
     display: table-cell;
     vertical-align: middle;
 }
+.tabContent{
+	padding:20px 20px 20px 20px;
+}

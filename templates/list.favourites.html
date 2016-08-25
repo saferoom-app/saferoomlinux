@@ -1,0 +1,30 @@
+<div>
+	<input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtFavsearch">   
+</div><hr/>
+<table id="tblFavs" class="table table-striped">
+<thead>
+	<tr>
+		<th><input type="checkbox" id="chkAll"/></th>
+		<th class="center">Service</th>
+		<th style="width:85%">Title</th>
+	</tr>
+<tbody>
+	{% for fav in favourites %}
+		<tr class="itemRow">
+			<td><input type="checkbox"/></td>
+			<td style="text-align:center">
+				{% if fav.service == "1" %}
+					<img title="Onenote note" src="/static/images/icon_onenote.png"/>
+				{%else%}
+					<img title="Evernote note" src="/static/images/icon_evernote.png"/>
+				{%endif%}
+			</td>
+			<td><a target="_blank" href="/note/{{fav.guid}}">{{fav.title}}</a></td>
+		</tr>
+	{%else%}
+		<tr>
+			<td colspan="3" style="text-align:center"> No favourites note found </td>
+		</tr>
+	{% endfor %}
+</tbody>
+</thead>

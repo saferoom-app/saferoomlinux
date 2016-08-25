@@ -1,6 +1,6 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
-from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links
+from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links,list_favourites
 import config
 
 
@@ -8,8 +8,24 @@ import config
 mod_favourites = Blueprint("mod_favourites",__name__)
 
 # Initializing routes
-@mod_favourites.route("/list")
-def list_favourites():
+@mod_favourites.route("/list",methods=['GET'])
+def list():
+
+    responseType = config.TYPE_LIST
+    if request.args.get('format'):
+        responseType = request.args.get('format')
+
+
+    # Getting list of favourites
+    favourites = list_favourites()
+
+    # Sending response
+    if (responseType == config.TYPE_JSON):
+        return jsonify(favourites)
+
+    else:
+        return render_template("list.favourites.html",favourites=favourites)
+
 	return "List of favourites"
 
 @mod_favourites.route("/add",methods=['POST'])
@@ -87,3 +103,8 @@ def create_quick_link():
 
     except:
         raise
+
+
+@mod_favourites.route("/",methods=['GET'])
+def index():
+    return render_template("favourites.html",title="Favourites")

@@ -23,7 +23,11 @@ MSG_SEARCHES_LOAD = "Loading a list of Saved Searches ... Please wait";
 MSG_FILES_ATTACH = "Attaching files to note ... Please wait";
 MSG_NOTEBOOKS_REFRESH = "Refreshing the list of notebooks ... Please wait";
 MSG_NOTES_LOAD = "Loading a list of notes ... Please wait";
+MSG_FAVS_LOAD = "Loading a list of favourite notes ... Please wait";
+MSG_QUICKS_LOAD = "Loading a list of Quick Links ... Please wait";
+MSG_FAVS_ADD = "Adding to favourites ... Please wait";
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
+
 
 // Path object to generate links
 path = new Array();
@@ -249,6 +253,29 @@ function humanFileSize(bytes, si) {
         ++u;
     } while(Math.abs(bytes) >= thresh && u < units.length - 1);
     return bytes.toFixed(1)+' '+units[u];
+}
+
+function listFavourites(contentID){
+
+	// Displaying Progress
+	displayProgress(MSG_FAVS_LOAD,true);
+
+	CreateAJAX("/favourites/list","GET","html",{format:"list"})
+	.done(function(response){
+		displayProgress("",false);
+		$("div#"+contentID).html(response);
+		rows = $("table#tblFavs tr.itemRow");
+		console.log(rows);
+	})
+	.fail(function(xhr){
+		displayProgress("",false);
+		alert(xhr.responseText);
+	});
+
+}
+
+function listQuicks(contentID){
+
 }
 
 // Loading external scripts

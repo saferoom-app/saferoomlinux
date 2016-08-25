@@ -15,7 +15,6 @@ from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
 
 # Blueprint imports
-from modules.test import blueprint
 from modules.mod_favourites import mod_favourites
 from modules.mod_note import mod_note
 from modules.mod_notebook import mod_notebook
@@ -29,7 +28,6 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # Registering blueprints
-app.register_blueprint(blueprint)
 app.register_blueprint(mod_favourites,url_prefix="/favourites")
 app.register_blueprint(mod_note,url_prefix="/note")
 app.register_blueprint(mod_notebook,url_prefix="/notebooks")

@@ -274,6 +274,7 @@ def download_note(accessToken,guid):
 
 
     # Saving resources for faster access
+    print response.resources
     if (response.resources != None):
         for resource in response.resources:
             with open("notes/"+str(guid)+"/"+str(resource.attributes.fileName),"wb") as f:

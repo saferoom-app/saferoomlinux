@@ -51,10 +51,10 @@ $(document).on("click","button#btnDecrypt",function(){
 $(document).on("click","button#btnAddFav",function(){
 
 	// Displaying modal progress
-	displayProgress("Adding to favourites ... ",true)
+	displayProgress(MSG_FAVS_ADD,true)
 
 	// Sending request
-	item = {guid:$("#txtGuid").val(),"service":0,"title":"Title","updated":"","created":""}
+	item = {guid:$("#txtGuid").val(),"service":0,"title":$("span#noteTitle").html(),"updated":"","created":""}
 	CreateAJAX("/favourites/add","POST","json",item).
 	done(function(response){
 		displayProgress("",false);
