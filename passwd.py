@@ -5,6 +5,8 @@ from libs.functions import encryptString, decryptString
 import config
 import json
 import uuid
+import hashlib
+import platform
 
 # init section
 password = ""
@@ -17,7 +19,7 @@ def save_password(password):
 	# Generating unique ID
 	print ""
 	print("   Generating salt ......"),
-	salt = uuid.uuid4()
+	salt = config.SALT
 	print "[OK]"
 
 	# Encrypting password
@@ -40,6 +42,13 @@ print ""
 print "=============================================="
 print "|    Saferoom Master Password generator      |"
 print "=============================================="
+
+# Checking the current platform informattion
+print ""
+print "OS: "+platform.system()
+print "Release: "+platform.release()
+print "Current user: "+getpass.getuser()
+print ""
 
 print ""
 print("   Checking if password already exists ......."),

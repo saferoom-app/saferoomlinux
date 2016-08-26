@@ -1,6 +1,9 @@
 ACCESS_TOKEN = "<developer_token>"
 NOTE_URL = "https://www.evernote.com/shard/s401/notestore"
 ERROR_LOG_FILE = "error.log"
+SERVICE_EVERNOTE = 0
+SERVICE_ONENOTE = 1
+SALT = "<your_salt_here>"
 
 # Paths
 path_favourites = "notes/favourites/favourites.json"
