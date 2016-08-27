@@ -71,8 +71,8 @@ def list_qlinks():
     # Getting links
     links = list_quick_links()
 
-    if (responseType == config.TYPE_TABLE):
-        return ""
+    if (responseType == config.TYPE_LIST):
+        return render_template("list.links.html",links=links);
     elif responseType == config.TYPE_JSON:
         return jsonify(links)
 

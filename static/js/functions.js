@@ -265,17 +265,26 @@ function listFavourites(contentID){
 		displayProgress("",false);
 		$("div#"+contentID).html(response);
 		rows = $("table#tblFavs tr.itemRow");
-		console.log(rows);
 	})
 	.fail(function(xhr){
 		displayProgress("",false);
-		alert(xhr.responseText);
+		alert(MSG_INTERNAL_ERROR);
 	});
 
 }
 
 function listQuicks(contentID){
-
+	displayProgress(MSG_QUICKS_LOAD,true);
+	CreateAJAX("/favourites/quick/list","GET","html",{format:"list"})
+	.done(function(response){
+		displayProgress("",false);
+		$("div#"+contentID).html(response);
+		rows = $("table#tblLinks tr.itemRow");
+	})
+	.fail(function(xhr){
+		displayProgress("",false);
+		alert(MSG_INTERNAL_ERROR);
+	});
 }
 
 // Loading external scripts

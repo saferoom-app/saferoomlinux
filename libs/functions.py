@@ -105,3 +105,9 @@ def getIcon(mime):
         return "icon_ppt.png"
     else:
         return "icon_doc.png"
+
+
+def generateKey(os,user,salt):
+    m = hashlib.md5()
+    m.update(os+user+salt)
+    return m.hexdigest()

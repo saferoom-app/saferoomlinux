@@ -10,16 +10,19 @@ $(document).ready(function(){
   				listFavourites("favs");
   				break;
   			case "tabQuicks":
-  				listQuicks();
+  				listQuicks("quicks");
   				break;
   		}
   	});
 });
 
-$(document).on("keyup","input#txtFavsearch",function(){
+$(document).on("keyup","input#txtSearch",function(){
 	var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
 	rows.show().filter(function() {
 		var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
 		return !~text.indexOf(val);
 	}).hide();
+});
+$(document).on("click","input#chkAll",function(){
+  $('input:checkbox').not(this).prop('checked', this.checked);
 });

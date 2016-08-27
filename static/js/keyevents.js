@@ -60,7 +60,7 @@ $(document).on("click","#btnApply",function(){
 
 });
 
-$(document).on("keyup","input#txtLinkSearch",function(){
+$(document).on("keyup","input#txtSearch",function(){
     var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
     linkRows.show().filter(function() {
         var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();

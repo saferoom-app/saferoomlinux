@@ -145,7 +145,7 @@ def list_tags(accessToken,forceRefresh):
 
     tags = []
     if (str_to_bool(forceRefresh) == True):
-        tags = loadTags(accessToken)
+        tags = load_tags(accessToken)
         return tags
 
     # Checking cache
@@ -154,7 +154,7 @@ def list_tags(accessToken,forceRefresh):
         tags = json.loads(f.read())
         f.close()
     except:
-        tags = loadTags(accessToken)
+        tags = load_tags(accessToken)
 
     return tags
 

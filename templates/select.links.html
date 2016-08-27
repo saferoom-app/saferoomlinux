@@ -1,5 +1,5 @@
 <div>
-   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtLinkSearch">   
+   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtSearch">   
 </div><br/>
 <table id="tblLinks" class="table table-striped">
 	<thead>
@@ -7,7 +7,7 @@
 	</thead>
 	<tbody>
 		{% for link in links %}
-		<tr>
+		<tr class="itemRow">
 			<td><a href="{{link.link}}">{{link.name}}</a></td>
 		</tr>
 		{% endfor %}
