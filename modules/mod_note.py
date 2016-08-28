@@ -13,8 +13,6 @@ from libs.EvernoteManager import list_notes,create_note,get_note
 mod_note = Blueprint("mod_note",__name__)
 
 # Initializing routes
-
-
 @mod_note.route("/list",methods=['POST','GET'])
 def notes():
 

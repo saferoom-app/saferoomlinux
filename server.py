@@ -7,14 +7,13 @@ import json
 import datetime
 import hashlib
 import os
+import ssl
 
 
 # Custom imports
 import config
 from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
-import platform
-import getpass
 from libs.functions import decryptString,generateKey
 
 # Blueprint imports
@@ -24,6 +23,7 @@ from modules.mod_notebook import mod_notebook
 from modules.mod_search import mod_search
 from modules.mod_tag import mod_tag
 from modules.mod_settings import mod_settings
+from modules.mod_onenote import mod_onenote
 
 
 # App initialization
@@ -37,6 +37,7 @@ app.register_blueprint(mod_notebook,url_prefix="/notebooks")
 app.register_blueprint(mod_tag,url_prefix="/tags")
 app.register_blueprint(mod_search,url_prefix="/searches")
 app.register_blueprint(mod_settings,url_prefix="/settings");
+app.register_blueprint(mod_onenote,url_prefix="/onenote");
 
 '''
 =============================================
@@ -75,12 +76,12 @@ def user():
     username = response.username
     uid = response.id
     email = response.email
-    privilegeLevel = app.config['PRIVILEGE_LEVEL'][str(response.privilege)]
-    premiumStatus = app.config['PREMIUM_STATUS'][str(response.accounting.premiumServiceStatus)]
+    privilegeLevel = config.PRIVILEGE_LEVEL[str(response.privilege)]
+    premiumStatus = config.PREMIUM_STATUS[str(response.accounting.premiumServiceStatus)]
     privilege = response.privilege
 
     #return json.dumps(response)
-    return render_template('user.html',username=username,uid=uid,email=email,premiumStatus=premiumStatus,priv=privilegeLevel)
+    return render_template('user.evernote.html',username=username,uid=uid,email=email,premiumStatus=premiumStatus,priv=privilegeLevel)
 
 
 
@@ -117,19 +118,17 @@ def upload():
 @app.route("/demo",methods=['GET'])
 def demo():
     #return "<embed src=\"static/tmp/sample.doc\" width=\"100%\" height=\"500\">"
-    
-    
+    #with open(config.path_password,"r") as f:
+    #    credentials = json.loads(f.read())
 
-    with open(config.path_password,"r") as f:
-        credentials = json.loads(f.read())
+    #print credentials['pass']
+    #print decryptString(credentials['pass'],generateKey(platform.system(),getpass.getuser(),config.SALT))+"asdasdadasd"
 
-    print credentials['pass']
-
-    print decryptString(credentials['pass'],generateKey(platform.system(),getpass.getuser(),config.SALT))+"asdasdadasd"
-
+    current = int(time.time())
+    expires_in = current + 3600
 
     # Combining all together
-    return ""
+    return str(current)+"<br/>"+str(expires_in)
 
 
 '''
@@ -177,4 +176,9 @@ if __name__ == "__main__":
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     app.logger.addHandler(file_handler)
-    app.run()
+
+    # SSL server
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain('server.crt', 'server.key')
+    app.run(ssl_context=context)
+    #app.run()

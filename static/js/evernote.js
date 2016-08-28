@@ -3,6 +3,7 @@ $("img#iconEvernote").click(function(){
 		// Displaying the modal window
 		$("div#modalEvernote").modal('show');
 		$("span#loader").show();
+		$("div#modalContent").html("");
 
 		// Sending request
 		CreateAJAX("/user","GET","html",{})
@@ -14,4 +15,4 @@ $("img#iconEvernote").click(function(){
 			$("span#loader").hide();
 			$("div#modalContent").html(xhr.responseText);
 		})
-	});
+});

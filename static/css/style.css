@@ -53,3 +53,8 @@ html, body, .container-table {
 .tabContent{
 	padding:20px 20px 20px 20px;
 }
+.greyedText
+{
+	font-size:1.7em;
+	color:#bbbbbb;
+}

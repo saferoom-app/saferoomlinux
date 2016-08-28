@@ -1,0 +1,22 @@
+<div style="text-align:center;">
+	<img style="width:100%" src="/static/images/6406.OneNote-logo_thumb_4CFFD82D.png"/>
+</div><br/>
+<ul class="list-group">
+	<li class="list-group-item"><strong>Access Token:</strong>
+	{%if tokens.access == True%}
+		[OK]
+	{%else%}
+		[n/a]
+	{%endif%}
+	</li>
+	<li class="list-group-item"><strong>Refresh Token:</strong>
+		{%if tokens.refresh == True%}
+		[OK]
+		{%else%}
+		[n/a]
+		{%endif%}
+	</li>
+	<li class="list-group-item"><strong>Expires In:</strong>
+		{{tokens.expires_in}}
+	</li>	
+</ul>
