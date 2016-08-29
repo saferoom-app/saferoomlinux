@@ -26,6 +26,7 @@ MSG_NOTES_LOAD = "Loading a list of notes ... Please wait";
 MSG_FAVS_LOAD = "Loading a list of favourite notes ... Please wait";
 MSG_QUICKS_LOAD = "Loading a list of Quick Links ... Please wait";
 MSG_FAVS_ADD = "Adding to favourites ... Please wait";
+MSG_SECTIONS_LOAD = "Loading a list of sections ... Please wait";
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
 
 

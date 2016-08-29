@@ -1,10 +1,10 @@
 <div class="row">
 	<div class="col-md-4">
 		<!-- Category selection  -->
-		
-		<div id="tree"></div>
+		<input style="margin-left:10px" class="form-control" id="txtFilter" placeholder="Type word to filter the notebooks" /><br/>
+		<div style="margin-left:10px" id="tree"></div>
 	</div>
 	<div class="col-md-8" style="padding-left:30px" id="listNotes">
-		<div class="noteContent"> Please select notebook, tag or Saved Search to see the list of notes </div>
+		{% include "onenote.notes.empty.html"%}
 	</div>
 </div> 

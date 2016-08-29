@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup, Tag
 from libs.EvernoteManager import list_notes,create_note,get_note
+from libs.OnenoteManager import list_on_notes,get_access_token
 
 # Initializing the blueprint
 mod_note = Blueprint("mod_note",__name__)
@@ -204,5 +205,23 @@ def note(GUID):
 
 @mod_note.route("/save",methods=["GET"])
 def save_note_as():
-
     return request.args.get("format")
+
+
+@mod_note.route("/on/list/<string:guid>/<string:responseType>",methods=["GET"])
+def list_onenote_notes(guid,responseType):
+    forceRefresh = False
+    if request.args.get("refresh"):
+        forceRefresh = str_to_bool(request.args.get("refresh"))
+
+    # Getting a list of sections
+    access_token = get_access_token()
+    notes = list_on_notes(access_token,False,guid)
+
+    # Returning response based on specified format
+    if responseType == "json":
+        return jsonify(notes)
+    elif responseType == "select":
+        return render_template("select.notebooks.html",notes=notes)
+    else:
+        return render_template('onenote.list.notes.html',notes=notes)

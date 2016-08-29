@@ -109,7 +109,3 @@ def refresh():
     except Exception as e:
     	print e
     	return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
-
-
-
-

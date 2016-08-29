@@ -42,7 +42,7 @@ def load_notebooks(accessToken):
 
 		response = json.loads(r.text)
 		for notebook in response['value']:
-			notebooks.append({"text":notebook['name'],"href":"/on/sections/"+notebook['id']+"/json"})
+			notebooks.append({"text":"  "+notebook['name'],"href":"/on/sections/"+notebook['id']+"/json","icon": "glyphicon glyphicon-book"})
 
 		# Saving notebooks to cache
 		cache_notebooks(notebooks)
@@ -56,7 +56,7 @@ def load_notebooks(accessToken):
 
 
 def cache_notebooks(notebooks):
-    f = open("cache/notebooks_on.json","w")
+    f = open(config.path_notebooks_onenote,"w")
     f.write(json.dumps(notebooks))
     f.close()
 
@@ -76,7 +76,7 @@ def list_sections(accessToken,forceRefresh,guid):
     # Checking if notebooks are cached
     try:
         f = open(config.path_sections % (guid),"r")
-        section = json.loads(f.read())
+        sections = json.loads(f.read())
         f.close()
     except Exception as e:
         sections = load_sections(accessToken,guid)
@@ -94,14 +94,78 @@ def load_sections(accessToken,guid):
 			log_message(config.MSG_UNAUTHORIZED)
 			return sections
 
-		print r.text
+		# Getting response
+		response = json.loads(r.text)
+		for section in response['value']:
+			sections.append({"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open"})
+
+		# Saving sections
+		cache_sections(guid,sections)
+
+		return sections
 
 
 	except Exception as e:
 		print e
 		raise
 
+def cache_sections(guid,sections):
+    f = open(config.path_sections % (guid),"w")
+    f.write(json.dumps(sections))
+    f.close()
 
+
+
+'''
+  ============================================================
+            Note functions
+  ============================================================
+'''
+
+def list_on_notes(accessToken,forceRefresh,guid):
+    notes = []
+    if forceRefresh == True:
+        notes = load_notes(accessToken,guid)
+        return notes
+
+    # Checking if notebooks are cached
+    try:
+        f = open(config.path_notes % (guid),"r")
+        notes = json.loads(f.read())
+        f.close()
+    except Exception as e:
+        notes = load_notes(accessToken,guid)
+
+    return notes
+
+def load_notes(accessToken,guid):
+	notes = []
+	try:
+		# Creating a POST request
+		headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
+		r = requests.get(config.url_notes % (guid),headers=headers)
+		if (r.status_code == 401):
+			log_message(config.MSG_UNAUTHORIZED)
+			return notes
+
+		# Getting response
+		response = json.loads(r.text)
+		for page in response['value']:
+			notes.append({"title":page['title'],"guid":page['id'],"created":page['createdTime'],"updated":page['lastModifiedTime']})
+		
+		# Saving sections
+		cache_notes(guid,notes)
+		return notes
+
+	except Exception as e:
+		print e
+		raise
+
+
+def cache_notes(guid,notes):
+    f = open(config.path_notes % (guid),"w")
+    f.write(json.dumps(notes))
+    f.close()
 
 
 '''

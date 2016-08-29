@@ -58,3 +58,10 @@ html, body, .container-table {
 	font-size:1.7em;
 	color:#bbbbbb;
 }
+.emptyText
+{
+	font-size:1.4em;
+	color:#bbbbbb;
+	text-align:center;
+	padding:30px 30px 30px 30px;
+}
