@@ -17,5 +17,8 @@ $("img#iconOnenote").click(function(){
 });
 
 $(document).on("click","button#btnRefresh",function(){
-	window.open("/onenote/token/refresh","_blank","width=600px;height=400");
+	window.open("/onenote/token/refresh","_blank","width=600,height=400");
+});
+$(document).on("click","button#btnLogin",function(){
+	window.open("/onenote/login","_blank","width=600,height=400");
 });

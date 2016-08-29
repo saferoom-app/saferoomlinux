@@ -15,6 +15,7 @@ import config
 from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
 from libs.functions import decryptString,generateKey
+from libs.OnenoteManager import is_access_token_valid
 
 # Blueprint imports
 from modules.mod_favourites import mod_favourites
@@ -59,6 +60,10 @@ def create():
 @app.route("/list")
 def list():
 	return render_template("list.html",pageTitle="Application :: View")
+
+@app.route("/on/list")
+def on_list():
+    return render_template("onenote.list.html",pageTitle="Application :: View")
 
 @app.route("/user")
 def user():
@@ -117,18 +122,10 @@ def upload():
 
 @app.route("/demo",methods=['GET'])
 def demo():
-    #return "<embed src=\"static/tmp/sample.doc\" width=\"100%\" height=\"500\">"
-    #with open(config.path_password,"r") as f:
-    #    credentials = json.loads(f.read())
-
-    #print credentials['pass']
-    #print decryptString(credentials['pass'],generateKey(platform.system(),getpass.getuser(),config.SALT))+"asdasdadasd"
-
-    current = int(time.time())
-    expires_in = current + 3600
-
+    
+    print is_access_token_valid()
     # Combining all together
-    return str(current)+"<br/>"+str(expires_in)
+    return ""
 
 
 '''

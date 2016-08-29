@@ -47,10 +47,10 @@ def callback():
 		with open(config.path_tokens,"w") as f:
 			f.write(json.dumps(tokens))
 
-		return render_template("service.onenote.html")
+		return render_template("dialog.onenote.result.html",success=True,message=config.MSG_ONLOGIN_OK,title="Onenote result")
 
 	except Exception as e:
-		return config.MSG_INTERNAL_ERROR
+		return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
 
 @mod_onenote.route("/user",methods=["GET"])
 def user():
@@ -93,9 +93,8 @@ def refresh():
 
         # Checking if refresh token is configured
         with open(config.path_tokens,"r") as f:
-        	print f.read()+"asdasdasdasdasd"
-        	#data = json.loads(f.read())
-        return ""
+        	data = json.loads(f.read())
+        
         if not data['refresh']:
         	return render_template("dialog.onenote.result.html",success=False,message=config.MSG_NO_TOKENS,title="Onenote result")
 
@@ -103,8 +102,7 @@ def refresh():
         r = requests.post(config.on_token_url, data={'grant_type': 'refresh_token', 'client_id': config.on_client_id, 'client_secret': config.on_client_secret,'redirect_uri':config.on_redirect_uri,'refresh_token':data['refresh']})
 
         # Saving tokens
-        print r.text
-        #save_tokens(json.loads(r.text))
+        save_tokens(json.loads(r.text))
         
         return render_template("dialog.onenote.result.html",success=True,message=config.MSG_TOKENREFRESH_OK,title="Onenote result")
 

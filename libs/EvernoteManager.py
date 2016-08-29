@@ -46,7 +46,7 @@ def load_notebooks(accessToken):
     noteStore = client.get_note_store()
     response = noteStore.listNotebooks()
     for notebook in response:
-        notebooks.append({"name":unicode(notebook.name, "utf8"),"guid":unicode(notebook.guid, "utf8")})
+        notebooks.append({"name":unicode(notebook.name, "utf8"),"guid":unicode(notebook.guid, "utf8"),"service":config.service_evernote})
 
     # Saving notebooks to cache
     cache_notebooks(notebooks)

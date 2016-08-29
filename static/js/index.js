@@ -3,8 +3,11 @@ $(document).ready(function(){
 	$("button#btnCreate").click(function(){
 		self.location.href="/create";
 	});
-	$("button#btnNotebooks").click(function(){
+	$("li#linkEvernote").click(function(){
 		self.location.href="/list?mode=notebook";
+	});
+	$("li#linkOnenote").click(function(){
+		self.location.href="/on/list?mode=notebook";
 	});
 	$("button#btnSearches").click(function(){
 		self.location.href="/list?mode=search";

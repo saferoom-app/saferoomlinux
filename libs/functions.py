@@ -5,6 +5,7 @@ import binascii
 import rncryptor
 import base64
 import config
+from time import strftime
 
 
 def millisToDate(timestamp):
@@ -111,3 +112,11 @@ def generateKey(os,user,salt):
     m = hashlib.md5()
     m.update(os+user+salt)
     return m.hexdigest()
+
+def log_message(message):
+
+    try:
+        with open(config.path_logfile,"a") as f:
+            f.write(strftime("%Y-%m-%d %H:%M:%S")+": "+message+"\n")
+    except:
+        raise
