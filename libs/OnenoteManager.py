@@ -4,7 +4,9 @@ import time
 import json
 import os
 import requests
-from libs.functions import log_message
+from libs.functions import log_message,stringMD5
+from bs4 import BeautifulSoup
+import uuid
 
 '''
   ============================================================
@@ -51,9 +53,6 @@ def load_notebooks(accessToken):
 	except Exception as e:
 		print e
 		return notebooks
-
-		
-
 
 def cache_notebooks(notebooks):
     f = open(config.path_notebooks_onenote,"w")
@@ -181,7 +180,7 @@ def get_on_note(accessToken,guid,forceRefresh):
 
     # Checking if note has been cached already
 	try:
-		with open(config.path_note % (guid),"r") as f:
+		with open(config.path_note % (guid,"content.json"),"r") as f:
 			note = f.read()
 		return note
 	except:
@@ -205,15 +204,63 @@ def download_note(access_token,guid):
 	# Processing the response
 	note = r.text
 
-	# Saving note to cache for faster load
+	# Saving note
 	cache_note(guid,note)
 
 	# Sending response
 	return note
 
-def cache_note(guid,note):
-	with open(config.path_note % (guid),"w") as f:
-		f.write(note)
+def download_resources(access_token,noteContent,guid):
+    # Getting note title and content
+    soup = BeautifulSoup(noteContent,"html.parser")
+
+    # Getting note resources
+    resources = []
+    images = soup.find_all("img")
+    for image in images:
+        resources.append({"name":stringMD5(image['src']),"type":image['data-src-type'],"link":image['src']})
+    objects = soup.find_all("object")
+    for obj in objects:
+        resources.append({"name":obj['data-attachment'],"type":obj['type'],"link":obj['data']})
+
+    # Downloading all resources into tmp folder
+    headers = {"Authorization":"Bearer "+access_token}
+    for resource in resources:
+    	if resource_exists(guid,resource['name']) == False:
+    	    r = requests.get(resource['link'],headers=headers,stream=True)
+    	    if r.ok:
+    	        with open(config.path_note % (guid,resource['name']),"wb") as f:
+    			    for block in r.iter_content(1024):
+    				    f.write(block)
+    	    else:
+    	    	log_message(config.ERROR_FILE_DOWNLOAD % (str(r.status_code)))
+
+    # Changing the content
+    matches = soup.find_all(['img','object'])
+    index = 0
+    for match in matches:
+    	if "img" in match.name:
+    		tag = soup.new_tag('img',style="width:100%",src="/static/tmp/"+guid+"/"+resources[index]['name'])
+    	elif "object" in match.name:
+    		tag = soup.new_tag('a',href="/static/tmp/"+guid+"/"+resources[index]['name'])
+    		tag.string = resources[index]['name']
+        match.replaceWith(tag)
+        index = index + 1
+
+    # Getting page body 
+    matches = soup.find_all("div")
+    for match in matches:
+        content = match.decode_contents(formatter="html")
+        break
+
+    return {"title":soup.title.string,"content":content,"service":config.service_onenote}
+
+def cache_note(guid,noteContent):
+    
+    if os.path.exists(config.path_note % (guid,"")) == False:
+        os.makedirs(config.path_note % (guid,""))
+	with open(config.path_note % (guid,"content.json"), "w") as f:
+	    f.write(noteContent) 
 
 '''
   ============================================================
@@ -277,3 +324,6 @@ def get_access_token():
 	except Exception as e:
 		print e
 		return ""
+
+def resource_exists(guid,name):
+	return os.path.exists(config.path_note % (guid,name))

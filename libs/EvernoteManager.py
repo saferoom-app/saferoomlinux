@@ -237,9 +237,8 @@ def get_note(accessToken,guid,forceRefresh):
 
     # Checking if note is cached
     try:
-        f = open("notes/"+guid+"/content.json")
-        note = json.loads(f.read())
-        f.close()
+        with open(config.path_note % (guid,"content.json")) as f:
+            note = json.loads(f.read())
     except:
         note = download_note(accessToken,guid)
 
@@ -262,26 +261,27 @@ def download_note(accessToken,guid):
     
     # Getting note with all the data
     note = {"title":unicode(response.title, "utf8"),"content":unicode(response.content, "utf8"),"created":millisToDate(response.created),"updated":millisToDate(response.updated)}
-
-    # Saving downloaded resources to temporary folder
-    if os.path.exists("notes/"+guid) == False:
-        os.makedirs("notes/"+response.guid)
-
-    # Saving content to this folder for faster access
-    f = open("notes/"+guid+"/content.json","w")
-    f.write(json.dumps(note))
-    f.close()
-
+   
+    # Save note content
+    cache_note(guid,note)
 
     # Saving resources for faster access
-    print response.resources
     if (response.resources != None):
         for resource in response.resources:
-            with open("notes/"+str(guid)+"/"+str(resource.attributes.fileName),"wb") as f:
+            with open(config.path_note % (guid,str(resource.attributes.fileName)),"wb") as f:
                 f.write(resource.data.body)
     
     return note
 
+
+def cache_note(guid,note):
+    # Saving downloaded resources to temporary folder
+    if os.path.exists(config.path_note % (guid,"")) == False:
+        os.makedirs(config.path_note % (guid,""))
+
+    # Saving content to this folder for faster access
+    with open(config.path_note % (guid,"content.json"),"w") as f:
+        f.write(json.dumps(note))
 
 def create_note(accessToken,title,content,notebookGuid,files,tags):
 

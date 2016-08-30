@@ -8,8 +8,9 @@ import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup, Tag
 from libs.EvernoteManager import list_notes,create_note,get_note
-from libs.OnenoteManager import list_on_notes,get_access_token, get_on_note
+from libs.OnenoteManager import list_on_notes,get_access_token, get_on_note,download_resources
 import requests
+import re
 
 # Initializing the blueprint
 mod_note = Blueprint("mod_note",__name__)
@@ -58,8 +59,6 @@ def createnote():
 
         # Filtering data
         content = content.replace("<p id=\"evernoteAttach\"><br></p>","").replace("<br>","").replace("id=\"evernoteAttach\"","").replace("></en-media>","/>")
-        #print fileList
-        #return ""
 
         # Creating a note
         create_note(config.ACCESS_TOKEN,title,content,guid,fileList,tags)
@@ -81,24 +80,24 @@ def decrypt_note():
 
 
         # Checking that encrypted note is saved on local machine
-        if (os.path.exists("notes/"+guid+"/") == False):
-            abort(404)
+        if os.path.exists(config.path_note % (guid,"")) == False:
+            abort(400)
 
         # Checking that "content.json" is there
-        if (os.path.isfile("notes/"+guid+"/content.json") == False):
-            abort(404)
+        if os.path.isfile(config.path_note % (guid,"content.json")) == False:
+            abort(400)
 
         # Reading the "content.json"
-        with open("notes/"+guid+"/content.json","r") as f:
+        with open(config.path_note % (guid,"content.json"),"r") as f:
             note = json.loads(f.read())
 
         # Getting a list of resources
         resources = []
         hash = ""
         data = None
-        path = "notes/"+guid+"/"
+        path = config.path_note % (guid,"")
         tmp_path = "static/tmp/"
-        for filename in os.listdir("notes/"+guid+"/"):
+        for filename in os.listdir(path):
             if "content.json" not in filename:
             
                 # Reading file data into variale
@@ -124,10 +123,11 @@ def decrypt_note():
                 resources.append({"name":filename,"hash":hash,"mime":mime}) 
 
         # Getting note content (within <en-note> tag)
-        tree = ET.fromstring(note.get('content'))
-        noteContent = "".join( [ tree.text ] + [ ET.tostring(e) for e in tree.getchildren() ])
-        noteContent = decryptNote(noteContent,"testtest")
+        noteContent = note.get('content')
+        noteContent = noteContent[noteContent.find("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__")+len("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"):noteContent.find("__TUFNTU9USEVOQ1JZUFRFRE5PVEU=")].strip();
+        noteContent = decryptNote(config.ENCRYPTED_PREFIX + noteContent + config.ENCRYPTED_SUFFIX,"testtest")
         noteContent.replace("></en-media>","/>")
+        print noteContent
         
         # Finding all <en-media> tags within the note content       
         soup = BeautifulSoup(noteContent,"html.parser")
@@ -250,27 +250,8 @@ def get_onenote_note(guid):
             # Downloading note
             note = get_on_note(access_token,guid,forceRefresh)
 
-            # Getting note title and content
-            soup = BeautifulSoup(note,"html.parser")
-            matches = soup.find_all("div")
-            for match in matches:
-                content = match.decode_contents(formatter="html")
-                break
-
-
-            # Getting note resources
-            resources = []
-            images = soup.find_all("img")
-            for image in images:
-                resources.append({"name":"","type":image['data-src-type'],"link":image['src']})
-            objects = soup.find_all("object")
-            for obj in objects:
-                resources.append({"name":obj['data-attachment'],"type":obj['type'],"link":obj['data']});
-
-            r = requests.get(resources[0]['link'])
-            print r.status_code
-
-            note = {"title":soup.title.string,"content":content,"service":config.service_onenote}
+            # Downloading resources and processing the note content for proper display
+            note = download_resources(access_token,note,guid)
             return jsonify(note);
 
     except Exception as e:
