@@ -3,12 +3,13 @@ from flask import Blueprint, jsonify,abort,request,render_template
 import config
 import os
 import json
-from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5
+from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,log_message
 import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup, Tag
 from libs.EvernoteManager import list_notes,create_note,get_note
-from libs.OnenoteManager import list_on_notes,get_access_token
+from libs.OnenoteManager import list_on_notes,get_access_token, get_on_note
+import requests
 
 # Initializing the blueprint
 mod_note = Blueprint("mod_note",__name__)
@@ -179,7 +180,6 @@ def decrypt_note():
         
         noteContent = soup.prettify()
         noteContent = noteContent.replace("></embed>","/>")
-        print noteContent
         return noteContent
 
     except Exception as e:
@@ -208,7 +208,7 @@ def save_note_as():
     return request.args.get("format")
 
 
-@mod_note.route("/on/list/<string:guid>/<string:responseType>",methods=["GET"])
+@mod_note.route("/on/list/<string:guid>/<string:responseType>")
 def list_onenote_notes(guid,responseType):
     forceRefresh = False
     if request.args.get("refresh"):
@@ -216,7 +216,7 @@ def list_onenote_notes(guid,responseType):
 
     # Getting a list of sections
     access_token = get_access_token()
-    notes = list_on_notes(access_token,False,guid)
+    notes = list_on_notes(access_token,forceRefresh,guid)
 
     # Returning response based on specified format
     if responseType == "json":
@@ -225,3 +225,55 @@ def list_onenote_notes(guid,responseType):
         return render_template("select.notebooks.html",notes=notes)
     else:
         return render_template('onenote.list.notes.html',notes=notes)
+
+@mod_note.route("/on/<string:guid>",methods=["GET","POST"])
+def get_onenote_note(guid):
+    try:
+        content = ""
+        # Checking the request
+        forceRefresh = False
+        if not guid or guid == "":
+            abort(400)
+        if request.args.get("refresh"):
+            forceRefresh = str_to_bool(request.args.get("refresh"))
+
+        if request.method == "GET":
+            return render_template("onenote.view.html",title="Application :: View note",guid=guid)
+
+        else:
+            # Getting access token
+            access_token = get_access_token()
+            if (access_token == ""):
+                log_message(config.MSG_NO_TOKENS)
+                abort(400)
+
+            # Downloading note
+            note = get_on_note(access_token,guid,forceRefresh)
+
+            # Getting note title and content
+            soup = BeautifulSoup(note,"html.parser")
+            matches = soup.find_all("div")
+            for match in matches:
+                content = match.decode_contents(formatter="html")
+                break
+
+
+            # Getting note resources
+            resources = []
+            images = soup.find_all("img")
+            for image in images:
+                resources.append({"name":"","type":image['data-src-type'],"link":image['src']})
+            objects = soup.find_all("object")
+            for obj in objects:
+                resources.append({"name":obj['data-attachment'],"type":obj['type'],"link":obj['data']});
+
+            r = requests.get(resources[0]['link'])
+            print r.status_code
+
+            note = {"title":soup.title.string,"content":content,"service":config.service_onenote}
+            return jsonify(note);
+
+    except Exception as e:
+        print e
+        raise
+    return guid

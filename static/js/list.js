@@ -71,7 +71,7 @@ $(document).on("change","select#selectCategory",function(){
 });
 $(document).ajaxComplete(function(){
 	path = {"mode":currentMode,"guid":selectedGUID};
-})
+});
 
 
 

@@ -14,9 +14,9 @@ def millisToDate(timestamp):
 	return datetime.datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S.%f')[:-7]
 
 def str_to_bool(s):
-    if s == 'True':
+    if s == 'True' or s == "true":
         return True
-    elif s == 'False':
+    elif s == 'False' or s == "False":
         return False
 
 def stringMD5(source):

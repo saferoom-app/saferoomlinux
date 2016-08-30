@@ -1,10 +1,10 @@
 <div class="input-group">
 	<span  class="input-group-btn">
-        <button title="Click to update the list of notes" type="button" class="btn btn-default" aria-label="Left Align" id="btnRefresh">
+        <button title="Click to update the list of notes" type="button" class="btn btn-default" aria-label="Left Align" id="btnNoteRefresh">
         	<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
         </button>
    </span>
-   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtSearch">
+   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtONSearch">
    
 </div><hr/>
 <table id="tblNotes" class="table table-striped">
@@ -17,8 +17,8 @@
 </thead>
 <tbody>
 	{% for note in notes %}
-		<tr>
-			<td style="width:50%"><a target="_blank" href="/note/{{note.guid}}">{{note.title}}</a></td>
+		<tr class="itemRow">
+			<td style="width:50%"><a target="_blank" href="/note/on/{{note.guid}}">{{note.title}}</a></td>
 			<td style="width:25%">{{note.created}}</td>
 			<td style="width:25%">{{note.updated}}</td>
 		</tr>

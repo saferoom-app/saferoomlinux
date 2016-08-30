@@ -69,11 +69,13 @@ $(document).on("keyup","input#txtSearch",function(){
 });
 function generateLink(path){
     link = location.protocol + '//' + location.host + location.pathname+"?"
+    console.log(path);
     for (var key in path) {
         if (path[key] != ""){
             link = link+key+"="+path[key]+"&";
         }
     }
+    console.log(link);
     return link.substr(0,link.length-1);
 }
 

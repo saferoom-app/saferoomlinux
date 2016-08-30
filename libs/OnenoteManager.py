@@ -118,7 +118,7 @@ def cache_sections(guid,sections):
 
 '''
   ============================================================
-            Note functions
+            Notes functions (List)
   ============================================================
 '''
 
@@ -145,7 +145,7 @@ def load_notes(accessToken,guid):
 		headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
 		r = requests.get(config.url_notes % (guid),headers=headers)
 		if (r.status_code == 401):
-			log_message(config.MSG_UNAUTHORIZED)
+			log_message(config.MSG_UNAUTHORIZED+": "+r.text)
 			return notes
 
 		# Getting response
@@ -167,6 +167,53 @@ def cache_notes(guid,notes):
     f.write(json.dumps(notes))
     f.close()
 
+
+'''
+  ============================================================
+            Note functions (view, encrypt, decrypt)
+  ============================================================
+'''
+
+def get_on_note(accessToken,guid,forceRefresh):
+	note = ""
+	if (forceRefresh == True):
+		note = download_note(accessToken,guid)
+
+    # Checking if note has been cached already
+	try:
+		with open(config.path_note % (guid),"r") as f:
+			note = f.read()
+		return note
+	except:
+		# Note is not cached, thus we need to download it
+	    note = download_note(accessToken,guid)
+	         
+	return note
+
+def download_note(access_token,guid):
+	note = ""
+
+	# Creating custom header for Onenote
+	headers = {"Authorization":"Bearer "+access_token,"Content-Type":"application/json"}
+	r = requests.get(config.url_note_content % (guid),headers=headers)
+
+	# Checking the response (if not 200 or 201 => failure, write to log file)
+	if r.status_code == 401:
+		log_message(config.MSG_UNAUTHORIZED+": "+r.text)
+		return note
+
+	# Processing the response
+	note = r.text
+
+	# Saving note to cache for faster load
+	cache_note(guid,note)
+
+	# Sending response
+	return note
+
+def cache_note(guid,note):
+	with open(config.path_note % (guid),"w") as f:
+		f.write(note)
 
 '''
   ============================================================
