@@ -301,7 +301,7 @@ def is_access_token_valid():
 			return False
 
 		# Checking that Access Token didn't expire
-		if is_token_expired(tokens['expires']) == False:
+		if is_token_expired(tokens['expires']) == True:
 			return False
 
 		return True

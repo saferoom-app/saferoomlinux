@@ -150,7 +150,7 @@ def list_tags(accessToken,forceRefresh):
 
     # Checking cache
     try:
-        f = open("cache/tags.json")
+        f = open(config.path_tags)
         tags = json.loads(f.read())
         f.close()
     except:
@@ -170,14 +170,11 @@ def load_tags(accessToken):
 
     # Saving notebooks to cache
     cache_tags(tags)
-
     return tags
 
 def cache_tags(tags):
-    f = open("cache/tags.json","w")
-    f.write(json.dumps(tags))
-    f.close()
-
+    with open(config.path_tags,"w") as f:
+        f.write(json.dumps(tags))
 '''
   ============================================================
             Saved Searches functions
@@ -193,7 +190,7 @@ def list_searches(accessToken,forceRefresh):
 
     # Checking cache
     try:
-        f = open("cache/searches.json")
+        f = open(config.path_searches)
         searches = json.loads(f.read())
         f.close()
     except:
@@ -214,14 +211,12 @@ def load_searches(accessToken):
 
     # Saving notebooks to cache
     cacheSearches(searches)
-
-    return tags
+    return searches
 
 
 def cacheSearches(searches):
-    f = open("cache/searches.json","w")
-    f.write(json.dumps(searches))
-    f.close()
+    with open(config.path_searches,"w") as f:
+        f.write(json.dumps(searches))   
 
 '''
   ============================================================
@@ -283,10 +278,10 @@ def cache_note(guid,note):
     with open(config.path_note % (guid,"content.json"),"w") as f:
         f.write(json.dumps(note))
 
-def create_note(accessToken,title,content,notebookGuid,files,tags):
+def create_note(accessToken,title,content,notebookGuid,files,tags,password):
 
     # Generating note body
-    content = config.ENCRYPTED_PREFIX+stringMD5(content)+"__"+encryptNote(content,"testtest")+config.ENCRYPTED_SUFFIX
+    content = config.ENCRYPTED_PREFIX+stringMD5(content)+"__"+encryptNote(content,password)+config.ENCRYPTED_SUFFIX
     nBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     nBody += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
     nBody += "<en-note>%s</en-note>" % content
@@ -308,7 +303,7 @@ def create_note(accessToken,title,content,notebookGuid,files,tags):
             with open("static/tmp/"+file.get('name'),"rb") as f:
                 
                 # Calculating hash
-                binaryData = encryptData(f.read(),"testtest")
+                binaryData = encryptData(f.read(),password)
                 md5 = hashlib.md5()
                 md5.update(binaryData)
                 hash = md5.digest()
@@ -334,18 +329,8 @@ def create_note(accessToken,title,content,notebookGuid,files,tags):
                 resources.append(resource)
 
     note.resources = resources
-
-    
-    try:
-        # Connecting to Evernote
-        client = EvernoteClient(token=accessToken,sandbox=False)
-        noteStore = client.get_note_store()
-        noteStore.createNote(accessToken,note)
-    except EDAMUserException, edue:
-        print "EDAMUserException:", edue
-        return None
-    except EDAMNotFoundException, endfe:
-        print "EDAMNotFoundException: Invalid parent notebook GUID"
-        return None
-    
+    # Connecting to Evernote
+    client = EvernoteClient(token=accessToken,sandbox=False)
+    noteStore = client.get_note_store()
+    noteStore.createNote(accessToken,note)
     return note

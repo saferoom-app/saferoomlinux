@@ -12,7 +12,9 @@ function getJSON()
 	CreateAJAX("/notebooks/on/list/json","GET","json",[])
 	.done(function(response){
 		displayProgress("",false);
-		tree = response
+		// Checking the response
+		if (response.status != HTTP_OK ){alert(response.msg);return;}
+		tree = response.msg;
 		$('div#tree').treeview({data: tree});
 		$('div#tree').on('nodeSelected', function(event, data) {
 			data.selected = true;
@@ -24,7 +26,7 @@ function getJSON()
 			setTimeout(function(){
 				listSections("/on/sections/"+notebookGUID+"/json");
 			},500);
-		}
+		};
 		sectionGUID = getParameterByName("section",document.location.href);
 		if (sectionGUID !=null){
 			var interval = window.setInterval(function(){
@@ -33,7 +35,7 @@ function getJSON()
 				clearInterval(interval);
 			}
 			},500);
-		}
+		};
 	})
 	.fail(function(xhr){
 		displayProgress("",false);

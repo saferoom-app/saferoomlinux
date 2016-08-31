@@ -1,9 +1,9 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_notebooks
-from libs.OnenoteManager import list_on_notebooks,get_access_token,list_sections
+from libs.OnenoteManager import list_on_notebooks,get_access_token,list_sections,is_access_token_valid
 import config
-from libs.functions import str_to_bool,log_message
+from libs.functions import str_to_bool,handle_exception
 
 # Initializing the blueprint
 mod_notebook = Blueprint("mod_notebook",__name__)
@@ -27,8 +27,8 @@ def notebooks(responseType):
             return render_template("select.notebooks.html",notebooks=notebooks)
         else:
             return render_template('list.notebooks.html',notebooks=notebooks)
-    except:
-        raise
+    except Exception as e:
+        return handle_exception(responseType,config.http_internal_server,str(e))
 
 @mod_notebook.route("/on/list/<string:responseType>",methods=["GET"])
 def list_onenote_notebooks(responseType):
@@ -37,12 +37,18 @@ def list_onenote_notebooks(responseType):
         forceRefresh = str_to_bool(request.args.get("refresh"))
 
     # Listing the Onenote notebooks
+    if is_access_token_valid() == False:
+        if responseType == config.TYPE_JSON:
+            return jsonify(status=401,msg=config.MSG_NO_TOKENS)
+        if responseType == config.TYPE_JSON:
+            return render_template("onenote.token.expired.html")
+
     access_token = get_access_token()
     notebooks = list_on_notebooks(access_token,False)
     
     # Returning response based on specified format
     if responseType == "json":
-        return jsonify(notebooks)
+        return jsonify(status=200,msg=notebooks)
     elif responseType == "select":
         return render_template("select.notebooks.html",notebooks=notebooks)
     else:
@@ -54,6 +60,13 @@ def list_on_sections(guid,responseType):
     forceRefresh = False
     if request.args.get("refresh"):
         forceRefresh = str_to_bool(request.args.get("refresh"))
+
+    # Listing the Onenote notebooks
+    if is_access_token_valid() == False:
+        if responseType == config.TYPE_JSON:
+            return jsonify(status=401,msg=config.MSG_NO_TOKENS)
+        if responseType == config.TYPE_JSON:
+            return render_template("onenote.token.expired.html"),401
 
     # Getting a list of sections
     access_token = get_access_token()

@@ -16,6 +16,7 @@ from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
 from libs.functions import decryptString,generateKey
 from libs.OnenoteManager import is_access_token_valid
+from libs.PasswordManager import get_master_password
 
 # Blueprint imports
 from modules.mod_favourites import mod_favourites
@@ -123,10 +124,7 @@ def upload():
 @app.route("/demo",methods=['GET'])
 def demo():
     
-    print is_access_token_valid()
-    # Combining all together
-    return ""
-
+   return "demo page"
 
 '''
 ============================================
@@ -146,12 +144,6 @@ def page_not_found(e):
 @app.errorhandler(501)
 def bad_request(e):
 	return render_template('501.html'),501
-
-@app.errorhandler(400)
-def custom_400(error):
-    print error
-    return error;
-
 
 @app.after_request
 def add_header(response):

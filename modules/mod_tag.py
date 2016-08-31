@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_tags
 import config
-from libs.functions import str_to_bool
+from libs.functions import str_to_bool,handle_exception
 
 # Initializing the blueprint
 mod_tag = Blueprint("mod_tag",__name__)
@@ -21,8 +21,6 @@ def tags():
         if request.args.get("format"):
             responseType = request.args.get("format")
 
-        print forceRefresh
-
         # Getting a list of tags
         tags = list_tags(config.ACCESS_TOKEN,forceRefresh)
 
@@ -34,4 +32,4 @@ def tags():
         else:
             return render_template('list.tags.html',tags=tags)
     except Exception as e:
-        raise
+        return handle_exception(responseType,config.http_internal_server,str(e))

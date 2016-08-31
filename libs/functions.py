@@ -6,6 +6,7 @@ import rncryptor
 import base64
 import config
 from time import strftime
+from flask import render_template,jsonify
 
 
 def millisToDate(timestamp):
@@ -120,3 +121,16 @@ def log_message(message):
             f.write(strftime("%Y-%m-%d %H:%M:%S")+": "+message+"\n")
     except:
         raise
+
+# This method is used to handle exceptions
+def handle_exception(responseType,code,message):
+
+    # Logging message
+    message = "Error while processing your request: "+message
+    log_message(message);
+
+    # Sending response based on response type: JSON or HTML
+    if responseType == config.TYPE_JSON:
+        return jsonify(status=code,message=message)
+    else:
+        return render_template("server.error.html",code=code,message=message)

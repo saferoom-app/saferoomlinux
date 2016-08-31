@@ -89,3 +89,39 @@ function listCategories(category){
 			break;
 	}
 }
+
+function listNotebooks(){
+	// Displaying modal window
+	displayProgress(MSG_NOTEBOOKS_LOAD,true)
+	
+	CreateAJAX("/notebooks/list/html","GET","html",{})
+	.done(function(response){
+		displayProgress("",false);
+		$("div#listItems").html(response);
+		rowItems = $("div#listNotebooks button");
+		FINISHED = true;
+	})
+	.fail(function(xhr){
+		displayProgress("",false);
+		$("div#listItems").html(response);
+		FINISHED = true;
+	});
+
+}
+
+function listTags(filter){
+	// Displaying modal window
+	displayProgress(MSG_TAGS_LOAD, true);
+	CreateAJAX("/tags/list","GET","html",filter)
+	.done(function(response){
+		displayProgress("",false);
+		$("div#listItems").html(response);
+		rowItems = $("div#listTags button");
+		FINISHED = true;
+	})
+	.fail(function(xhr){
+		FINISHED = true;
+		displayProgress("",false);
+		$("div#listItems").html(response);
+	});
+}

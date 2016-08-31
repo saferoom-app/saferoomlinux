@@ -23,53 +23,9 @@ $(document).ready(function(){
 	});
 
 	$("button#btnEncrypt").click(function(){
-
-		showAlert(false,"","");
-		// Checking note title
-		var title = $("input#txtTitle").val();
-		if (title == ""){$("input#txtTitle").focus();return;}
-
-		// Checking note content
-		var noteContent = $("#summernote").summernote('code');
-		if (noteContent == ""){
-			noteContent.focus();
-			alert("Note content cannot be empty");
-			return;
-		}
-
-		// Setting tags
-		var tags = $("input#txtTags").val();
-
-		// Setting notebook GUID
-		var guid = $("select#txtNotebook option:selected").val();
-
-		// Before sending the content to server, let's format it
-		var tmpl = $("<div>"+noteContent+"</div>");
-		var enml = "";
-		var htmlAttach = "";
-		var fileList = []
-		tmpl.find("p#evernoteAttach").each(function(){
-			htmlAttach = $(this).next().html();
-			enml = $(this).next().find("span#enml");
-			if (enml != null){
-				fileList.push({name:$(this).next().find("span#txtFilename").html(),mime:enml.find("en-media").attr("type")});
-				noteContent = noteContent.replace("<div class=\"attachment\">"+htmlAttach+"</div>",enml.html());
-			}
-		});
-		noteContent = noteContent.replace(/<p><br><\/p>/g, '<br/>');
-		displayProgress(MSG_NOTE_UPLOAD,true);
-		CreateAJAX("/note/create","POST","json",{title:title,content:noteContent,tags:tags,guid:guid,filelist:JSON.stringify(fileList)})
-		.done(function(response){
-			displayProgress("",false);
-			showAlert(true,LEVEL_SUCCESS,response.msg);
-			scrollTop();
-		})
-		.fail(function(xhr){
-			displayProgress("",false);
-			showAlert(true,LEVEL_DANGER,MSG_INTERNAL_ERROR);
-		});
-
+		encrypt_note("master","");
 	});	
+
 
 });
 
@@ -205,3 +161,72 @@ $(document).on("click","button#btnApply",function(){
 	$("div#modalTags").modal("hide");
 	$("div#listTags").html("");
 });
+$(document).on("click","button#btnOTPEncrypt",function(){
+	$("input#txtOTP").val("");
+	$("div#modalOTP").modal("show");
+});
+$(document).on("click","button#btnOTPApply",function(){
+	// Checking if the password has been specified
+	if ($("input#txtOTP").val() == ""){
+		$("input#txtOTP").focus();
+		return;
+	}
+
+	// Closing modal window and start decryption procedure
+	$("div#modalOTP").modal("hide");
+	encrypt_note("otp",$("input#txtOTP").val());
+});
+
+function encrypt_note(mode,password)
+{
+	showAlert(false,"","");
+		// Checking note title
+		var title = $("input#txtTitle").val();
+		if (title == ""){$("input#txtTitle").focus();return;}
+
+		// Checking note content
+		var noteContent = $("#summernote").summernote('code');
+		if (noteContent == ""){
+			noteContent.focus();
+			alert("Note content cannot be empty");
+			return;
+		}
+
+		// Setting tags
+		var tags = $("input#txtTags").val();
+
+		// Setting notebook GUID
+		var guid = $("select#txtNotebook option:selected").val();
+
+		// Before sending the content to server, let's format it
+		var tmpl = $("<div>"+noteContent+"</div>");
+		var enml = "";
+		var htmlAttach = "";
+		var fileList = []
+		tmpl.find("p#evernoteAttach").each(function(){
+			htmlAttach = $(this).next().html();
+			enml = $(this).next().find("span#enml");
+			if (enml != null){
+				fileList.push({name:$(this).next().find("span#txtFilename").html(),mime:enml.find("en-media").attr("type")});
+				noteContent = noteContent.replace("<div class=\"attachment\">"+htmlAttach+"</div>",enml.html());
+			}
+		});
+		noteContent = noteContent.replace(/<p><br><\/p>/g, '<br/>');
+		displayProgress(MSG_NOTE_UPLOAD,true);
+		CreateAJAX("/note/create","POST","json",
+			{title:title,content:noteContent,tags:tags,guid:guid,filelist:JSON.stringify(fileList),mode:mode,pass:password})
+		.done(function(response){
+			displayProgress("",false);
+			if (response.status != HTTP_OK){
+				showAlert(true,LEVEL_DANGER,response.message);
+				scrollTop();
+				return;
+			}
+			showAlert(true,LEVEL_SUCCESS,response.message);
+			scrollTop();
+		})
+		.fail(function(xhr){
+			displayProgress("",false);
+			showAlert(true,LEVEL_DANGER,MSG_INTERNAL_ERROR);
+		});s
+}

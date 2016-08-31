@@ -3,17 +3,23 @@ $(document).ready(function(){
 	// Getting note GUID
 	GUID = $("input#txtGuid").val();
 	// Displaying modal window
-	$("#modalLoading").modal('show');
-	$("span#loadingText").html("Loading specified note ...");
-
+	displayProgress(MSG_LOAD_NOTE,true);
+	
 	// Loading note content
 	CreateAJAX("/note/"+GUID,"POST","json",{})
 	.done(function(response){
-		$("span#noteTitle").html(response.title);
-		$("div#noteContent").html(response.content);
+		displayProgress("",false);
+		if (response.status != HTTP_OK){
+			showToast(LEVEL_DANGER,response.message);
+			$("div#noteContent").html("n/a");
+			$("span#noteTitle").html("n/a");
+			return;
+		}
+		$("span#noteTitle").html(response.message.title);
+		$("div#noteContent").html(response.message.content);
 		$("div#modalLoading").modal('hide');
 
-		if (response.favourite == true){
+		if (response.message.favourite == true){
 			$("span#favAdd").hide();
 			$("span#favRemove").show();
 		}
@@ -31,22 +37,15 @@ $(document).ready(function(){
 });
 
 $(document).on("click","button#btnDecrypt",function(){
-
-	// Displaying progress
-	$("div#decryptedContent").html("")
-	$("#modalDecrypted").modal("show");
-	$("div#modalDecrypted span#loader").show();
-
-	CreateAJAX("/note/decrypt","POST","html",{guid:$("#txtGuid").val()})
-	.done(function(response){
-		$("div#modalDecrypted span#loader").hide();
-		$("div#decryptedContent").html(response);
-	})
-	.fail(function(xhr){
-		$("div#modalDecrypted span#loader").hide();
-		$("div#decryptedContent").html(xhr.responseText);
-	});
+	decrypt_note("master","");	
 });
+
+$(document).on("click","button#btnOTPDecrypt",function(){
+	$("input#txtOTP").val("");
+	$("div#modalOTP").modal("show");
+});
+
+
 
 $(document).on("click","button#btnAddFav",function(){
 
@@ -84,3 +83,34 @@ $(document).on("click","button#btnRemFav",function(){
 		console.log(xhr);
 	});
 });
+
+$(document).on("click","button#btnOTPApply",function(){
+	// Checking if the password has been specified
+	if ($("input#txtOTP").val() == ""){
+		$("input#txtOTP").focus();
+		return;
+	}
+
+	// Closing modal window and start decryption procedure
+	$("div#modalOTP").modal("hide");
+	decrypt_note("otp",$("input#txtOTP").val());
+});
+
+
+function decrypt_note(mode,password)
+{
+	// Displaying progress
+	$("div#decryptedContent").html("")
+	$("#modalDecrypted").modal("show");
+	$("div#modalDecrypted span#loader").show();
+
+	CreateAJAX("/note/decrypt","POST","html",{guid:$("#txtGuid").val(),mode:mode,"pass":password})
+	.done(function(response){
+		$("div#modalDecrypted span#loader").hide();
+		$("div#decryptedContent").html(response);
+	})
+	.fail(function(xhr){
+		$("div#modalDecrypted span#loader").hide();
+		$("div#decryptedContent").html(xhr.responseText);
+	});
+}

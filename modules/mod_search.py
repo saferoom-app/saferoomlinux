@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_searches
 import config
+from libs.functions import handle_exception
 
 # Initializing the blueprint
 mod_search = Blueprint("mod_search",__name__)
@@ -16,10 +17,9 @@ def searches(responseType):
         # Returing the response based on specified format
         if responseType == "json":
             return jsonify(searches)
-        elif responseType == "select":
-            return ""
         else:
             return render_template('list.searches.html',searches=searches)
 
-    except:
-        raise
+    except Exception as e:
+        print e
+        return handle_exception(responseType,config.http_internal_server,str(e))

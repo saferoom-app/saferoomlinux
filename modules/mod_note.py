@@ -3,12 +3,13 @@ from flask import Blueprint, jsonify,abort,request,render_template
 import config
 import os
 import json
-from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,log_message
+from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,handle_exception
 import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup, Tag
 from libs.EvernoteManager import list_notes,create_note,get_note
 from libs.OnenoteManager import list_on_notes,get_access_token, get_on_note,download_resources
+from libs.PasswordManager import set_password
 import requests
 import re
 
@@ -20,18 +21,23 @@ mod_note = Blueprint("mod_note",__name__)
 def notes():
 
     try:
+        # Defining response type
+        responseType = "html"
+        if request.args.get('format'):
+            responseType = request.args.get("format")
+
         # Getting a list of notes
         notes = list_notes(config.ACCESS_TOKEN,request.form['refresh'],request.form["type"],request.form['guid'])
 
-        # Sending response based on specified format
-        if (request.args.get('format') == "select"):
+        # Sending response based on specified response type
+        if (responseType == config.TYPE_SELECT):
             return ""        
-        elif (request.args.get('format') == "json"):
+        elif (responseType == config.TYPE_JSON):
             return jsonify(notes)
         else:
             return render_template('list.notes.html',notes=notes)
-    except:
-        raise
+    except Exception as e:
+        return handle_exception(responseType,config.http_internal_server,str(e))
 
 
 @mod_note.route("/create",methods=['POST'])
@@ -40,56 +46,72 @@ def createnote():
     try:
         # Checking provided data
         if not request.form['title']:
-            abort(400)
+            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
         title = request.form['title']
         if not request.form['content']:
-            abort(400)
+            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
         if not request.form['guid']:
-            abort(400)
+            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+        
         guid = request.form['guid']
         content = request.form['content']
         if "en-media" in content and not request.form['filelist']:
-            abort(400)
+            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
         fileList = json.loads(request.form['filelist'])
-        #print fileList
+
+        # Checking if mode is set to "OTP" and OTP password has been provided
+        if not request.form['mode']:
+            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+        if request.form['mode'] == "otp" and not request.form['pass']:
+            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+
         tags = []
         if request.form['tags']:
             tags = request.form['tags'].split(",")
 
-
         # Filtering data
         content = content.replace("<p id=\"evernoteAttach\"><br></p>","").replace("<br>","").replace("id=\"evernoteAttach\"","").replace("></en-media>","/>")
 
+        # Set password
+        password = set_password(request.form['mode'],request.form['pass'])
+        
         # Creating a note
-        create_note(config.ACCESS_TOKEN,title,content,guid,fileList,tags)
+        create_note(config.ACCESS_TOKEN,title,content,guid,fileList,tags,password)
+        return jsonify(status=200,message=config.MSG_NOTECREATE_OK)
 
     except Exception as e:
-    	raise
+    	return handle_exception(config.TYPE_JSON,config.http_internal_server,str(e))
     
-    return jsonify(status=200,msg=config.MSG_NOTECREATE_OK)
-
-
 @mod_note.route("/decrypt",methods=['POST'])
 def decrypt_note():
 
     try:
         # Checking the GUID
         if not request.form['guid']:
-            abort(400)
+            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
         guid = request.form['guid']
+
+        # Checking if mode is set to "OTP" and OTP password has been provided
+        if not request.form['mode']:
+            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+        if request.form['mode'] == "otp" and not request.form['pass']:
+            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
 
 
         # Checking that encrypted note is saved on local machine
         if os.path.exists(config.path_note % (guid,"")) == False:
-            abort(400)
+            return handle_exception(config.TYPE_HTML,config.http_not_found,config.MSG_NOTE_MISSING % config.path_note % (guid,"") )
 
         # Checking that "content.json" is there
         if os.path.isfile(config.path_note % (guid,"content.json")) == False:
-            abort(400)
+            return handle_exception(config.TYPE_HTML,config.http_not_found,config.MSG_NOTE_MISSING % config.path_note % (guid,"content.json") )
 
         # Reading the "content.json"
         with open(config.path_note % (guid,"content.json"),"r") as f:
             note = json.loads(f.read())
+
+        # Setting decryption password
+        password = set_password(request.form['mode'],request.form['pass'])
 
         # Getting a list of resources
         resources = []
@@ -105,7 +127,7 @@ def decrypt_note():
                     data = f.read()
 
                 # Decrypting data
-                data = decryptFileData(data,"testtest")
+                data = decryptFileData(data,password)
 
                 # Writing data to temporary file
                 filename = filename.replace("%20","")
@@ -125,9 +147,8 @@ def decrypt_note():
         # Getting note content (within <en-note> tag)
         noteContent = note.get('content')
         noteContent = noteContent[noteContent.find("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__")+len("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"):noteContent.find("__TUFNTU9USEVOQ1JZUFRFRE5PVEU=")].strip();
-        noteContent = decryptNote(config.ENCRYPTED_PREFIX + noteContent + config.ENCRYPTED_SUFFIX,"testtest")
+        noteContent = decryptNote(config.ENCRYPTED_PREFIX + noteContent + config.ENCRYPTED_SUFFIX,password)
         noteContent.replace("></en-media>","/>")
-        print noteContent
         
         # Finding all <en-media> tags within the note content       
         soup = BeautifulSoup(noteContent,"html.parser")
@@ -183,24 +204,26 @@ def decrypt_note():
         return noteContent
 
     except Exception as e:
-    	raise
+    	return handle_exception(config.TYPE_HTML,config.http_internal_server,str(e))
 
 
 
 @mod_note.route("/<string:GUID>",methods=['POST','GET'])
 def note(GUID):
     try:
+        responseType = "html"
         if not GUID or GUID == "":
-            abort(400)
+            return handle_exception(responseType,config.http_bad_request,config.MSG_MANDATORY_MISSING)
             
         if request.method == "GET":
             return render_template("view.html",title="Application :: View note",guid=GUID)
         else:
             # Getting note
+            responseType = "json"
             note = get_note(config.ACCESS_TOKEN,GUID,False)
-            return jsonify(note)
-    except:
-        raise
+            return jsonify(status=config.http_ok,message=note)
+    except Exception as e:
+        return handle_exception(responseType,config.http_internal_server,str(e))
 
 
 @mod_note.route("/save",methods=["GET"])

@@ -30,7 +30,11 @@ MSG_SECTIONS_LOAD = "Loading a list of sections ... Please wait";
 MSG_LOAD_NOTE	 = "Loading specified note ... Please wait"
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
 
-
+// HTTP Response codes
+HTTP_OK = "200";
+HTTP_UNAUTHORIZED = "401";
+HTTP_NOT_FOUND = "404"
+HTTP_FORBIDDEN = "403"
 
 // Path object to generate links
 path = new Array();
@@ -64,42 +68,6 @@ function listNotes(filter){
 		$("div#listNotes").html(xhr.responseText);
 	});
 
-}
-
-function listNotebooks(){
-	// Displaying modal window
-	displayProgress(MSG_NOTEBOOKS_LOAD,true)
-	
-	CreateAJAX("/notebooks/list/html","GET","html",{})
-	.done(function(response){
-		displayProgress("",false);
-		$("div#listItems").html(response);
-		rowItems = $("div#listNotebooks button");
-		FINISHED = true;
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		$("div#listItems").html(response);
-		FINISHED = true;
-	});
-
-}
-
-function listTags(filter){
-	// Displaying modal window
-	displayProgress(MSG_TAGS_LOAD, true);
-	CreateAJAX("/tags/list","GET","html",filter)
-	.done(function(response){
-		displayProgress("",false);
-		$("div#listItems").html(response);
-		rowItems = $("div#listTags button");
-		FINISHED = true;
-	})
-	.fail(function(xhr){
-		FINISHED = true;
-		displayProgress("",false);
-		$("div#listItems").html(response);
-	});
 }
 
 function listSearches(){
@@ -288,6 +256,30 @@ function listQuicks(contentID){
 		displayProgress("",false);
 		alert(MSG_INTERNAL_ERROR);
 	});
+}
+
+
+function showToast(type,message){
+	toastr.options = {
+		"closeButton": false,
+		"debug": false,"newestOnTop": false,"progressBar": false,
+		"positionClass": "toast-bottom-center","preventDuplicates": false,
+		"onclick": null,"showDuration": "300","hideDuration": "1000",
+		"timeOut": "6000","extendedTimeOut": "1000","showEasing": "swing",
+		"hideEasing": "linear","showMethod": "fadeIn","hideMethod": "fadeOut"
+	}
+
+	switch (type)
+	{
+		case LEVEL_SUCCESS: // success
+			toastr['success'](message);
+			break;
+		case LEVEL_WARN: //warning
+			toastr['warning'](message);
+			break;
+		case LEVEL_DANGER: // error
+			toastr['error'](message);
+	}
 }
 
 // Loading external scripts

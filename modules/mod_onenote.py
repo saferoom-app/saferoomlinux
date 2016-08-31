@@ -8,21 +8,26 @@ import time
 import os
 import datetime
 from libs.OnenoteManager import save_tokens
+from libs.functions import log_message
 
 # Initializing the blueprint
 mod_onenote = Blueprint("mod_onenote",__name__)
 
 @mod_onenote.route("/login",methods=["GET"])
 def login():
-
 	# Creating HTTP GET to Login Live URL
-	try:
-	    conn = httplib.HTTPSConnection(config.on_hostname)
-	    conn.request("GET",config.on_path % (config.on_client_id,config.on_scopes,config.on_response_type,config.on_redirect_uri))
-	    response = conn.getresponse()
-	    return response.read()
-	except Exception as e:
-		return config.MSG_INTERNAL_ERROR
+    try:
+        conn = httplib.HTTPSConnection(config.on_hostname)
+        conn.request("GET",config.on_path % (config.on_client_id,config.on_scopes,config.on_response_type,config.on_redirect_uri))
+        response = conn.getresponse()
+
+        if response.status != config.HTTP_OK:
+            return render_template("dialog.onenote.result.html",success=False,message=config.MSG_RESPONSE_ERROR % (str(response.status),response.read()),title="Onenote result")
+
+        return response.read()
+    except Exception as e:
+        log_message(str(e))
+        return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
 
 
 @mod_onenote.route("/callback",methods=["GET"])
