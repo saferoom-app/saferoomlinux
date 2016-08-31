@@ -1,0 +1,152 @@
+<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-10">
+		<!-- ===================== [ General settings ] ============================ -->
+		<h3>General</h3><hr/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">System status: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Information about system status: master key, paths and access tokens" id="blah"></i></label>
+				<div> [ Success ] </div>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Default service: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Default service that will be used during note creation" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Evernote</option>
+					<option>Onenote</option>
+				</select>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<!-- ===================== [ Evernote settings ] ============================ -->
+		<h3>Evernote</h3><hr/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Status: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Service status" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Enabled</option>
+					<option>Disabled</option>
+				</select>
+				
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Developer token: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Developer token status" id="blah"></i></label>
+				<div>[ OK ]</div>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Default notebook: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Default notebook that will be used during note creation" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Evernote</option>
+					<option>Onenote</option>
+				</select>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Default tags: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="A list of tags that will be added to encrypted note by default" id="blah"></i></label>
+				<input type="text" class="form-control" style="width:50%"/>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<!-- ===================== [ Onenote settings ] ============================ -->
+		<h3>Onenote</h3><hr/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Status: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Service status" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Enabled</option>
+					<option>Disabled</option>
+				</select>
+				
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Default notebook: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Default notebook that will be used during note creation" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Evernote</option>
+					<option>Onenote</option>
+				</select>
+			</div>
+			<div class="col-md-1"></div>
+		</div><br/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<label for="#txtDefaultService">Default section: <i class="fa fa-info-circle" aria-hidden="true" rel="tooltip" title="Default section that will be used during note creation" id="blah"></i></label>
+				<select class="form-control" style="width:50%">
+					<option>Evernote</option>
+					<option>Onenote</option>
+				</select>
+			</div>
+			<div class="col-md-1"></div>
+		</div>
+		<br/>
+		<!-- ===================== [ Cache settings ] ============================ -->
+		<h3>Cache settings</h3><hr/>
+		<div class="row">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<table id="tblNotes" class="table table-striped">
+			<thead>
+				<tr>
+					<th>Type</th>
+					<th>Size</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Notebooks (Evernote + Onenote)</td>
+					<td>292 Kb</td>
+					<td><button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear</button></td>
+				</tr>
+				<tr>
+					<td>Tags</td>
+					<td>1 Kb</td>
+					<td><button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear</button></td>
+				</tr>
+				<tr>
+					<td>Saved searches</td>
+					<td>292 Kb</td>
+					<td><button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear</button></td>
+				</tr>
+				<tr>
+					<td>Onenote sections</td>
+					<td>292 Kb</td>
+					<td><button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear</button></td>
+				</tr>
+				<tr>
+					<td>Notes and its resources (Onenote+Evernote)</td>
+					<td>292 Kb</td>
+					<td><button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear</button></td>
+				</tr>
+
+			</tbody>
+			</table>
+			<button type="button" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear all caches</button>
+			</div>
+			<div class="col-md-1"></div>
+		</div>
+		
+	</div>
+	<div class="col-md-1"></div>
+</div><br/><br/>
