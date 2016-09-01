@@ -7,7 +7,25 @@ import base64
 import config
 from time import strftime
 from flask import render_template,jsonify
+import math
+import os
 
+def get_folder_size(start_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+def convert_size(size):
+   if (size == 0):
+       return '0B'
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size,1024)))
+   p = math.pow(1024,i)
+   s = round(size/p,2)
+   return '%s %s' % (s,size_name[i])
 
 def millisToDate(timestamp):
 	millis = float(timestamp)

@@ -21,7 +21,7 @@ def login():
         conn.request("GET",config.on_path % (config.on_client_id,config.on_scopes,config.on_response_type,config.on_redirect_uri))
         response = conn.getresponse()
 
-        if response.status != config.HTTP_OK:
+        if response.status != config.http_ok:
             return render_template("dialog.onenote.result.html",success=False,message=config.MSG_RESPONSE_ERROR % (str(response.status),response.read()),title="Onenote result")
 
         return response.read()
@@ -32,30 +32,27 @@ def login():
 
 @mod_onenote.route("/callback",methods=["GET"])
 def callback():
-	try:
-		if not request.args.get("code"):
-			abort(400)
+    try:
+        if not request.args.get("code"):
+            return render_template("dialog.onenote.result.html",success=False,message=config.MSG_MANDATORY_MISSING,title="Onenote result")
+        # Getting the authorization code
+        code = request.args.get("code")
+        r = requests.post(config.on_token_url, data={'grant_type': 'authorization_code', 'client_id': config.on_client_id, 'client_secret': config.on_client_secret,'code':code,'redirect_uri':config.on_redirect_uri})
 
-		# Getting the authorization code
-		code = request.args.get("code")
-		r = requests.post(config.on_token_url, data={'grant_type': 'authorization_code', 'client_id': config.on_client_id, 'client_secret': config.on_client_secret,'code':code,'redirect_uri':config.on_redirect_uri})
-
-		# Checking the response (it should be in JSON format)
-		response = json.loads(r.text)
-		
-		# Calculating the expiration date
-		current = int(time.time())
-		expires_in = int(response['expires_in'])+current
-		tokens = {"access":response['access_token'],"refresh":response['refresh_token'],"expires":str(expires_in)}
-
-		# Writing tokens to file
-		with open(config.path_tokens,"w") as f:
-			f.write(json.dumps(tokens))
-
-		return render_template("dialog.onenote.result.html",success=True,message=config.MSG_ONLOGIN_OK,title="Onenote result")
-
-	except Exception as e:
-		return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
+        # Checking the response (it should be in JSON format)
+        response = json.loads(r.text)
+        # Calculating the expiration date
+        current = int(time.time())
+        expires_in = int(response['expires_in'])+current
+        tokens = {"access":response['access_token'],"refresh":response['refresh_token'],"expires":str(expires_in)}
+        
+        # Writing tokens to file
+        with open(config.path_tokens,"w") as f:
+            f.write(json.dumps(tokens))
+        return render_template("dialog.onenote.result.html",success=True,message=config.MSG_ONLOGIN_OK,title="Onenote result")
+    except Exception as e:
+        log_message(str(e))
+        return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
 
 @mod_onenote.route("/user",methods=["GET"])
 def user():
@@ -84,7 +81,7 @@ def user():
 
         return render_template("user.onenote.html",tokens=tokens)
     except Exception as e:
-    	print e
+    	log_message(str(e))
         return render_template("user.onenote.html",tokens=tokens)
 
 
@@ -112,5 +109,5 @@ def refresh():
         return render_template("dialog.onenote.result.html",success=True,message=config.MSG_TOKENREFRESH_OK,title="Onenote result")
 
     except Exception as e:
-    	print e
+    	log_message(str(e))
     	return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")

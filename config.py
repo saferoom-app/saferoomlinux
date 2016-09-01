@@ -4,12 +4,12 @@ service_evernote = 0 # Evernote Service ID
 service_onenote = 1  # Onenote Service ID
  
 # Evernote credentials
-ACCESS_TOKEN = "<developer_token>"
+ACCESS_TOKEN = "S=s560:U=5c7a77b:E=15dc1f9d00c:C=1566a48a140:P=1cd:A=en-devtoken:V=2:H=4e29851144b67242741f8979f663e9a9"
 NOTE_URL = "https://www.evernote.com/shard/s401/notestore"
   
 # Onenote credentials
-on_client_secret = "<client_secret>"
-on_client_id = "<client_id>"
+on_client_secret = "RgRBx6ZmwLnLq3obMsxXSgY"
+on_client_id = "7a743681-e5bf-42ca-9ed5-e7f0c0749f7d"
 on_redirect_uri = "https://www.saferoomapp.com:5000/onenote/callback"
 on_token_redirect_uri = "https://www.saferoomapp.com:5000/onenote/token"
 on_scopes = "wl.signin%20Office.onenote%20wl.offline_access%20Office.onenote_create"
@@ -35,6 +35,10 @@ path_sections = "cache/section_%s.json"
 path_notes = "cache/notes_%s.json"
 path_logfile = "logs/server.log"
 path_note = "static/tmp/%s/%s"
+path_cache = "cache/"
+path_tmp = "static/tmp/"
+path_notes_evernote = "cache/notes_%s_%s.json"
+
  
 # Onenote URLs
 url_notebooks = "https://www.onenote.com/api/v1.0/me/notes/notebooks"

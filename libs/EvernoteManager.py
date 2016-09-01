@@ -79,12 +79,11 @@ def list_notes(accessToken,forceRefresh,type,guid):
         return notes    
     try:
         if (type == "search"):
-            filename = "cache/"+stringMD5(guid)+"_"+type+".json"
+            filename = config.path_notes_evernote % (stringMD5(guid),type)
         else:
-            filename = "cache/"+guid+"_"+type+".json"        
-        f = open(filename,"r")
-        notes = json.loads(f.read())
-        f.close()
+            filename = config.path_notes_evernote % (guid,type)        
+        with open(filename,"r") as f:
+            notes = json.loads(f.read())
     except:
         notes = load_notes(accessToken,type,guid)
 
@@ -126,12 +125,11 @@ def load_notes(accessToken,type,guid):
 def cache_notes(notes,type,guid):
 
     if (type == "search"):
-        filename = "cache/"+stringMD5(guid)+"_"+type+".json"
+        filename = config.path_notes_evernote % (stringMD5(guid),type)
     else:
-        filename = "cache/"+guid+"_"+type+".json"
-    f = open(filename,"w")
-    f.write(json.dumps(notes))
-    f.close()
+        filename = config.path_notes_evernote % (guid,type)
+    with open(filename,"w") as f:
+        f.write(json.dumps(notes))
 
 
 '''
