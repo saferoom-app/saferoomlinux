@@ -185,6 +185,12 @@ evernote_developer = <developer_token>
 ```
 Save **config.ini**, open main Saferoom page and click Evernote icon in the upper-right corner of the page. If everything is OK, then you will see the basic info about your account.
 
+# Onenote
+This section contains instructions how to connect Saferoom app to your Onenote account
+
+## Getting Client ID, Client Secret and Redirect URI
+Client ID, Client Secret and Redirect URI are required to authtenticate Saferoom app into your Onenote account. 
+
 
 
 
