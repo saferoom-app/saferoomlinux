@@ -144,6 +144,24 @@ http://127.0.0.1:5000/
 ```
 You should see Saferoom main page
 
+## Generating master password
+
+Before generating the master password, please check [this](http://help.getsaferoom.com/2015/03/28/saferoom-concepts/). 
+Summarizing, the **Master password** is the password that you use to encrypt and decrypt your data. This password **is stored on your local PC and never sent anywhere**
+
+**OTP or One-Time password** is the password that is used to encrypt/decrypt specific note. This password can be useful when you want to share the encrypted note with someone you know and you don't want to compromise your **Master password**
+
+Master password is generated using small CLI utility. To generate the master password, please navigate to Saferoom app root folder and type the following:
+
+```
+python passwd.py
+```
+
+Then follow the intructions
+
+# Evernote
+This section contains necessary instructions how to connect Saferoom App to your Evernote account
+
 ## Getting developer token
 To interact with Evernote API Saferoom app needs the developer token. This token for your specific account can be generated [here](https://www.evernote.com/api/DeveloperToken.action)
 
@@ -153,11 +171,6 @@ ACCESS_TOKEN = "<developer_token>"
 ```
 Save **config.py**, open main Saferoom page and click Evernote icon in the upper-right corner of the page. If everything is OK, then you will see the basic info about your account.
 
-## Generating master password
 
-Before generating the master password, please check [this](http://help.getsaferoom.com/2015/03/28/saferoom-concepts/). 
-Summarizing, the **Master password** is the password that you use to encrypt and decrypt your data. This password **is stored on your local PC and never sent anywhere**
-
-**OTP or One-Time password** is the password that is used to encrypt/decrypt specific note. This password can be useful when you want to share the encrypted note with someone you know and you don't want to compromise your **Master password**
 
 
