@@ -27,11 +27,17 @@ Install GIT client using the following command:
 apt-get install git
 ```
 
-### Installing Flask and Pycrypto
+### Installing Flask, Requests and Pycrypto
 
 Saferoom is using [Flask Python microframework](http://flask.pocoo.org/). To install Flask type the following command:
 ```
 pip install flask
+```
+
+**Requests** is a [Python module](http://docs.python-requests.org/en/master/) used to work with HTTP requests. TO install this module, type the following command:
+
+```
+pip install requests
 ```
 
 Pycrypto library is needed to perform cryptographic operations (encryption and decryption). Pycrypto is installed using the following command:
@@ -91,11 +97,17 @@ Install GIT client using the following command:
 yum install git
 ```
 
-### Installing Flask and Pycrypto
+### Installing Flask, Requests and Pycrypto
 
 Saferoom is using [Flask Python microframework](http://flask.pocoo.org/). To install Flask type the following command:
 ```
 pip install flask
+```
+
+**Requests** is a [Python module](http://docs.python-requests.org/en/master/) used to work with HTTP requests. TO install this module, type the following command:
+
+```
+pip install requests
 ```
 
 Pycrypto library is needed to perform cryptographic operations (encryption and decryption). Pycrypto is installed using the following command:
