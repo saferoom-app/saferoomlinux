@@ -1,17 +1,34 @@
 var rows;
+var config;
 $(document).ready(function(){
+	$("[rel=tooltip]").tooltip({ placement: 'right'});
 	$('#summernote').summernote({height:300});
-
-	$.getScript('/static/js/evernote.js', function(){});
-
-	// Loading a list of notebooks
-	CreateAJAX("/notebooks/list/select","GET","html",{})
+	// Getting current config
+	CreateAJAX("/settings/config","GET","json",{})
 	.done(function(response){
-		$("div#listNotebooks").html(response);
+
+		// Setting configured values
+		config = response;
+		$("div[id*='Notebooks']").hide();
+		$("select#txtService").val(config.system.default_service);
+		switch(true)
+		{
+			case (config.system.default_service === 0): // Evernote
+			    $("div#listNotebooks").show();
+			    select_notebooks({});
+			    $("div#listONSections").html("<select class='form-control' style='width:50%' id='txtSection'><option value=''>Not relevant for Evernote</option></select>");
+				break;
+			case (config.system.default_service === 1):
+				$("div#listONNotebooks").show();
+				select_onenote_notebooks({});
+				break;
+
+		}
+
 	})
 	.fail(function(xhr){
-		$("div#listNotebooks").html(ERROR_NOTEBOOKS_LOAD);
-	});
+
+	})
 
 	$("button#btnAttach").click(function(){
 		$("input#txtFiles").focus().trigger("click");

@@ -135,7 +135,7 @@ def refresh():
             return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_ONDATA_MISSING,title="Onenote result")
 
         # If "Refresh Token" exists, then we need to update the access token
-        r = requests.post(config.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
+        r = requests.post(libs.globals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
 
         # Saving tokens
         save_tokens(json.loads(r.text))
@@ -144,4 +144,4 @@ def refresh():
 
     except Exception as e:
     	log_message(str(e))
-    	return render_template("dialog.onenote.result.html",success=False,message=config.MSG_INTERNAL_ERROR,title="Onenote result")
+    	return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_INTERNAL_ERROR,title="Onenote result")

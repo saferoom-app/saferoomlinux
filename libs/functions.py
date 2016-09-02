@@ -144,6 +144,7 @@ def log_message(message):
 def handle_exception(responseType,code,message):
 
     # Logging message
+    message = message.replace("\"","").replace("'","")
     message = "Error while processing your request: "+message
     log_message(message);
 

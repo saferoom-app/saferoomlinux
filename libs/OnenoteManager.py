@@ -42,7 +42,7 @@ def load_notebooks(accessToken):
 
 		response = json.loads(r.text)
 		for notebook in response['value']:
-			notebooks.append({"text":"  "+notebook['name'],"href":"/on/sections/"+notebook['id']+"/json","icon": "glyphicon glyphicon-book"})
+			notebooks.append({"text":"  "+notebook['name'],"href":"/on/sections/"+notebook['id']+"/json","icon": "glyphicon glyphicon-book","guid":notebook['id']})
 
 		# Saving notebooks to cache
 		cache_notebooks(notebooks)
@@ -94,7 +94,7 @@ def load_sections(accessToken,guid):
     # Getting response
     response = json.loads(r.text)
     for section in response['value']:
-    	sections.append({"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open"})
+    	sections.append({"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open","guid":section['id']})
 
     # Saving sections
     cache_sections(guid,sections)

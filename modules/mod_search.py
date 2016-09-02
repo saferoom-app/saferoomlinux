@@ -15,7 +15,7 @@ def searches(responseType):
         # Getting access token
         access_token = get_developer_token()
         if access_token == "":
-            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http,libs.globals.MSG_NO_DEVTOKEN)        
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)        
 
         # Getting a list of Saved Searches
         searches = list_searches(access_token,False)

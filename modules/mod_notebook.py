@@ -43,15 +43,17 @@ def list_onenote_notebooks(responseType):
         if is_access_token_valid() == False:
             if responseType == libs.globals.TYPE_JSON:
                 return jsonify(status=libs.globals.http_unauthorized,message=libs.globals.MSG_NO_TOKENS)
+            elif responseType == libs.globals.TYPE_SELECT:
+                return send_response([{"guid":"","name":"Access token expired or doesn't exist"}],responseType,{"default":"onenote.select.notebooks.html"})
             else:
                 return render_template("onenote.token.expired.html")
 
         # Getting access token and getting a list of notebooks
         access_token = get_access_token()
         notebooks = list_on_notebooks(access_token,forceRefresh)
-
+        
         # Returning response based on specified format
-        return jsonify(status=200,message=notebooks)
+        return send_response(notebooks,responseType,{"default":"onenote.select.notebooks.html"})
         
     except Exception as e:
         return handle_exception(responseType,libs.globals.http_internal_server,str(e))
@@ -68,15 +70,17 @@ def list_on_sections(guid,responseType):
         if is_access_token_valid() == False:
             if responseType == libs.globals.TYPE_JSON:
                 return jsonify(status=libs.globals.http_unauthorized,message=libs.globals.MSG_NO_TOKENS)
+            elif responseType == libs.globals.TYPE_SELECT:
+                return send_response([{"guid":"","name":"Access token expired or doesn't exist"}],responseType,{"default":"select.sections.html"})
             else:
                 return render_template("onenote.token.expired.html"),401
 
         # Getting a list of sections
         access_token = get_access_token()
-        sections = list_sections(access_token,False,guid)
+        sections = list_sections(access_token,forceRefresh,guid)
 
         # Returning response based on specified format
-        return jsonify(status=libs.globals.http_ok, message=sections)
+        return send_response(sections,responseType,{"default":"select.sections.html"})
         
     except Exception as e:
         return handle_exception(responseType,libs.globals.http_internal_server,str(e))

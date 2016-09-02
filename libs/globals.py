@@ -64,6 +64,7 @@ MSG_RESPONSE_ERROR = "Error while processing your request. Server response: %s -
 MSG_MANDATORY_MISSING = "Mandatory data is missing"
 MSG_NOTE_MISSING = "Note content is missing. Please make sure that encrypted note exists in [ %s ]"
 MSG_ONDATA_MISSING = "Mandatory data missing. To login to Onenote account you need to specify Client ID, Client Secret, Scopes and Redirect URI in [config.ini] file"
+MSG_CONFIG_OK = "Configuration has been successfully saved"
 ERROR_FILE_DOWNLOAD = "Error while downloading file. Response code: %s"
 
   

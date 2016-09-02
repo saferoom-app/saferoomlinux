@@ -2,6 +2,7 @@
 import ConfigParser
 import json
 from libs.functions import log_message
+import libs.globals
 
 # Functions
 
@@ -22,6 +23,60 @@ def get_services():
     # Return value
     return services
 
+def get_default_values():
+
+    response = {"system":{},"evernote":{},"onenote":{}}
+    
+    # Getting general system info
+    response['system']['default_service'] = get_value('defaults','default_service','int')
+
+    # Getting Evernote service status, default notebook and default tags
+    response['evernote']['status'] = get_value('services','evernote','boolean')
+    response['evernote']['default_notebook'] = get_value('defaults','default_evernote_notebook','string')
+    response['evernote']['token'] = {}
+    if (get_developer_token() == ""):
+        response['evernote']['token']['status'] = 0
+        response['evernote']['token']['message'] = libs.globals.MSG_NO_DEVTOKEN
+    else:
+        response['evernote']['token']['status'] = 1
+        response['evernote']['token']['message'] = ""
+
+    # Getting default tags (if any)
+    response['evernote']['default_tags'] = get_value('defaults','default_tags','string')
+
+    # Getting Onenote 
+    response['onenote']['status'] = get_value('services','onenote','boolean')
+    response['onenote']['client_id'] = {}
+    response['onenote']['client_secret'] = {}
+    response['onenote']['redirect_uri'] = {}
+    response['onenote']['scopes'] = {}
+
+    # Checking Client ID
+    if get_client_id() == "":
+        response['onenote']['client_id']['status'] = 0
+        response['onenote']['client_id']['message'] = libs.globals.MSG_ONDATA_MISSING
+    else:
+        response['onenote']['client_id']['status'] = 1
+        response['onenote']['client_id']['message'] = ""
+
+    # Checking Client Secret
+    if get_client_secret() == "":
+        response['onenote']['client_secret']['status'] = 0
+        response['onenote']['client_secret']['message'] = libs.globals.MSG_ONDATA_MISSING
+    else:
+        response['onenote']['client_secret']['status'] = 1
+        response['onenote']['client_secret']['message'] = ""
+
+    # Checking Redirect URI
+    response['onenote']['redirect_uri'] = get_redirect_uri();
+    response['onenote']['scopes'] = get_scopes()
+    
+    # Getting default section and default notebook
+    response['onenote']['default_notebook'] = get_value('defaults','default_onenote_notebook','string')
+    response['onenote']['default_section'] = get_value('defaults','default_onenote_section','string')
+    return response
+
+
 def get_value(section,key,type):
     try:
         # Initializing the config
@@ -39,17 +94,30 @@ def get_value(section,key,type):
     	log_message(str(e))
     	return None
 
-def set_value(section,key,value):
+def save(configString):
 
-	# Initializing config
-	config = init()
+    # Parsing JSON config
+    configObject = json.loads(configString)
 
-	# Setting value
-	config.set(section,key,value)
+    # Iterating for items
+    config = init()
+    save_to_ini(config,"",configObject)
 
-	# Saving config
-	with open("config.ini","w") as configfile:
-		config.write(configfile)
+def save_to_ini(config,section,d):
+    
+    # Iterating through all keys and values
+    for k, v in d.iteritems():
+        if isinstance(v, dict):
+            section = k
+            save_to_ini(config,section,v)
+        else:
+            #print "Section: %s, Key: %s, Value: %s" (section,k,v)
+            print section+":"+k+":"+v
+            config.set(section,k,v)
+
+    # Saving config
+    with open("config.ini","w") as configfile:
+        config.write(configfile)
 
 def get_developer_token():
 

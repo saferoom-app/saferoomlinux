@@ -1,8 +1,9 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 import getpass
 import libs.globals
-from libs.functions import encryptString, decryptString,convert_size,get_folder_size
+from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception
 import os
+from libs.ConfigManager import get_services,get_default_values,save
 
 
 
@@ -14,6 +15,30 @@ mod_settings = Blueprint("mod_settings",__name__)
 @mod_settings.route("/",methods=['GET'])
 def show_page():
     return render_template("settings.html",title="Settings")
+
+@mod_settings.route("/config",methods=["GET"])
+def get_config():
+    try:
+        response = get_default_values()
+        return jsonify(response);
+    except Exception as e:
+        return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_internal_server,str(e))
+
+@mod_settings.route("/save",methods=["POST"])
+def save_config():
+    try:
+        if not request.form['config']:
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MSG_MANDATORY_MISSING)
+
+        # Saving configuration
+        save(request.form['config'])
+
+        return jsonify(status=libs.globals.http_ok,message=libs.globals.MSG_CONFIG_OK)
+
+    except Exception as e:
+        print e
+        return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_internal_server,str(e))
+
 
 @mod_settings.route("/cache",methods=["GET"])
 def cache_status():

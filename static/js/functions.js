@@ -244,6 +244,70 @@ function showToast(type,message){
 	}
 }
 
+
+// Function used to load a list of Evernote notebooks for droppdown list
+function select_notebooks(filter){
+	$("div#listNotebooks").html("<img src='/static/images/103.gif'>");
+	CreateAJAX("/notebooks/list/select","GET","html",filter)
+	.done(function(response){
+		$("div#listNotebooks").html(response);
+		guid_exists(config.evernote.default_notebook,"txtNotebook");
+	})
+	.fail(function(xhr){
+		$("div#listNotebooks").html(ERROR_NOTEBOOKS_LOAD);
+	});
+}
+
+// Function used to load a list of Onenote notebooks for dropdown list
+function select_onenote_notebooks(filter){
+	$("div#listONNotebooks").html("<img src='/static/images/103.gif'/>");
+	CreateAJAX("/notebooks/on/list/select","GET","html",filter)
+	.done(function(response){
+		$("div#listONNotebooks").html(response);
+        default_onenote_notebook = config.onenote.default_notebook != "" ? config.onenote.default_notebook  : $("select#txtONNotebook option:selected").val()
+        $("select#txtONNotebook").val(default_onenote_notebook);
+		// Listing sections for default notebook
+		select_sections($("select#txtONNotebook").val(),{});
+	})
+	.fail(function(xhr){
+		$("div#listONNotebooks").html(response);
+	});
+}
+
+function select_sections(guid,filter){
+	$("div#listONSections").html("<img src='/static/images/103.gif'/>");
+	if (guid == ""){
+		$("div#listONSections").html("<select class='form-control' style='width:50%' id='txtSection'><option value=''>No GUID specified</option></select>");
+		return;
+	}
+	$("div#listONSections").html("<img src='/static/images/103.gif'/>");
+	CreateAJAX("/notebooks/on/sections/"+guid+"/select","GET","html",filter)
+	.done(function(response){
+		$("div#listONSections").html(response);
+		guid_exists(config.onenote.default_section,"txtSection");
+	})
+	.fail(function(xhr){
+		console.log(xhr.responseText);
+	});
+}
+
+function guid_exists(guid,selectElement)
+{
+	$("select#"+selectElement+" option").each(function(){
+		if ($(this).val() == guid){
+			$("select#"+selectElement).val(guid);
+			return;
+		}
+	});
+}
+
+function parse_json_response(jsonString)
+{
+	response = jQuery.parseJSON(jsonString);
+	return response.message;
+}
+
+
 // Loading external scripts
 $.getScript('/static/js/evernote.js', function(){});
 $.getScript('/static/js/onenote.js', function(){});
