@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify,abort,request,render_template
 import libs.globals
 import os
 import json
-from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,handle_exception
+from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,handle_exception,send_response
 import xml.etree.ElementTree as ET
 import re
 from bs4 import BeautifulSoup, Tag
@@ -23,25 +23,22 @@ def notes():
 
     try:
         # Defining response type
-        responseType = "html"
-        if request.args.get('format'):
-            responseType = request.args.get("format")
+        if request.form['format']:
+            responseType = request.form['format']
+        else:
+            responseType = "json"
 
         # Getting developer token
         access_token = get_developer_token()
         if access_token == "":
-            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)                    
+            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)               
 
         # Getting a list of notes
         notes = list_notes(access_token,request.form['refresh'],request.form["type"],request.form['guid'])
 
         # Sending response based on specified response type
-        if (responseType == libs.globals.TYPE_SELECT):
-            return ""        
-        elif (responseType == libs.globals.TYPE_JSON):
-            return jsonify(status=libs.globals.http_ok,message=notes)
-        else:
-            return render_template('list.notes.html',notes=notes)
+        return send_response(notes,responseType,{libs.globals.TYPE_HTML:"list.notes.html"})
+        
     except Exception as e:
         return handle_exception(responseType,libs.globals.http_internal_server,str(e))
 
@@ -57,12 +54,12 @@ def createnote():
             return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
 
         # Checking provided data
-        if not request.form['title']:
+        if not request.form['title'] or request.form['title'] == "":
             return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         title = request.form['title']
-        if not request.form['content']:
+        if not request.form['content'] or request.form['content'] == "":
             return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
-        if not request.form['guid']:
+        if not request.form['guid'] or request.form['guid'] == "":
             return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         
         guid = request.form['guid']
@@ -89,7 +86,7 @@ def createnote():
         
         # Creating a note
         create_note(access_token,title,content,guid,fileList,tags,password)
-        return jsonify(status=200,message=libs.globals.MSG_NOTECREATE_OK)
+        return jsonify(status=libs.globals.http_ok,message=libs.globals.MSG_NOTECREATE_OK)
 
     except Exception as e:
     	return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_internal_server,str(e))
@@ -261,12 +258,7 @@ def list_onenote_notes(guid,responseType):
     notes = list_on_notes(access_token,forceRefresh,guid)
 
     # Returning response based on specified format
-    if responseType == libs.globals.TYPE_JSON:
-        return jsonify(notes)
-    elif responseType == libs.globals.TYPE_JSON:
-        return render_template("select.notebooks.html",notes=notes)
-    else:
-        return render_template('onenote.list.notes.html',notes=notes)
+    return send_response(notes,responseType,{"default":"onenote.list.notes.html"})    
 
 @mod_note.route("/on/<string:guid>",methods=["GET","POST"])
 def get_onenote_note(guid):

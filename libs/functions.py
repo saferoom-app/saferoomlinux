@@ -4,11 +4,11 @@ import hashlib
 import binascii
 import rncryptor
 import base64
-import config
 from time import strftime
 from flask import render_template,jsonify
 import math
 import os
+import libs.globals
 
 def get_folder_size(start_path):
     total_size = 0
@@ -76,7 +76,7 @@ def encryptData(data,password):
 def decryptNote(noteContent,password):
 
     # Filtering content
-    noteContent = noteContent.replace(config.ENCRYPTED_PREFIX,"").replace(config.ENCRYPTED_SUFFIX,"");
+    noteContent = noteContent.replace(libs.globals.ENCRYPTED_PREFIX,"").replace(libs.globals.ENCRYPTED_SUFFIX,"");
     array = noteContent.split("__")
     noteContent = array[1]
 
@@ -115,13 +115,13 @@ def getMime(fileName):
 
 def getIcon(mime):
 
-    if mime == config.MIME_PDF:
+    if mime == libs.globals.MIME_PDF:
         return "icon_pdf.png"
-    elif mime == config.MIME_DOC or mime == config.MIME_DOCX:
+    elif mime == libs.globals.MIME_DOC or mime == libs.globals.MIME_DOCX:
         return "icon_word.png"
-    elif mime == config.MIME_XLS or mime == config.MIME_XLSX:
+    elif mime == libs.globals.MIME_XLS or mime == libs.globals.MIME_XLSX:
         return "icon_excel.png"
-    elif mime == config.MIME_PPT or mime == config.MIME_PPTX:
+    elif mime == libs.globals.MIME_PPT or mime == libs.globals.MIME_PPTX:
         return "icon_ppt.png"
     else:
         return "icon_doc.png"
@@ -135,7 +135,7 @@ def generateKey(os,user,salt):
 def log_message(message):
 
     try:
-        with open(config.path_logfile,"a") as f:
+        with open(libs.globals.path_logfile,"a") as f:
             f.write(strftime("%Y-%m-%d %H:%M:%S")+": "+message+"\n")
     except:
         raise
@@ -148,7 +148,17 @@ def handle_exception(responseType,code,message):
     log_message(message);
 
     # Sending response based on response type: JSON or HTML
-    if responseType == config.TYPE_JSON:
+    if responseType == libs.globals.TYPE_JSON:
         return jsonify(status=code,message=message),code
     else:
         return render_template("server.error.html",code=code,message=message),code
+
+def send_response(items,responseType,templates):
+    if responseType == libs.globals.TYPE_JSON:
+        return jsonify(status=libs.globals.http_ok,message=items)
+    else:
+        try:
+            return render_template(templates[responseType],items=items)
+        except KeyError as e:
+            return render_template(templates['default'],items=items)
+

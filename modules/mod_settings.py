@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 import getpass
-import config
+import libs.globals
 from libs.functions import encryptString, decryptString,convert_size,get_folder_size
 import os
 
@@ -23,52 +23,52 @@ def cache_status():
     response = {}
 	
 	# Calculating the size of "notebooks.json" file in Kb
-    if os.path.exists(config.path_notebooks_evernote) == False:
+    if os.path.exists(libs.globals.path_notebooks_evernote) == False:
         evernote_notebooks = 0;
     else:
-		evernote_notebooks = os.path.getsize(config.path_notebooks_evernote)
+		evernote_notebooks = os.path.getsize(libs.globals.path_notebooks_evernote)
 
-    if os.path.exists(config.path_notebooks_onenote) == False:
+    if os.path.exists(libs.globals.path_notebooks_onenote) == False:
 	    onenote_notebooks = 0
     else:
-	    onenote_notebooks = os.path.getsize(config.path_notebooks_onenote)
+	    onenote_notebooks = os.path.getsize(libs.globals.path_notebooks_onenote)
 
     notebook_total = evernote_notebooks + onenote_notebooks
     response['notebooks'] =  str(convert_size(notebook_total))
 
     # Calculating the "tags.json"
     size = 0
-    if os.path.exists(config.path_tags) == True:
-    	size = os.path.getsize(config.path_tags)
+    if os.path.exists(libs.globals.path_tags) == True:
+    	size = os.path.getsize(libs.globals.path_tags)
     response['tags'] = convert_size(size)
 
     # Calculating "searches.json" size
     size = 0
-    if os.path.exists(config.path_searches) == True:
-    	size = os.path.getsize(config.path_searches)
+    if os.path.exists(libs.globals.path_searches) == True:
+    	size = os.path.getsize(libs.globals.path_searches)
     response['searches'] = convert_size(size)
 
     # Calculating "sections.json" size
     size = 0
-    files = os.listdir(config.path_cache)
+    files = os.listdir(libs.globals.path_cache)
     for file in files:
     	if "section" in file:
-    		size = size + os.path.getsize(config.path_cache+file)
+    		size = size + os.path.getsize(libs.globals.path_cache+file)
 
     response['sections'] = convert_size(size)
 
     # Calculating the size of notes cache
     size = 0
-    files = os.listdir(config.path_cache)
+    files = os.listdir(libs.globals.path_cache)
     for file in files:
     	if "notes_" in file:
-    		size = size + os.path.getsize(config.path_cache+file)
+    		size = size + os.path.getsize(libs.globals.path_cache+file)
     response['notes'] = convert_size(size)
 
     # Calculating the size of TMP folder
     size = 0
-    if os.path.exists(config.path_tmp) == True:
-    	size = get_folder_size(config.path_tmp)
+    if os.path.exists(libs.globals.path_tmp) == True:
+    	size = get_folder_size(libs.globals.path_tmp)
 
     response['tmp'] = convert_size(size)
 

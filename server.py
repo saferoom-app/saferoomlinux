@@ -13,7 +13,7 @@ import ssl
 import libs.globals
 from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
-from libs.functions import decryptString,generateKey
+from libs.functions import decryptString,generateKey,send_response
 from libs.OnenoteManager import is_access_token_valid
 from libs.PasswordManager import get_master_password
 from libs.ConfigManager import get_developer_token,get_client_id,get_client_secret
@@ -120,7 +120,7 @@ def upload():
 
 @app.route("/demo",methods=['GET'])
 def demo():
-    print get_client_id()
+    send_response([{"name":"test"},{"name":"test2"}],"json",{"json":"json.html","select":"select.html","html":"html.html"})
     return "demo page"
 
 '''

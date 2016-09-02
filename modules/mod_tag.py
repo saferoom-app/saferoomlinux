@@ -1,7 +1,7 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_tags
-from libs.functions import str_to_bool,handle_exception
+from libs.functions import str_to_bool,handle_exception,send_response
 import libs.globals
 from libs.ConfigManager import get_developer_token
 
@@ -31,11 +31,7 @@ def tags():
         tags = list_tags(access_token,forceRefresh)
 
         # Returning response based on specified format
-        if responseType == libs.globals.TYPE_JSON:
-            return jsonify(notebooks)
-        elif responseType == libs.globals.TYPE_SELECT:
-            return render_template("select.tags.html",tags=tags)
-        else:
-            return render_template('list.tags.html',tags=tags)
+        return send_response(tags,responseType,{libs.globals.TYPE_SELECT:"select.tags.html",libs.globals.TYPE_HTML:'list.tags.html'})
+        
     except Exception as e:
         return handle_exception(responseType,libs.globals.http_internal_server,str(e))

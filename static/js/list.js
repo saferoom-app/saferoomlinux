@@ -158,7 +158,7 @@ function listSearches(){
 	})
 	.fail(function(xhr){
 		displayProgress("",false);
-		$("div#listItems").html(response);
+		$("div#listItems").html(xhr.responseText);
 		FINISHED = true;
 	});
 }

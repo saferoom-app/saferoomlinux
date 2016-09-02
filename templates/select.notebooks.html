@@ -1,5 +1,5 @@
 <select id="txtNotebook" class="form-control">
-	{% for notebook in notebooks %}
+	{% for notebook in items %}
 		<option value="{{notebook.guid}}">{{notebook.name}}</option>
 	{% endfor %}
 </select>
