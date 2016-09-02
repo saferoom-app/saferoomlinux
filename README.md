@@ -165,9 +165,11 @@ This section contains necessary instructions how to connect Saferoom App to your
 ## Getting developer token
 To interact with Evernote API Saferoom app needs the developer token. This token for your specific account can be generated [here](https://www.evernote.com/api/DeveloperToken.action)
 
-If you're not logged in, you need to login with your account. After you receive the developer token, open **config.py** file in application root folder and paste it instead of **<developer_token>**
+If you're not logged in, you need to login with your account. After you receive the developer token, open **config.ini** file in application root folder, find section **[tokens]** and paste your developer token as the following:
 ```
-ACCESS_TOKEN = "<developer_token>"
+[tokens]
+evernote_developer = "<developer_token>"
+ ...
 ```
 Save **config.py**, open main Saferoom page and click Evernote icon in the upper-right corner of the page. If everything is OK, then you will see the basic info about your account.
 
