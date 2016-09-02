@@ -1,8 +1,9 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_tags
-import config
 from libs.functions import str_to_bool,handle_exception
+import libs.globals
+from libs.ConfigManager import get_developer_token
 
 # Initializing the blueprint
 mod_tag = Blueprint("mod_tag",__name__)
@@ -21,15 +22,20 @@ def tags():
         if request.args.get("format"):
             responseType = request.args.get("format")
 
+        # Getting access token
+        access_token = get_developer_token()
+        if access_token == "":
+            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+
         # Getting a list of tags
-        tags = list_tags(config.ACCESS_TOKEN,forceRefresh)
+        tags = list_tags(access_token,forceRefresh)
 
         # Returning response based on specified format
-        if responseType == "json":
+        if responseType == libs.globals.TYPE_JSON:
             return jsonify(notebooks)
-        elif responseType == "select":
+        elif responseType == libs.globals.TYPE_SELECT:
             return render_template("select.tags.html",tags=tags)
         else:
             return render_template('list.tags.html',tags=tags)
     except Exception as e:
-        return handle_exception(responseType,config.http_internal_server,str(e))
+        return handle_exception(responseType,libs.globals.http_internal_server,str(e))

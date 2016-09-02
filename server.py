@@ -9,14 +9,14 @@ import hashlib
 import os
 import ssl
 
-
 # Custom imports
-import config
+import libs.globals
 from libs.functions import fileMD5
 from bs4 import BeautifulSoup, Tag
 from libs.functions import decryptString,generateKey
 from libs.OnenoteManager import is_access_token_valid
 from libs.PasswordManager import get_master_password
+from libs.ConfigManager import get_developer_token,get_client_id,get_client_secret
 
 # Blueprint imports
 from modules.mod_favourites import mod_favourites
@@ -70,11 +70,12 @@ def on_list():
 def user():
 
 	# Checking Access Token
-    if (config.ACCESS_TOKEN == ""):
+    access_token = get_developer_token()
+    if (access_token == ""):
         abort(501)
         exit()
 
-    client = EvernoteClient(token=config.ACCESS_TOKEN,sandbox=False)
+    client = EvernoteClient(token=access_token,sandbox=False)
     userStore = client.get_user_store()
     response = userStore.getUser()
 
@@ -82,8 +83,8 @@ def user():
     username = response.username
     uid = response.id
     email = response.email
-    privilegeLevel = config.PRIVILEGE_LEVEL[str(response.privilege)]
-    premiumStatus = config.PREMIUM_STATUS[str(response.accounting.premiumServiceStatus)]
+    privilegeLevel = libs.globals.PRIVILEGE_LEVEL[str(response.privilege)]
+    premiumStatus = libs.globals.PREMIUM_STATUS[str(response.accounting.premiumServiceStatus)]
     privilege = response.privilege
 
     #return json.dumps(response)
@@ -105,15 +106,11 @@ def upload():
     hashes = []
     uploaded_files = request.files.getlist("attach[]")
     for file in uploaded_files:
-        file.save("static/tmp/"+file.filename)
-
+        file.save(libs.globals.path_tmp+file.filename)
 
     for file in uploaded_files:
-        hashes.append(fileMD5("static/tmp/"+file.filename))
-
+        hashes.append(fileMD5(libs.globals.path_tmp+file.filename))
     return jsonify(hashes)
-
-
 
 '''
 ============================================
@@ -123,8 +120,8 @@ def upload():
 
 @app.route("/demo",methods=['GET'])
 def demo():
-    
-   return "demo page"
+    print get_client_id()
+    return "demo page"
 
 '''
 ============================================
@@ -160,7 +157,7 @@ if __name__ == "__main__":
     app.debug = True
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler(config.ERROR_LOG_FILE, maxBytes=1024 * 1024 * 100, backupCount=20)
+    file_handler = RotatingFileHandler(libs.globals.ERROR_LOG_FILE, maxBytes=1024 * 1024 * 100, backupCount=20)
     file_handler.setLevel(logging.ERROR)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)

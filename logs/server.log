@@ -3,3 +3,30 @@
 2016-09-01 02:28:29: Error while processing your request: 'module' object has no attribute 'path_notes_evernote'
 2016-09-01 02:29:26: Error while processing your request: 'module' object has no attribute 'path_notes_evernote'
 2016-09-01 02:30:03: Error while processing your request: 'module' object has no attribute 'path_notes_evernote'
+2016-09-02 00:14:35: No option 'developer_token' in section: 'tokens'
+2016-09-02 00:29:21: Error while processing your request: global name 'config' is not defined
+2016-09-02 00:46:04: Error while processing your request: global name 'config' is not defined
+2016-09-02 00:47:18: Error while processing your request: Bad data
+2016-09-02 00:47:45: Error while processing your request: local variable 'e' referenced before assignment
+2016-09-02 00:48:29: Error while processing your request: Developer token not found. Please make sure that correct developer token is specified in [config.ini]
+2016-09-02 00:48:48: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-02 00:49:35: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-02 01:09:52: global name 'config' is not defined
+2016-09-02 01:09:53: global name 'config' is not defined
+2016-09-02 01:20:20: global name 'config' is not defined
+2016-09-02 01:21:42: global name 'config' is not defined
+2016-09-02 01:21:43: global name 'config' is not defined
+2016-09-02 01:23:33: global name 'config' is not defined
+2016-09-02 01:26:39: global name 'config' is not defined
+2016-09-02 01:27:14: global name 'config' is not defined
+2016-09-02 01:29:47: global name 'config' is not defined
+2016-09-02 01:30:05: global name 'config' is not defined
+2016-09-02 01:59:46: Error while processing your request: 'module' object has no attribute 'path_notebooks'
+2016-09-02 01:59:58: Error while processing your request: 'module' object has no attribute 'path_notebooks'
+2016-09-02 02:00:54: Error while processing your request: 'module' object has no attribute 'path_notebooks'
+2016-09-02 02:01:37: Error while processing your request: 'module' object has no attribute 'path_notebooks'
+2016-09-02 02:01:57: Error while processing your request: 'module' object has no attribute 'path_notebooks'
+2016-09-02 02:03:08: Error while processing your request: global name 'config' is not defined
+2016-09-02 02:03:52: Error while processing your request: global name 'config' is not defined
+2016-09-02 02:04:34: Error while processing your request: global name 'config' is not defined
+2016-09-02 02:05:15: Error while processing your request: Bad data

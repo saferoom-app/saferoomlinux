@@ -13,8 +13,10 @@ function getJSON()
 	.done(function(response){
 		displayProgress("",false);
 		// Checking the response
-		if (response.status != HTTP_OK ){alert(response.msg);return;}
-		tree = response.msg;
+		if (response.status != HTTP_OK ){
+			showToast(LEVEL_DANGER,response.message);
+		}
+		tree = response.message;
 		$('div#tree').treeview({data: tree});
 		$('div#tree').on('nodeSelected', function(event, data) {
 			data.selected = true;
@@ -51,8 +53,12 @@ function listSections(href){
 	displayProgress(MSG_SECTIONS_LOAD,true);
 	CreateAJAX("/notebooks"+href,"GET","json",{})
 	.done(function(response){
-		appendNodes(response,href);
-		displayProgress("",false);
+        displayProgress("",false);
+		if (response.status != HTTP_OK){
+			showToast(LEVEL_DANGER,response.message);
+			return;
+		}
+		appendNodes(response.message,href);		
 		$('div#tree').treeview({data: tree});
 		$('div#tree').on('nodeSelected', function(event, data) {
 			data.selected = true;
@@ -62,6 +68,7 @@ function listSections(href){
 	})
 	.fail(function(xhr){
 		displayProgress("",false);
+		alert(xhr.responseText);
 	});
 }
 

@@ -149,6 +149,6 @@ def handle_exception(responseType,code,message):
 
     # Sending response based on response type: JSON or HTML
     if responseType == config.TYPE_JSON:
-        return jsonify(status=code,message=message)
+        return jsonify(status=code,message=message),code
     else:
-        return render_template("server.error.html",code=code,message=message)
+        return render_template("server.error.html",code=code,message=message),code

@@ -1,6 +1,6 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
-import config
+import libs.globals
 import os
 import json
 from libs.functions import encryptNote,stringMD5,decryptNote,decryptFileData,getMime,getIcon,millisToDate,fileMD5,str_to_bool,handle_exception
@@ -12,6 +12,7 @@ from libs.OnenoteManager import list_on_notes,get_access_token, get_on_note,down
 from libs.PasswordManager import set_password
 import requests
 import re
+from libs.ConfigManager import get_developer_token
 
 # Initializing the blueprint
 mod_note = Blueprint("mod_note",__name__)
@@ -26,44 +27,55 @@ def notes():
         if request.args.get('format'):
             responseType = request.args.get("format")
 
+        # Getting developer token
+        access_token = get_developer_token()
+        if access_token == "":
+            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)                    
+
         # Getting a list of notes
-        notes = list_notes(config.ACCESS_TOKEN,request.form['refresh'],request.form["type"],request.form['guid'])
+        notes = list_notes(access_token,request.form['refresh'],request.form["type"],request.form['guid'])
 
         # Sending response based on specified response type
-        if (responseType == config.TYPE_SELECT):
+        if (responseType == libs.globals.TYPE_SELECT):
             return ""        
-        elif (responseType == config.TYPE_JSON):
-            return jsonify(notes)
+        elif (responseType == libs.globals.TYPE_JSON):
+            return jsonify(status=libs.globals.http_ok,message=notes)
         else:
             return render_template('list.notes.html',notes=notes)
     except Exception as e:
-        return handle_exception(responseType,config.http_internal_server,str(e))
+        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
 
 
 @mod_note.route("/create",methods=['POST'])
 def createnote():
 
     try:
+
+        # Checking access token
+        access_token = get_developer_token()
+        if access_token == "":
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+
         # Checking provided data
         if not request.form['title']:
-            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         title = request.form['title']
         if not request.form['content']:
-            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         if not request.form['guid']:
-            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         
         guid = request.form['guid']
         content = request.form['content']
         if "en-media" in content and not request.form['filelist']:
-            return handle_exception(config.TYPE_JSON,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         fileList = json.loads(request.form['filelist'])
 
         # Checking if mode is set to "OTP" and OTP password has been provided
         if not request.form['mode']:
-            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         if request.form['mode'] == "otp" and not request.form['pass']:
-            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
 
         tags = []
         if request.form['tags']:
@@ -76,11 +88,11 @@ def createnote():
         password = set_password(request.form['mode'],request.form['pass'])
         
         # Creating a note
-        create_note(config.ACCESS_TOKEN,title,content,guid,fileList,tags,password)
-        return jsonify(status=200,message=config.MSG_NOTECREATE_OK)
+        create_note(access_token,title,content,guid,fileList,tags,password)
+        return jsonify(status=200,message=libs.globals.MSG_NOTECREATE_OK)
 
     except Exception as e:
-    	return handle_exception(config.TYPE_JSON,config.http_internal_server,str(e))
+    	return handle_exception(libs.globals.TYPE_JSON,libs.globals.http_internal_server,str(e))
     
 @mod_note.route("/decrypt",methods=['POST'])
 def decrypt_note():
@@ -88,26 +100,26 @@ def decrypt_note():
     try:
         # Checking the GUID
         if not request.form['guid']:
-            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         guid = request.form['guid']
 
         # Checking if mode is set to "OTP" and OTP password has been provided
         if not request.form['mode']:
-            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
         if request.form['mode'] == "otp" and not request.form['pass']:
-            return handle_exception(config.TYPE_HTML,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
 
 
         # Checking that encrypted note is saved on local machine
-        if os.path.exists(config.path_note % (guid,"")) == False:
-            return handle_exception(config.TYPE_HTML,config.http_not_found,config.MSG_NOTE_MISSING % config.path_note % (guid,"") )
+        if os.path.exists(libs.globals.path_note % (guid,"")) == False:
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_not_found,libs.globals.MSG_NOTE_MISSING % libs.globals.path_note % (guid,"") )
 
         # Checking that "content.json" is there
-        if os.path.isfile(config.path_note % (guid,"content.json")) == False:
-            return handle_exception(config.TYPE_HTML,config.http_not_found,config.MSG_NOTE_MISSING % config.path_note % (guid,"content.json") )
+        if os.path.isfile(libs.globals.path_note % (guid,"content.json")) == False:
+            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_not_found,libs.globals.MSG_NOTE_MISSING % libs.globals.path_note % (guid,"content.json") )
 
         # Reading the "content.json"
-        with open(config.path_note % (guid,"content.json"),"r") as f:
+        with open(libs.globals.path_note % (guid,"content.json"),"r") as f:
             note = json.loads(f.read())
 
         # Setting decryption password
@@ -117,8 +129,8 @@ def decrypt_note():
         resources = []
         hash = ""
         data = None
-        path = config.path_note % (guid,"")
-        tmp_path = "static/tmp/"
+        path = libs.globals.path_note % (guid,"")
+        tmp_path = libs.globals.path_tmp
         for filename in os.listdir(path):
             if "content.json" not in filename:
             
@@ -146,8 +158,8 @@ def decrypt_note():
 
         # Getting note content (within <en-note> tag)
         noteContent = note.get('content')
-        noteContent = noteContent[noteContent.find("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__")+len("TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"):noteContent.find("__TUFNTU9USEVOQ1JZUFRFRE5PVEU=")].strip();
-        noteContent = decryptNote(config.ENCRYPTED_PREFIX + noteContent + config.ENCRYPTED_SUFFIX,password)
+        noteContent = noteContent[noteContent.find(libs.globals.ENCRYPTED_PREFIX)+len(libs.globals.ENCRYPTED_PREFIX):noteContent.find(libs.globals.ENCRYPTED_SUFFIX)].strip();
+        noteContent = decryptNote(libs.globals.ENCRYPTED_PREFIX + noteContent + libs.globals.ENCRYPTED_SUFFIX,password)
         noteContent.replace("></en-media>","/>")
         
         # Finding all <en-media> tags within the note content       
@@ -161,7 +173,7 @@ def decrypt_note():
                     if "image" in match['type']:
                         tag = soup.new_tag('img',style="width:100%",src="/static/tmp/"+resource['name'])
 
-                    elif config.MIME_PDF in match['type']:
+                    elif libs.globals.MIME_PDF in match['type']:
                         
                         tag = soup.new_tag("embed",width="100%", height="500",src="/static/tmp/"+resource['name']+"#page=1&zoom=50")
 
@@ -204,7 +216,7 @@ def decrypt_note():
         return noteContent
 
     except Exception as e:
-    	return handle_exception(config.TYPE_HTML,config.http_internal_server,str(e))
+    	return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_internal_server,str(e))
 
 
 
@@ -213,17 +225,24 @@ def note(GUID):
     try:
         responseType = "html"
         if not GUID or GUID == "":
-            return handle_exception(responseType,config.http_bad_request,config.MSG_MANDATORY_MISSING)
+            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
             
         if request.method == "GET":
             return render_template("view.html",title="Application :: View note",guid=GUID)
         else:
             # Getting note
             responseType = "json"
-            note = get_note(config.ACCESS_TOKEN,GUID,False)
-            return jsonify(status=config.http_ok,message=note)
+
+            # Checking developer token
+            access_token = get_developer_token()
+            if access_token == "":
+                return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+
+            # Getting note    
+            note = get_note(access_token,GUID,False)
+            return jsonify(status=libs.globals.http_ok,message=note)
     except Exception as e:
-        return handle_exception(responseType,config.http_internal_server,str(e))
+        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
 
 
 @mod_note.route("/save",methods=["GET"])
@@ -242,9 +261,9 @@ def list_onenote_notes(guid,responseType):
     notes = list_on_notes(access_token,forceRefresh,guid)
 
     # Returning response based on specified format
-    if responseType == "json":
+    if responseType == libs.globals.TYPE_JSON:
         return jsonify(notes)
-    elif responseType == "select":
+    elif responseType == libs.globals.TYPE_JSON:
         return render_template("select.notebooks.html",notes=notes)
     else:
         return render_template('onenote.list.notes.html',notes=notes)
@@ -252,23 +271,23 @@ def list_onenote_notes(guid,responseType):
 @mod_note.route("/on/<string:guid>",methods=["GET","POST"])
 def get_onenote_note(guid):
     try:
-        content = ""
-        # Checking the request
-        forceRefresh = False
-        if not guid or guid == "":
-            abort(400)
-        if request.args.get("refresh"):
-            forceRefresh = str_to_bool(request.args.get("refresh"))
-
         if request.method == "GET":
             return render_template("onenote.view.html",title="Application :: View note",guid=guid)
 
         else:
+            content = ""
+            # Checking the request
+            forceRefresh = False
+            if not guid or guid == "":
+                return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_MANDATORY_MISSING)
+            if request.args.get("refresh"):
+                forceRefresh = str_to_bool(request.args.get("refresh"))
+            
             # Getting access token
             access_token = get_access_token()
             if (access_token == ""):
-                log_message(config.MSG_NO_TOKENS)
-                abort(400)
+                log_message(libs.globals.MSG_NO_TOKENS)
+                return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_TOKENS)               
 
             # Downloading note
             note = get_on_note(access_token,guid,forceRefresh)

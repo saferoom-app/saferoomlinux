@@ -1,7 +1,7 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links,list_favourites
-import config
+import libs.globals
 
 
 # Initializing the blueprint
@@ -11,22 +11,18 @@ mod_favourites = Blueprint("mod_favourites",__name__)
 @mod_favourites.route("/list",methods=['GET'])
 def list():
 
-    responseType = config.TYPE_LIST
+    responseType = libs.globals.TYPE_LIST
     if request.args.get('format'):
         responseType = request.args.get('format')
-
 
     # Getting list of favourites
     favourites = list_favourites()
 
     # Sending response
-    if (responseType == config.TYPE_JSON):
+    if (responseType == libs.globals.TYPE_JSON):
         return jsonify(favourites)
-
     else:
-        return render_template("list.favourites.html",favourites=favourites)
-
-	return "List of favourites"
+        return render_template("list.favourites.html",favourites=favourites)	
 
 @mod_favourites.route("/add",methods=['POST'])
 def add_favourite():
@@ -67,20 +63,15 @@ def list_qlinks():
     if request.args.get('format'):
         responseType = request.args.get('format')
 
-
     # Getting links
     links = list_quick_links()
 
-    if (responseType == config.TYPE_LIST):
+    if (responseType == libs.globals.TYPE_LIST):
         return render_template("list.links.html",links=links);
-    elif responseType == config.TYPE_JSON:
+    elif responseType == libs.globals.TYPE_JSON:
         return jsonify(links)
-
-    elif responseType == config.TYPE_SELECT:
-        return render_template("select.links.html",links=links)       
-
-
-
+    elif responseType == libs.globals.TYPE_SELECT:
+        return render_template("select.links.html",links=links)
 
 @mod_favourites.route("/quick/add",methods=['GET'])
 def add_to_quick():
@@ -96,11 +87,9 @@ def create_quick_link():
         abort(400)
 
     try:
-
         # Creating a link
         add_quick_link(request.form['name'],request.form['link'])
-        return jsonify(status=200,msg=config.MSG_LINKCREATE_OK)
-
+        return jsonify(status=200,msg=libs.globals.MSG_LINKCREATE_OK)
     except:
         raise
 

@@ -1,8 +1,9 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_searches
-import config
+import libs.globals
 from libs.functions import handle_exception
+from libs.ConfigManager import get_developer_token
 
 # Initializing the blueprint
 mod_search = Blueprint("mod_search",__name__)
@@ -11,8 +12,14 @@ mod_search = Blueprint("mod_search",__name__)
 @mod_search.route("/list/<string:responseType>")
 def searches(responseType):
     try:
+        
+        # Getting access token
+        access_token = get_developer_token()
+        if access_token == "":
+            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+
         # Getting a list of Saved Searches
-        searches = list_searches(config.ACCESS_TOKEN,False)
+        searches = list_searches(access_token,False)
 
         # Returing the response based on specified format
         if responseType == "json":
@@ -21,5 +28,4 @@ def searches(responseType):
             return render_template('list.searches.html',searches=searches)
 
     except Exception as e:
-        print e
-        return handle_exception(responseType,config.http_internal_server,str(e))
+        return handle_exception(responseType,libs.globals.http_internal_server,str(e))

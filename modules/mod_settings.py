@@ -55,6 +55,8 @@ def cache_status():
     	if "section" in file:
     		size = size + os.path.getsize(config.path_cache+file)
 
+    response['sections'] = convert_size(size)
+
     # Calculating the size of notes cache
     size = 0
     files = os.listdir(config.path_cache)

@@ -1,18 +1,11 @@
 # Services
-services = {"evernote":True,"onenote":True}
 service_evernote = 0 # Evernote Service ID
 service_onenote = 1  # Onenote Service ID
  
 # Evernote credentials
-ACCESS_TOKEN = "<developer_token>"
 NOTE_URL = "https://www.evernote.com/shard/s401/notestore"
   
 # Onenote credentials
-on_client_secret = "<client_secret>"
-on_client_id = "<client_id>"
-on_redirect_uri = "https://www.saferoomapp.com:5000/onenote/callback"
-on_token_redirect_uri = "https://www.saferoomapp.com:5000/onenote/token"
-on_scopes = "wl.signin%20Office.onenote%20wl.offline_access%20Office.onenote_create"
 on_response_type = "code"
 on_path = "/oauth20_authorize.srf?client_id=%s&scope=%s&response_type=%s&redirect_uri=%s"
 on_token_url = "https://login.live.com/oauth20_token.srf"
@@ -62,14 +55,17 @@ html_attach = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-
 MSG_NOTECREATE_OK = "Note has been successfully created and uploaded to the server"
 MSG_LINKCREATE_OK = "Quick link has been successfully created"
 MSG_INTERNAL_ERROR = "Internal server error. Please check logs"
-MSG_NO_TOKENS = "No tokens founds or your Access Token has expired. Please check that ["+path_tokens+"] file exists or check the refresh token inside this file. Refresh token is needed to get a new access token. If you don't have access and refresh tokens, please login to your Onenote account"
+MSG_NO_DEVTOKEN = "Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]"
+MSG_NO_TOKENS = "No tokens founds or your Access Token has expired. Please check that ["+path_tokens+"] file exists and it contains access and refresh tokens. Refresh token is needed to get a new access token. If you don't have access and refresh tokens, please login to your Onenote account"
 MSG_ONLOGIN_OK = "You've successfully connected your application to your Onenote account. All tokens were saved into ["+path_tokens+"] file. Please don't update and delete this file. If you accidentally lost it, you can always get new tokens by initiating the login procedure"
 MSG_TOKENREFRESH_OK = "Access token has been successfully refreshed"
 MSG_UNAUTHORIZED = "Server returned '401 Unauthorized' to your request. Please check if your Access Token expires or not"
 MSG_RESPONSE_ERROR = "Error while processing your request. Server response: %s -  %s"
 MSG_MANDATORY_MISSING = "Mandatory data is missing"
 MSG_NOTE_MISSING = "Note content is missing. Please make sure that encrypted note exists in [ %s ]"
+MSG_ONDATA_MISSING = "Mandatory data missing. To login to Onenote account you need to specify Client ID, Client Secret, Scopes and Redirect URI in [config.ini] file"
 ERROR_FILE_DOWNLOAD = "Error while downloading file. Response code: %s"
+
   
 # Response types
 TYPE_JSON = "json"

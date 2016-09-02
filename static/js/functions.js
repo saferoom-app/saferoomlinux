@@ -51,44 +51,6 @@ function CreateAJAX(url,requestType,dataType,data){
 	});
 }
 
-
-function listNotes(filter){
-	
-	// Displaying modal window
-	displayProgress(MSG_NOTES_LOAD,true)
-
-	CreateAJAX("/note/list","POST","html",filter)
-	.done(function(response){
-		displayProgress("",false);
-		$("div#listNotes").html(response);
-		rows = $("table#tblNotes tr");
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		$("div#listNotes").html(xhr.responseText);
-	});
-
-}
-
-function listSearches(){
-
-	// Displaying modal window
-	displayProgress(MSG_SEARCHES_LOAD,true);
-
-	CreateAJAX("/searches/list/html","GET","html",{})
-	.done(function(response){
-		displayProgress("",false);
-		$("div#listItems").html(response);
-		rowItems = $("div#listSearches button");
-		FINISHED = true;
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		$("div#listItems").html(response);
-		FINISHED = true;
-	});
-}
-
 function scrollTop(){
 	$("html, body").animate({ scrollTop: 0 }, "slow");
 }
