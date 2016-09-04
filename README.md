@@ -1,5 +1,5 @@
 # Saferoom
-Encryption extension to Evernote platform
+Encryption extension to Evernote and Onenote platforms
 
 # Installation
 ## Ubuntu
