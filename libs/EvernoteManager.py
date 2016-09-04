@@ -9,8 +9,9 @@ from evernote.edam.error.ttypes import EDAMUserException, EDAMSystemException, E
 import hashlib
 import binascii
 import base64
-import libs.globals
+import safeglobals
 from libs.FavouritesManager import is_favourite
+from bs4 import BeautifulSoup, Tag
 
 
 '''
@@ -46,7 +47,7 @@ def load_notebooks(accessToken):
     noteStore = client.get_note_store()
     response = noteStore.listNotebooks()
     for notebook in response:
-        notebooks.append({"name":unicode(notebook.name, "utf8"),"guid":unicode(notebook.guid, "utf8"),"service":libs.globals.service_evernote})
+        notebooks.append({"name":unicode(notebook.name, "utf8"),"guid":unicode(notebook.guid, "utf8"),"service":safeglobals.service_evernote})
 
     # Saving notebooks to cache
     cache_notebooks(notebooks)
@@ -55,7 +56,7 @@ def load_notebooks(accessToken):
   
 
 def cache_notebooks(notebooks):
-    f = open(libs.globals.path_notebooks_evernote,"w")
+    f = open(safeglobals.path_notebooks_evernote,"w")
     f.write(json.dumps(notebooks))
     f.close()
 
@@ -78,9 +79,9 @@ def list_notes(accessToken,forceRefresh,type,guid):
         return notes    
     try:
         if (type == "search"):
-            filename = libs.globals.path_notes_evernote % (stringMD5(guid),type)
+            filename = safeglobals.path_notes_evernote % (stringMD5(guid),type)
         else:
-            filename = libs.globals.path_notes_evernote % (guid,type)        
+            filename = safeglobals.path_notes_evernote % (guid,type)        
         with open(filename,"r") as f:
             notes = json.loads(f.read())
     except:
@@ -124,9 +125,9 @@ def load_notes(accessToken,type,guid):
 def cache_notes(notes,type,guid):
 
     if (type == "search"):
-        filename = libs.globals.path_notes_evernote % (stringMD5(guid),type)
+        filename = safeglobals.path_notes_evernote % (stringMD5(guid),type)
     else:
-        filename = libs.globals.path_notes_evernote % (guid,type)
+        filename = safeglobals.path_notes_evernote % (guid,type)
     with open(filename,"w") as f:
         f.write(json.dumps(notes))
 
@@ -147,7 +148,7 @@ def list_tags(accessToken,forceRefresh):
 
     # Checking cache
     try:
-        f = open(libs.globals.path_tags)
+        f = open(safeglobals.path_tags)
         tags = json.loads(f.read())
         f.close()
     except:
@@ -170,7 +171,7 @@ def load_tags(accessToken):
     return tags
 
 def cache_tags(tags):
-    with open(libs.globals.path_tags,"w") as f:
+    with open(safeglobals.path_tags,"w") as f:
         f.write(json.dumps(tags))
 '''
   ============================================================
@@ -186,7 +187,7 @@ def list_searches(accessToken,forceRefresh):
         return searches
     # Checking cache
     try:
-        f = open(libs.globals.path_searches)
+        f = open(safeglobals.path_searches)
         searches = json.loads(f.read())
         f.close()
     except:
@@ -210,7 +211,7 @@ def load_searches(accessToken):
 
 
 def cacheSearches(searches):
-    with open(libs.globals.path_searches,"w") as f:
+    with open(safeglobals.path_searches,"w") as f:
         f.write(json.dumps(searches))   
 
 '''
@@ -227,7 +228,7 @@ def get_note(accessToken,guid,forceRefresh):
 
     # Checking if note is cached
     try:
-        with open(libs.globals.path_note % (guid,"content.json")) as f:
+        with open(safeglobals.path_note % (guid,"content.json")) as f:
             note = json.loads(f.read())
     except:
         note = download_note(accessToken,guid)
@@ -258,7 +259,7 @@ def download_note(accessToken,guid):
     # Saving resources for faster access
     if (response.resources != None):
         for resource in response.resources:
-            with open(libs.globals.path_note % (guid,str(resource.attributes.fileName)),"wb") as f:
+            with open(safeglobals.path_note % (guid,str(resource.attributes.fileName)),"wb") as f:
                 f.write(resource.data.body)
     
     return note
@@ -266,17 +267,17 @@ def download_note(accessToken,guid):
 
 def cache_note(guid,note):
     # Saving downloaded resources to temporary folder
-    if os.path.exists(libs.globals.path_note % (guid,"")) == False:
-        os.makedirs(libs.globals.path_note % (guid,""))
+    if os.path.exists(safeglobals.path_note % (guid,"")) == False:
+        os.makedirs(safeglobals.path_note % (guid,""))
 
     # Saving content to this folder for faster access
-    with open(libs.globals.path_note % (guid,"content.json"),"w") as f:
+    with open(safeglobals.path_note % (guid,"content.json"),"w") as f:
         f.write(json.dumps(note))
 
 def create_note(accessToken,title,content,notebookGuid,files,tags,password):
 
     # Generating note body
-    content = libs.globals.ENCRYPTED_PREFIX+stringMD5(content)+"__"+encryptNote(content,password)+libs.globals.ENCRYPTED_SUFFIX
+    content = safeglobals.ENCRYPTED_PREFIX+stringMD5(content)+"__"+encryptNote(content,password)+safeglobals.ENCRYPTED_SUFFIX
     nBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     nBody += "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">"
     nBody += "<en-note>%s</en-note>" % content

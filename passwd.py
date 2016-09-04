@@ -2,7 +2,7 @@ import os
 import getpass
 import time
 from libs.functions import encryptString, decryptString, generateKey
-import config
+import libs.globals
 import json
 import uuid
 import hashlib
@@ -20,24 +20,24 @@ def save_password(password):
 	# Generating unique ID
 	print ""
 	print("   Generating salt ......"),
-	salt = config.SALT
+	salt = libs.globals.SALT
 	print "[OK]"
 
 	# Encrypting password
 	print ""
 	print("   Encrypting password ......"),
-	encrypted_password = encryptString(password,generateKey(platform.system(),getpass.getuser(),config.SALT))
+	encrypted_password = encryptString(password,generateKey(platform.system(),getpass.getuser(),libs.globals.SALT))
 	print "[OK]"
 
 	# Saving password to a specified file
 	credentials = {"pass":encrypted_password}
 	print ""
 	print("   Saving password ......"),
-	with open(config.path_password,"w") as f:
+	with open(libs.globals.path_password,"w") as f:
 		f.write(json.dumps(credentials))
 	print "[OK]"
 	print ""
-	print "Your master password has been saved into ["+config.path_password+"] file. This password is encrypted, however if someone gets access to your machine, your master password can be easily decrypted. Please make sure that this file is protected from unauthorized use"
+	print "Your master password has been saved into ["+libs.globals.path_password+"] file. This password is encrypted, however if someone gets access to your machine, your master password can be easily decrypted. Please make sure that this file is protected from unauthorized use"
 
 def wait_for_password():
     passTrue = False
@@ -62,7 +62,7 @@ print "=============================================="
 print ""
 print "OS: "+platform.system()
 print "Current user: "+getpass.getuser()
-print "Salt: "+config.SALT
+print "Salt: "+libs.globals.SALT
 print ""
 print " ** Please note that these parameters will be used to generate the key, that will be used to encrypt your Master password. This key will not be stored anywhere and will be generated during the runtime"
 print ""
@@ -70,11 +70,12 @@ print ""
 print("   Checking if password already exists ......."),
 
 # Checking if password exists
-exists = os.path.isfile(config.path_password)
-print "[OK]"
-print ""
+exists = os.path.isfile(libs.globals.path_password)
+
 
 if (exists):
+    print "[OK]"
+    print ""
     overwrite = raw_input("Master password already exists. Do you want to overwrite it? [Yes|No]: ")
     if (overwrite.upper() == "No".upper()):
         exit()
@@ -86,7 +87,8 @@ if (exists):
     save_password(password)
 
 else:
-    
+    print "[NOK]"
+    print ""
     # Waiting for password inptut
     password = wait_for_password()
 

@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_tags
 from libs.functions import str_to_bool,handle_exception,send_response
-import libs.globals
+import safeglobals
 from libs.ConfigManager import get_developer_token
 
 # Initializing the blueprint
@@ -25,13 +25,13 @@ def tags():
         # Getting access token
         access_token = get_developer_token()
         if access_token == "":
-            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+            return handle_exception(responseType,safeglobals.http_bad_request,safeglobals.MSG_NO_DEVTOKEN)
 
         # Getting a list of tags
         tags = list_tags(access_token,forceRefresh)
 
         # Returning response based on specified format
-        return send_response(tags,responseType,{libs.globals.TYPE_SELECT:"select.tags.html",libs.globals.TYPE_HTML:'list.tags.html'})
+        return send_response(tags,responseType,{safeglobals.TYPE_SELECT:"select.tags.html",safeglobals.TYPE_HTML:'list.tags.html'})
         
     except Exception as e:
-        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
+        return handle_exception(responseType,safeglobals.http_internal_server,str(e))

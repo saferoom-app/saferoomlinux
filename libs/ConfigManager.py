@@ -2,7 +2,7 @@
 import ConfigParser
 import json
 from libs.functions import log_message
-import libs.globals
+import safeglobals
 
 # Functions
 
@@ -36,7 +36,7 @@ def get_default_values():
     response['evernote']['token'] = {}
     if (get_developer_token() == ""):
         response['evernote']['token']['status'] = 0
-        response['evernote']['token']['message'] = libs.globals.MSG_NO_DEVTOKEN
+        response['evernote']['token']['message'] = safeglobals.MSG_NO_DEVTOKEN
     else:
         response['evernote']['token']['status'] = 1
         response['evernote']['token']['message'] = ""
@@ -54,7 +54,7 @@ def get_default_values():
     # Checking Client ID
     if get_client_id() == "":
         response['onenote']['client_id']['status'] = 0
-        response['onenote']['client_id']['message'] = libs.globals.MSG_ONDATA_MISSING
+        response['onenote']['client_id']['message'] = safeglobals.MSG_ONDATA_MISSING
     else:
         response['onenote']['client_id']['status'] = 1
         response['onenote']['client_id']['message'] = ""
@@ -62,7 +62,7 @@ def get_default_values():
     # Checking Client Secret
     if get_client_secret() == "":
         response['onenote']['client_secret']['status'] = 0
-        response['onenote']['client_secret']['message'] = libs.globals.MSG_ONDATA_MISSING
+        response['onenote']['client_secret']['message'] = safeglobals.MSG_ONDATA_MISSING
     else:
         response['onenote']['client_secret']['status'] = 1
         response['onenote']['client_secret']['message'] = ""

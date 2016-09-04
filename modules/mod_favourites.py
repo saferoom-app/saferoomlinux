@@ -1,7 +1,7 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links,list_favourites
-import libs.globals
+import safeglobals
 
 
 # Initializing the blueprint
@@ -11,7 +11,7 @@ mod_favourites = Blueprint("mod_favourites",__name__)
 @mod_favourites.route("/list",methods=['GET'])
 def list():
 
-    responseType = libs.globals.TYPE_LIST
+    responseType = safeglobals.TYPE_LIST
     if request.args.get('format'):
         responseType = request.args.get('format')
 
@@ -19,7 +19,7 @@ def list():
     favourites = list_favourites()
 
     # Sending response
-    if (responseType == libs.globals.TYPE_JSON):
+    if (responseType == safeglobals.TYPE_JSON):
         return jsonify(favourites)
     else:
         return render_template("list.favourites.html",favourites=favourites)	
@@ -66,11 +66,11 @@ def list_qlinks():
     # Getting links
     links = list_quick_links()
 
-    if (responseType == libs.globals.TYPE_LIST):
+    if (responseType == safeglobals.TYPE_LIST):
         return render_template("list.links.html",links=links);
-    elif responseType == libs.globals.TYPE_JSON:
+    elif responseType == safeglobals.TYPE_JSON:
         return jsonify(links)
-    elif responseType == libs.globals.TYPE_SELECT:
+    elif responseType == safeglobals.TYPE_SELECT:
         return render_template("select.links.html",links=links)
 
 @mod_favourites.route("/quick/add",methods=['GET'])
@@ -89,7 +89,7 @@ def create_quick_link():
     try:
         # Creating a link
         add_quick_link(request.form['name'],request.form['link'])
-        return jsonify(status=200,msg=libs.globals.MSG_LINKCREATE_OK)
+        return jsonify(status=200,msg=safeglobals.MSG_LINKCREATE_OK)
     except:
         raise
 

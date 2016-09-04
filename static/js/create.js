@@ -25,6 +25,13 @@ $(document).ready(function(){
 
 		}
 
+		array = config.evernote.default_tags.split(",");
+		if (array.length > 0){
+			for (i=0;i<array.length;i++){
+				$("input#txtTags").tagsinput('add',array[i]);
+			}
+		}
+
 	})
 	.fail(function(xhr){
 
@@ -48,10 +55,7 @@ $(document).ready(function(){
 
 $(document).on("change","input#txtFiles",function(){
 	selectedFiles = $(this)[0].files;
-	console.log(selectedFiles);
-	if (selectedFiles.length == 0){
-		return;
-	}
+	if (selectedFiles.length == 0){return;}
 	var fd = new FormData();
 	// Processing the list of files
 	for (i=0;i<selectedFiles.length;i++){
@@ -99,16 +103,23 @@ $(document).on("click","button#btnRefreshNotebooks",function(){
 
 function insertFile(file,fileHash){
 	var node = document.createElement('p');
-	node.setAttribute("id","evernoteAttach");
+	var tpl_attach
+	node.setAttribute("id","saferoomAttach");
 	switch(file.type)
 	{
 		case "image/jpeg":
 		case "image/gif":
 		case "image/png":
-			node.innerHTML = TPL_IMAGE_ATTACH.replace("::filename::",file.name).replace("::filename::",file.name).replace("::fileType::",file.type).replace("::fileHash::",fileHash);
+			node.innerHTML = TPL_IMAGE_ATTACH.replace("::fileType::",file.type).replace("::filename::",file.name).replace("::filehash::",fileHash).replace("::filename::",file.name).replace("::filename::",file.name);
 			break;
 		default:
-			node.innerHTML = TPL_ATTACH.replace("::filename::",file.name).replace("::filename::",file.name).replace("::filename::",file.name).replace("::fileicon::",getIcon(file.type)).replace("::filesize::",humanFileSize(file.size,true)).replace("::fileType::",file.type).replace("::fileHash::",fileHash);
+			tpl_attach = replace_all(TPL_ATTACH,"::filename::",file.name);
+			tpl_attach = replace_all(tpl_attach,"::filesize::",humanFileSize(file.size,true));
+			tpl_attach = replace_all(tpl_attach,"::filehash::",fileHash);
+			tpl_attach = replace_all(tpl_attach,"::fileicon::",getIcon(file.type));
+			tpl_attach = replace_all(tpl_attach,"::filetype::",file.type);
+			node.innerHTML = tpl_attach;			
+
 			break;
 	}
 	
@@ -198,41 +209,61 @@ function encrypt_note(mode,password)
 {
 	showAlert(false,"","");
 		// Checking note title
-		var title = $("input#txtTitle").val();
-		if (title == ""){$("input#txtTitle").focus();return;}
+		if ($("input#txtTitle").val() == ""){$("input#txtTitle").focus();return;}
 
 		// Checking note content
 		var noteContent = $("#summernote").summernote('code');
 		if (noteContent == ""){
-			noteContent.focus();
 			alert("Note content cannot be empty");
 			return;
-		}
-
-		// Setting tags
-		var tags = $("input#txtTags").val();
-
-		// Setting notebook GUID
-		var guid = $("select#txtNotebook option:selected").val();
+		}	
 
 		// Before sending the content to server, let's format it
 		var tmpl = $("<div>"+noteContent+"</div>");
 		var enml = "";
 		var htmlAttach = "";
 		var fileList = []
-		tmpl.find("p#evernoteAttach").each(function(){
-			htmlAttach = $(this).next().html();
-			enml = $(this).next().find("span#enml");
-			if (enml != null){
-				fileList.push({name:$(this).next().find("span#txtFilename").html(),mime:enml.find("en-media").attr("type")});
-				noteContent = noteContent.replace("<div class=\"attachment\">"+htmlAttach+"</div>",enml.html());
+		var img;
+		tmpl.find("p#saferoomAttach").each(function(){
+
+			// We have image
+			if ($(this).html().includes("img")){
+				img = $(this).find("img");
+				fileList.push({name:img.attr("data-filename"),mime:img.attr("data-type"),hash:img.attr("data-hash")});				
+			}
+			else{
+				htmlAttach = $(this).next().html();
+				enml = $(this).next().find("span#enml");
+				if (enml != null){
+					fileList.push({name:$(this).next().find("span#txtFilename").html(),mime:enml.find("en-media").attr("data-type"),hash:enml.find("en-media").attr("data-hash")});
+					noteContent = noteContent.replace("<div class=\"attachment\">"+htmlAttach+"</div>",enml.html());
+				}
 			}
 		});
 		noteContent = noteContent.replace(/<p><br><\/p>/g, '<br/>');
+		fileList = clear_array(fileList);		
+		
+		// Creating note request
+		note = {}
+		note['service'] = $("select#txtService").val();
+		note['title'] = $("input#txtTitle").val();
+		note['tags'] = $("input#txtTags").val();
+		switch ($("select#txtService").val())
+		{
+			case "0":
+				note['notebook_guid'] =$("select#txtNotebook option:selected").val()
+				break;
+			case "1":
+			    note['notebook_guid'] =$("select#txtONNotebook option:selected").val()
+			    break;
+		}
+		note['section_guid'] = $("select#txtSection option:selected").val();
+		note['content'] = noteContent;
+		note['filelist'] = JSON.stringify(fileList)
+		note['mode'] = mode
+		note['pass'] = password
 		displayProgress(MSG_NOTE_UPLOAD,true);
-		CreateAJAX("/note/create","POST","json",
-			{title:title,content:noteContent,tags:tags,guid:guid,filelist:JSON.stringify(fileList),mode:mode,pass:password})
-		.done(function(response){
+		CreateAJAX("/note/create","POST","json",note).done(function(response){
 			displayProgress("",false);
 			if (response.status != HTTP_OK){
 				showAlert(true,LEVEL_DANGER,response.message);

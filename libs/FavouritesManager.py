@@ -1,4 +1,4 @@
-import libs.globals
+import safeglobals
 import json
 import os
 
@@ -8,11 +8,11 @@ def list_favourites():
 	favourites = []
 
 	# Checking if "favourites.json" exist
-	if os.path.isfile(libs.globals.path_favourites) == False:
+	if os.path.isfile(safeglobals.path_favourites) == False:
 		return favourites
 
 	# Loading a list of favourites
-	with open(libs.globals.path_favourites,"r") as f:
+	with open(safeglobals.path_favourites,"r") as f:
 		favourites = json.loads(f.read())
 
 	return favourites
@@ -27,7 +27,7 @@ def add_to_favourites(item):
 	favourites.append(item)
 
 	# Saving new list of favourites
-	with open(libs.globals.path_favourites,"w") as f:
+	with open(safeglobals.path_favourites,"w") as f:
 		f.write(json.dumps(favourites))
 
 
@@ -43,7 +43,7 @@ def remove_from_favourites(guid):
 			favourites.pop(0)
 
 	# Saving list of favourites back into file
-	with open(libs.globals.path_favourites,"w") as f:
+	with open(safeglobals.path_favourites,"w") as f:
 		f.write(json.dumps(favourites))
 
 
@@ -64,7 +64,7 @@ def list_quick_links():
 
 	links = []
 	try:
-		with open(libs.globals.path_quicklinks,"r") as f:
+		with open(safeglobals.path_quicklinks,"r") as f:
 			links = json.loads(f.read())
 		return links
 	except:
@@ -85,7 +85,7 @@ def add_quick_link(name,link):
 def save_quick_links(links):
 
 	try:
-		with open(libs.globals.path_quicklinks,"w") as f:
+		with open(safeglobals.path_quicklinks,"w") as f:
 			f.write(json.dumps(links))
 	except Exception as e:
 		pass

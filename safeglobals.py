@@ -1,6 +1,6 @@
 # Services
-service_evernote = 0 # Evernote Service ID
-service_onenote = 1  # Onenote Service ID
+service_evernote = "0" # Evernote Service ID
+service_onenote = "1"  # Onenote Service ID
  
 # Evernote credentials
 NOTE_URL = "https://www.evernote.com/shard/s401/notestore"
@@ -39,6 +39,7 @@ url_sections = "https://www.onenote.com/api/v1.0/me/notes/notebooks/%s/sections"
 url_notes = "https://www.onenote.com/api/v1.0/me/notes/sections/%s/pages"
 url_note = "https://www.onenote.com/api/v1.0/me/notes/pages/%s"
 url_note_content = "https://www.onenote.com/api/v1.0/me/notes/pages/%s/content"
+url_post_page = "https://www.onenote.com/api/v1.0/me/notes/sections/%s/pages"
 
 # Evernote variables
 PREMIUM_STATUS = {"0": "None","1":"Pending","2":"Active","3":"FAILED","4":"Cancellation pending","5":"CANCELLED"}
@@ -50,6 +51,8 @@ ENCRYPTED_SUFFIX = "__TUFNTU9USEVOQ1JZUFRFRE5PVEU="
   
 # HTML templates
 html_attach = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-10\" style=\"display:inline-block\"><span style=\"margin-left:10px\"><img src=\"/static/images/::fileicon::\"/></span><span style=\"margin-left:10px\"><a href=\"static/tmp/::filename::\">::filename::</a></span></div><div class=\"col-md-2\"></div></div></div><br/>"
+html_onenote_image = "<img src=\"name:%s\"/>"
+html_onenote_object = "<object data-attachment=\"%s\" data=\"name:%s\" type=\"%s\"/>"
   
 # Success messages
 MSG_NOTECREATE_OK = "Note has been successfully created and uploaded to the server"
@@ -94,3 +97,4 @@ http_not_found = 404
 http_forbidden = 403
 http_internal_server = 500
 http_bad_request = 400
+

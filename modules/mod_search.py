@@ -1,7 +1,7 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_searches
-import libs.globals
+import safeglobals
 from libs.functions import handle_exception,send_response
 from libs.ConfigManager import get_developer_token
 
@@ -15,13 +15,13 @@ def searches(responseType):
         # Getting access token
         access_token = get_developer_token()
         if access_token == "":
-            return handle_exception(libs.globals.TYPE_HTML,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)        
+            return handle_exception(safeglobals.TYPE_HTML,safeglobals.http_bad_request,safeglobals.MSG_NO_DEVTOKEN)        
 
         # Getting a list of Saved Searches
         searches = list_searches(access_token,False)
 
         # Returing the response based on specified format
-        return send_response(searches,responseType,{libs.globals.TYPE_HTML:'list.searches.html'})
+        return send_response(searches,responseType,{safeglobals.TYPE_HTML:'list.searches.html'})
 
     except Exception as e:
-        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
+        return handle_exception(responseType,safeglobals.http_internal_server,str(e))

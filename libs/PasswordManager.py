@@ -1,6 +1,6 @@
 # Import section
 import os
-import libs.globals
+import safeglobals
 from libs.functions import log_message,decryptString,generateKey
 import platform
 import getpass
@@ -11,17 +11,17 @@ def get_master_password():
     password = ""
     try:
         # Checking if master password file has been generated
-        if os.path.exists(libs.globals.path_password) == False:
+        if os.path.exists(safeglobals.path_password) == False:
             return password
 
         # Checking if master password is in this file :)
-        with open(libs.globals.path_password,"r") as f:
+        with open(safeglobals.path_password,"r") as f:
             data = json.loads(f.read())
         if not data['pass']:
             return password
 
         # Decrypting password
-        password = decryptString(data['pass'],generateKey(platform.system(),getpass.getuser(),libs.globals.SALT))
+        password = decryptString(data['pass'],generateKey(platform.system(),getpass.getuser(),safeglobals.SALT))
         return password
 
     except Exception as e:

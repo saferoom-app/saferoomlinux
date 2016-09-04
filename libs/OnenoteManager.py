@@ -1,10 +1,10 @@
 # Import section
-import libs.globals
+import safeglobals
 import time
 import json
 import os
 import requests
-from libs.functions import log_message,stringMD5,log_message
+from libs.functions import log_message,stringMD5,log_message,encryptNote, encryptData
 from bs4 import BeautifulSoup
 import uuid
 
@@ -21,7 +21,7 @@ def list_on_notebooks(accessToken,forceRefresh):
         return notebooks
     # Checking if notebooks are cached
     try:
-        f = open(libs.globals.path_notebooks_onenote,"r")
+        f = open(safeglobals.path_notebooks_onenote,"r")
         notebooks = json.loads(f.read())
         f.close()
     except Exception as e:
@@ -35,9 +35,9 @@ def load_notebooks(accessToken):
 
 		# Creating a POST request
 		headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
-		r = requests.get(libs.globals.url_notebooks,headers=headers)
+		r = requests.get(safeglobals.url_notebooks,headers=headers)
 		if (r.status_code == 401):
-			log_message(libs.globals.MSG_UNAUTHORIZED)
+			log_message(safeglobals.MSG_UNAUTHORIZED)
 			return notebooks
 
 		response = json.loads(r.text)
@@ -53,7 +53,7 @@ def load_notebooks(accessToken):
 		return notebooks
 
 def cache_notebooks(notebooks):
-    f = open(libs.globals.path_notebooks_onenote,"w")
+    f = open(safeglobals.path_notebooks_onenote,"w")
     f.write(json.dumps(notebooks))
     f.close()
 
@@ -72,7 +72,7 @@ def list_sections(accessToken,forceRefresh,guid):
 
     # Checking if notebooks are cached
     try:
-        f = open(libs.globals.path_sections % (guid),"r")
+        f = open(safeglobals.path_sections % (guid),"r")
         sections = json.loads(f.read())
         f.close()
     except Exception as e:
@@ -86,9 +86,9 @@ def load_sections(accessToken,guid):
     
     # Creating a POST request
     headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
-    r = requests.get(libs.globals.url_sections % (guid),headers=headers)
+    r = requests.get(safeglobals.url_sections % (guid),headers=headers)
     if (r.status_code == 401):
-    	log_message(libs.globals.MSG_UNAUTHORIZED)
+    	log_message(safeglobals.MSG_UNAUTHORIZED)
     	return sections
 
     # Getting response
@@ -102,7 +102,7 @@ def load_sections(accessToken,guid):
 	
 
 def cache_sections(guid,sections):
-    f = open(libs.globals.path_sections % (guid),"w")
+    f = open(safeglobals.path_sections % (guid),"w")
     f.write(json.dumps(sections))
     f.close()
 
@@ -122,7 +122,7 @@ def list_on_notes(accessToken,forceRefresh,guid):
 
     # Checking if notebooks are cached
     try:
-        f = open(libs.globals.path_notes % (guid),"r")
+        f = open(safeglobals.path_notes % (guid),"r")
         notes = json.loads(f.read())
         f.close()
     except Exception as e:
@@ -135,9 +135,9 @@ def load_notes(accessToken,guid):
 	try:
 		# Creating a POST request
 		headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
-		r = requests.get(libs.globals.url_notes % (guid),headers=headers)
+		r = requests.get(safeglobals.url_notes % (guid),headers=headers)
 		if (r.status_code == 401):
-			log_message(libs.globals.MSG_UNAUTHORIZED+": "+r.text)
+			log_message(safeglobals.MSG_UNAUTHORIZED+": "+r.text)
 			return notes
 
 		# Getting response
@@ -155,7 +155,7 @@ def load_notes(accessToken,guid):
 
 
 def cache_notes(guid,notes):
-    f = open(libs.globals.path_notes % (guid),"w")
+    f = open(safeglobals.path_notes % (guid),"w")
     f.write(json.dumps(notes))
     f.close()
 
@@ -173,7 +173,7 @@ def get_on_note(accessToken,guid,forceRefresh):
 
     # Checking if note has been cached already
 	try:
-		with open(libs.globals.path_note % (guid,"content.json"),"r") as f:
+		with open(safeglobals.path_note % (guid,"content.json"),"r") as f:
 			note = f.read()
 		return note
 	except:
@@ -187,11 +187,11 @@ def download_note(access_token,guid):
 
 	# Creating custom header for Onenote
 	headers = {"Authorization":"Bearer "+access_token,"Content-Type":"application/json"}
-	r = requests.get(libs.globals.url_note_content % (guid),headers=headers)
+	r = requests.get(safeglobals.url_note_content % (guid),headers=headers)
 
 	# Checking the response (if not 200 or 201 => failure, write to log file)
 	if r.status_code == 401:
-		log_message(libs.globals.MSG_UNAUTHORIZED+": "+r.text)
+		log_message(safeglobals.MSG_UNAUTHORIZED+": "+r.text)
 		return note
 
 	# Processing the response
@@ -223,11 +223,11 @@ def download_resources(access_token,noteContent,guid):
     	if resource_exists(guid,resource['name']) == False:
     	    r = requests.get(resource['link'],headers=headers,stream=True)
     	    if r.ok:
-    	        with open(libs.globals.path_note % (guid,resource['name']),"wb") as f:
+    	        with open(safeglobals.path_note % (guid,resource['name']),"wb") as f:
     			    for block in r.iter_content(1024):
     				    f.write(block)
     	    else:
-    	    	log_message(libs.globals.ERROR_FILE_DOWNLOAD % (str(r.status_code)))
+    	    	log_message(safeglobals.ERROR_FILE_DOWNLOAD % (str(r.status_code)))
 
     # Changing the content
     matches = soup.find_all(['img','object'])
@@ -247,13 +247,58 @@ def download_resources(access_token,noteContent,guid):
         content = match.decode_contents(formatter="html")
         break
 
-    return {"title":soup.title.string,"content":content,"service":libs.globals.service_onenote}
+    return {"title":soup.title.string,"content":content,"service":safeglobals.service_onenote}
+
+def create_on_note(access_token,title,content,guids,files,password):
+
+    data = None
+
+    # Encrypting note content
+    content = safeglobals.ENCRYPTED_PREFIX+stringMD5(content)+"__"+encryptNote(content,password)+safeglobals.ENCRYPTED_SUFFIX    
+    nBody = "<html>"
+    nBody += "<head><title>%s</title></head>" % (title)
+    nBody += "<body>%s</body>" % (content)
+    
+    # First we need to prepare a list of files to upload
+    resources = []
+    for file in files:
+
+        # First we need to encrypt these files
+        with open(safeglobals.path_tmp+file['name'],"rb") as f:
+            data = f.read()
+
+        # Encrypting data
+        data = encryptData(data,password)
+
+        # Writing encrypted data back to original file
+        with open(safeglobals.path_tmp + file['name'],"wb") as f:
+            f.write(data)
+
+        # Appending file to the list of resources
+        resources.append((file['hash'],(file['name'],open(safeglobals.path_tmp+file['name'],'rb'),file['mime'])))
+
+        # Appending to the content, so the files can be uploaded
+        if "image" in file['mime']:
+            nBody += safeglobals.html_onenote_image % (file['hash'])
+        else:
+            nBody += safeglobals.html_onenote_object % (file['name'],file['hash'],file['mime'])
+    
+    nBody += "</html>"
+    resources.append(('Presentation',(None,nBody,'text/html')))
+
+    # Preparing POST request
+    print resources
+    headers = {"Authorization":"Bearer "+access_token}
+    r = requests.post(safeglobals.url_post_page % (guids['section']),headers=headers,files=resources)
+    print r.text
+
+    
 
 def cache_note(guid,noteContent):
     
-    if os.path.exists(libs.globals.path_note % (guid,"")) == False:
-        os.makedirs(libs.globals.path_note % (guid,""))
-	with open(libs.globals.path_note % (guid,"content.json"), "w") as f:
+    if os.path.exists(safeglobals.path_note % (guid,"")) == False:
+        os.makedirs(safeglobals.path_note % (guid,""))
+	with open(safeglobals.path_note % (guid,"content.json"), "w") as f:
 	    f.write(noteContent) 
 
 '''
@@ -272,18 +317,18 @@ def save_tokens(responseJson):
     tokens = {"access":responseJson['access_token'],"refresh":responseJson['refresh_token'],"expires":str(expires_in)}
 
     # Saving tokens into ".tokens" file
-    with open(libs.globals.path_tokens,"w") as f:
+    with open(safeglobals.path_tokens,"w") as f:
     	f.write(json.dumps(tokens))
 
 def is_access_token_valid():
 
 	# Checking that file exists
-	if os.path.exists(libs.globals.path_tokens) == False:
+	if os.path.exists(safeglobals.path_tokens) == False:
 		return False
 
 	# Checking that Access Token exists in the file
 	try:
-		with open(libs.globals.path_tokens,"r") as f:
+		with open(safeglobals.path_tokens,"r") as f:
 			tokens = json.loads(f.read())
 
 		# Checking that token exists and has somve values
@@ -312,7 +357,7 @@ def is_token_expired(expires):
 
 def get_access_token():
 	try:
-		with open(libs.globals.path_tokens,"r") as f:
+		with open(safeglobals.path_tokens,"r") as f:
 			data = json.loads(f.read())
 		return data['access']
 	except Exception as e:
@@ -320,4 +365,4 @@ def get_access_token():
 		return ""
 
 def resource_exists(guid,name):
-	return os.path.exists(libs.globals.path_note % (guid,name))
+	return os.path.exists(safeglobals.path_note % (guid,name))

@@ -16,9 +16,12 @@ $(document).ready(function(){
 			return;
 		}
 		$("span#noteTitle").html(response.message.title);
-		$("div#noteContent").html(response.message.content);
-		$("div#modalLoading").modal('hide');
-
+		if (response.message.content.includes(encrypted_prefix) && response.message.content.includes(encrypted_suffix) ){
+			$("div#noteContent").html(show_encrypted_icon(service_evernote));
+		}
+		else{
+			$("div#noteContent").html(response.message.content);
+		}
 		if (response.message.favourite == true){
 			$("span#favAdd").hide();
 			$("span#favRemove").show();

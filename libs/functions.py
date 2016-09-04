@@ -8,7 +8,8 @@ from time import strftime
 from flask import render_template,jsonify
 import math
 import os
-import libs.globals
+import safeglobals
+from bs4 import BeautifulSoup, Tag
 
 def get_folder_size(start_path):
     total_size = 0
@@ -76,7 +77,7 @@ def encryptData(data,password):
 def decryptNote(noteContent,password):
 
     # Filtering content
-    noteContent = noteContent.replace(libs.globals.ENCRYPTED_PREFIX,"").replace(libs.globals.ENCRYPTED_SUFFIX,"");
+    noteContent = noteContent.replace(safeglobals.ENCRYPTED_PREFIX,"").replace(safeglobals.ENCRYPTED_SUFFIX,"");
     array = noteContent.split("__")
     noteContent = array[1]
 
@@ -115,13 +116,13 @@ def getMime(fileName):
 
 def getIcon(mime):
 
-    if mime == libs.globals.MIME_PDF:
+    if mime == safeglobals.MIME_PDF:
         return "icon_pdf.png"
-    elif mime == libs.globals.MIME_DOC or mime == libs.globals.MIME_DOCX:
+    elif mime == safeglobals.MIME_DOC or mime == safeglobals.MIME_DOCX:
         return "icon_word.png"
-    elif mime == libs.globals.MIME_XLS or mime == libs.globals.MIME_XLSX:
+    elif mime == safeglobals.MIME_XLS or mime == safeglobals.MIME_XLSX:
         return "icon_excel.png"
-    elif mime == libs.globals.MIME_PPT or mime == libs.globals.MIME_PPTX:
+    elif mime == safeglobals.MIME_PPT or mime == safeglobals.MIME_PPTX:
         return "icon_ppt.png"
     else:
         return "icon_doc.png"
@@ -135,7 +136,7 @@ def generateKey(os,user,salt):
 def log_message(message):
 
     try:
-        with open(libs.globals.path_logfile,"a") as f:
+        with open(safeglobals.path_logfile,"a") as f:
             f.write(strftime("%Y-%m-%d %H:%M:%S")+": "+message+"\n")
     except:
         raise
@@ -149,17 +150,57 @@ def handle_exception(responseType,code,message):
     log_message(message);
 
     # Sending response based on response type: JSON or HTML
-    if responseType == libs.globals.TYPE_JSON:
+    if responseType == safeglobals.TYPE_JSON:
         return jsonify(status=code,message=message),code
     else:
         return render_template("server.error.html",code=code,message=message),code
 
 def send_response(items,responseType,templates):
-    if responseType == libs.globals.TYPE_JSON:
-        return jsonify(status=libs.globals.http_ok,message=items)
+    if responseType == safeglobals.TYPE_JSON:
+        return jsonify(status=safeglobals.http_ok,message=items)
     else:
         try:
             return render_template(templates[responseType],items=items)
         except KeyError as e:
             return render_template(templates['default'],items=items)
 
+
+def parse_content(service,content):
+
+    document = BeautifulSoup(content,"html.parser")
+    note_content = ""
+    if service == safeglobals.service_evernote:
+        # Find all images
+        matches = document.find_all(["img","en-media"])
+        for match in matches:
+            tag = document.new_tag("en-media",type=match['data-type'],hash=match['data-hash'])
+            tag.string = ""
+            match.replaceWith(tag)
+
+        # Find all <en-media>
+        note_content = str(document.prettify().replace("\n",""))
+        note_content = note_content.replace("> </en-media>","/>")
+    elif service == safeglobals.service_onenote:
+
+        # First, we need to find all images within the note
+        matches = document.find_all("img")
+        for match in matches:
+            tag = document.new_tag("img",src="name:"+match['data-hash'])
+            tag['data-filename'] = match['data-filename']
+            match.replaceWith(tag)       
+
+        # Second, we need to find all <en-media> tags
+        matches = document.find_all("en-media")
+        for match in matches:
+            tag = document.new_tag("object")
+            tag['data-attachment'] = match['data-filename']
+            tag['data'] = "name:"+match['data-hash']
+            tag['type'] = match['data-type']
+            tag.string = ""
+            match.replaceWith(tag)
+        
+        note_content = str(document.prettify().replace("\n",""))
+        note_content = note_content.replace("> </en-media>","/>")
+        note_content = note_content.replace("> </object>","/>")        
+        
+    return note_content

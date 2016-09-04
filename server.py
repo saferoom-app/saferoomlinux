@@ -10,8 +10,8 @@ import os
 import ssl
 
 # Custom imports
-import libs.globals
-from libs.functions import fileMD5
+import safeglobals
+from libs.functions import fileMD5,parse_content
 from bs4 import BeautifulSoup, Tag
 from libs.functions import decryptString,generateKey,send_response
 from libs.OnenoteManager import is_access_token_valid
@@ -83,8 +83,8 @@ def user():
     username = response.username
     uid = response.id
     email = response.email
-    privilegeLevel = libs.globals.PRIVILEGE_LEVEL[str(response.privilege)]
-    premiumStatus = libs.globals.PREMIUM_STATUS[str(response.accounting.premiumServiceStatus)]
+    privilegeLevel = safeglobals.PRIVILEGE_LEVEL[str(response.privilege)]
+    premiumStatus = safeglobals.PREMIUM_STATUS[str(response.accounting.premiumServiceStatus)]
     privilege = response.privilege
 
     #return json.dumps(response)
@@ -106,10 +106,10 @@ def upload():
     hashes = []
     uploaded_files = request.files.getlist("attach[]")
     for file in uploaded_files:
-        file.save(libs.globals.path_tmp+file.filename)
+        file.save(safeglobals.path_tmp+file.filename)
 
     for file in uploaded_files:
-        hashes.append(fileMD5(libs.globals.path_tmp+file.filename))
+        hashes.append(fileMD5(safeglobals.path_tmp+file.filename))
     return jsonify(hashes)
 
 '''
@@ -120,8 +120,11 @@ def upload():
 
 @app.route("/demo",methods=['GET'])
 def demo():
-    send_response([{"name":"test"},{"name":"test2"}],"json",{"json":"json.html","select":"select.html","html":"html.html"})
-    return "demo page"
+    html_content = '<br/><p ><img style="max-width:70%;max-height=70%" data-type="image/jpeg" data-filename="171916.jpg" data-hash="f01777b1b5089c77c837e49bf6ecd8fa" src="/static/tmp/171916.jpg"></p><p ><en-media data-type="application/pdf" data-hash="48c94886c717562b6cbf603b26cd63d6" data-filename="document.pdf"></en-media></p><p ><en-media data-type="application/msword" data-hash="ba4f564d6e091ad70d31747e1e303b02" data-filename="download.doc"></en-media></p><br/>'
+
+    print parse_content(safeglobals.service_onenote,html_content)
+    return ""
+
 
 '''
 ============================================
@@ -157,7 +160,7 @@ if __name__ == "__main__":
     app.debug = True
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler(libs.globals.ERROR_LOG_FILE, maxBytes=1024 * 1024 * 100, backupCount=20)
+    file_handler = RotatingFileHandler(safeglobals.ERROR_LOG_FILE, maxBytes=1024 * 1024 * 100, backupCount=20)
     file_handler.setLevel(logging.ERROR)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)

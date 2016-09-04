@@ -1,6 +1,6 @@
 # Import section
 from flask import Blueprint, jsonify,abort,request,render_template
-import libs.globals
+import safeglobals
 import requests
 import httplib
 import json
@@ -26,28 +26,28 @@ def login():
         redirect_uri = get_redirect_uri()
 
         if client_id == "" or client_secret == "" or scopes == "" or redirect_uri == "":
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_ONDATA_MISSING,title="Onenote result")
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_ONDATA_MISSING,title="Onenote result")
         
         # Sending HTTP GET request to Onenote service
-        conn = httplib.HTTPSConnection(libs.globals.on_hostname)
-        conn.request("GET",libs.globals.on_path % (client_id,scopes,libs.globals.on_response_type,redirect_uri))
+        conn = httplib.HTTPSConnection(safeglobals.on_hostname)
+        conn.request("GET",safeglobals.on_path % (client_id,scopes,safeglobals.on_response_type,redirect_uri))
         response = conn.getresponse()
                 
         # Processing the response
-        if response.status != libs.globals.http_ok:
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_RESPONSE_ERROR % (str(response.status),response.read()),title="Onenote result")
+        if response.status != safeglobals.http_ok:
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_RESPONSE_ERROR % (str(response.status),response.read()),title="Onenote result")
         return response.read()
 
     except Exception as e:
         log_message(str(e))
-        return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_INTERNAL_ERROR,title="Onenote result")
+        return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_INTERNAL_ERROR,title="Onenote result")
 
 
 @mod_onenote.route("/callback",methods=["GET"])
 def callback():
     try:
         if not request.args.get("code"):
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_MANDATORY_MISSING,title="Onenote result")
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_MANDATORY_MISSING,title="Onenote result")
         # Getting the authorization code
         code = request.args.get("code")
 
@@ -58,10 +58,10 @@ def callback():
 
         # Checking mandatory data
         if client_id == "" or client_secret == "" or redirect_uri == "":
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_ONDATA_MISSING,title="Onenote result")
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_ONDATA_MISSING,title="Onenote result")
 
         # Sending HTTP POST request for Access Token and Refresh Tokens
-        r = requests.post(libs.globals.on_token_url, data={'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret,'code':code,'redirect_uri':redirect_uri})
+        r = requests.post(safeglobals.on_token_url, data={'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret,'code':code,'redirect_uri':redirect_uri})
 
         # Checking the response (it should be in JSON format)
         response = json.loads(r.text)
@@ -72,21 +72,21 @@ def callback():
         tokens = {"access":response['access_token'],"refresh":response['refresh_token'],"expires":str(expires_in)}
         
         # Writing tokens to file
-        with open(libs.globals.path_tokens,"w") as f:
+        with open(safeglobals.path_tokens,"w") as f:
             f.write(json.dumps(tokens))
-        return render_template("dialog.onenote.result.html",success=True,message=libs.globals.MSG_ONLOGIN_OK,title="Onenote result")
+        return render_template("dialog.onenote.result.html",success=True,message=safeglobals.MSG_ONLOGIN_OK,title="Onenote result")
     except Exception as e:
         log_message(str(e))
-        return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_INTERNAL_ERROR,title="Onenote result")
+        return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_INTERNAL_ERROR,title="Onenote result")
 
 @mod_onenote.route("/user",methods=["GET"])
 def user():
     tokens = {"access":False,"refresh":False,"expired":False,"expires_in":"n/a"}
     try:
         # Checking that file with tokens exists
-        if os.path.exists(libs.globals.path_tokens) == False:
+        if os.path.exists(safeglobals.path_tokens) == False:
             return render_template("user.onenote.html",tokens=tokens)
-        with open(libs.globals.path_tokens,"r") as f:
+        with open(safeglobals.path_tokens,"r") as f:
             data = json.loads(f.read())
         
         if data['access']:
@@ -115,15 +115,15 @@ def refresh():
     try:
         
         # Checking if we have the developer token
-        if os.path.exists(libs.globals.path_tokens) == False:
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_NO_TOKENS,title="Onenote result")
+        if os.path.exists(safeglobals.path_tokens) == False:
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")
 
         # Checking if refresh token is configured
-        with open(libs.globals.path_tokens,"r") as f:
+        with open(safeglobals.path_tokens,"r") as f:
         	data = json.loads(f.read())
         
         if not data['refresh']:
-        	return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_NO_TOKENS,title="Onenote result")
+        	return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")
 
         # Getting Client ID, Client Secret and Scopes
         client_id = get_client_id()
@@ -132,16 +132,16 @@ def refresh():
 
         # Checking mandatory data
         if client_id == "" or client_secret == "" or redirect_uri == "":
-            return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_ONDATA_MISSING,title="Onenote result")
+            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_ONDATA_MISSING,title="Onenote result")
 
         # If "Refresh Token" exists, then we need to update the access token
-        r = requests.post(libs.globals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
+        r = requests.post(safeglobals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
 
         # Saving tokens
         save_tokens(json.loads(r.text))
         
-        return render_template("dialog.onenote.result.html",success=True,message=libs.globals.MSG_TOKENREFRESH_OK,title="Onenote result")
+        return render_template("dialog.onenote.result.html",success=True,message=safeglobals.MSG_TOKENREFRESH_OK,title="Onenote result")
 
     except Exception as e:
     	log_message(str(e))
-    	return render_template("dialog.onenote.result.html",success=False,message=libs.globals.MSG_INTERNAL_ERROR,title="Onenote result")
+    	return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_INTERNAL_ERROR,title="Onenote result")

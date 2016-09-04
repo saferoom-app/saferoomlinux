@@ -4,15 +4,22 @@
 
 var FINISHED = false;
 
-TPL_ATTACH = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-10\" style=\"display:inline-block\"><span style=\"margin-left:10px\"><img src=\"/static/images/::fileicon::\"/></span><span style=\"margin-left:10px\"><a href=\"/tmp/::filename::\">::filename:: (Size: ::filesize::)</a></span><span id='enml'><en-media type=\"::fileType::\" hash=\"::fileHash::\" /></span></div><div class=\"col-md-2\"><span id='txtFilename' style='display:none'>::filename::</span><span class=\"pull-right\" style=\"margin-right:10px\"><span id='removeAttach' class=\"glyphicon glyphicon-remove link\" aria-hidden=\"true\"></span></span></div></div></div><br/>";
+// HTML templates
+TPL_ATTACH = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-10\" style=\"display:inline-block\"><span style=\"margin-left:10px\"><img src=\"/static/images/::fileicon::\"/></span><span style=\"margin-left:10px\"><a href=\"/tmp/::filename::\">::filename:: (Size: ::filesize::)</a></span><span id='enml'><en-media data-type=\"::filetype::\" data-hash=\"::filehash::\" data-filename=\"::filename::\"/></span></div><div class=\"col-md-2\"><span id='txtFilename' style='display:none'>::filename::</span><span class=\"pull-right\" style=\"margin-right:10px\"><span id='removeAttach' class=\"glyphicon glyphicon-remove link\" aria-hidden=\"true\"></span></span></div></div></div><br/>";
 
-TPL_IMAGE_ATTACH = "<img width=\"100%\" src=\"/static/tmp/::filename::\"/><span id='enml'><en-media type=\"::fileType::\" hash=\"::fileHash::\" /></span><span style=\"display:none\" id='txtFilename'>::filename::</span>";
+TPL_IMAGE_ATTACH = "<img style='max-width:70%;max-height=70%' data-type='::fileType::' data-filename='::filename::' data-hash='::filehash::' src=\"/static/tmp/::filename::\"/>";
+
+TPL_PAGE_ENCRYPTED = "<div class='row'><div class='col-md-12' style='text-align:center;padding:30px 30px 30px 30px'><div><img src='/static/images/::icon::'></div><div class='greyedText'>This ::pageType:: is encrypted. To see its contents, please decrypt it</div></div></div>"
 
 // Type of alerts
 LEVEL_INFO = 0;
 LEVEL_SUCCESS = 1;
 LEVEL_WARN = 2;
 LEVEL_DANGER = 3;
+
+// Service IDs
+service_evernote = 0
+service_onenote = 1
 
 // Common system messages
 MSG_INTERNAL_ERROR = "Server internal error. Please check system logs";
@@ -38,6 +45,10 @@ HTTP_FORBIDDEN = "403"
 
 // Path object to generate links
 path = new Array();
+
+// Encrypted prefixes and suffixes
+encrypted_prefix = "TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"
+encrypted_suffix = "__TUFNTU9USEVOQ1JZUFRFRE5PVEU="
 
 
 function CreateAJAX(url,requestType,dataType,data){
@@ -305,6 +316,37 @@ function parse_json_response(jsonString)
 {
 	response = jQuery.parseJSON(jsonString);
 	return response.message;
+}
+
+function clear_array(items)
+{
+	if (items.length > 0 )
+	{
+		var newArray = new Array();
+		for (i=0;i<items.length;i++){
+			if (items[i].name != null){
+				newArray.push(items[i]);
+			}
+		}
+		return newArray;
+	}
+	return items;
+
+}
+
+function replace_all(str, find, replace) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function show_encrypted_icon(service){
+	switch (service){
+		case service_evernote:
+			return TPL_PAGE_ENCRYPTED.replace("::icon::","page_encrypted_evernote.png").replace("::pageType::","note");
+			break;
+		case service_onenote:
+			return TPL_PAGE_ENCRYPTED.replace("::icon::","page_encrypted_onenote.png").replace("::pageType::","page");
+			break;
+	}
 }
 
 

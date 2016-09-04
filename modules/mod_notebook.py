@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.EvernoteManager import list_notebooks
 from libs.OnenoteManager import list_on_notebooks,get_access_token,list_sections,is_access_token_valid
-import libs.globals
+import safeglobals
 from libs.functions import str_to_bool,handle_exception,send_response
 from libs.ConfigManager import get_developer_token
 
@@ -17,7 +17,7 @@ def notebooks(responseType):
         # Checking Access Token
         access_token = get_developer_token()
         if access_token == "":
-            return handle_exception(responseType,libs.globals.http_bad_request,libs.globals.MSG_NO_DEVTOKEN)
+            return handle_exception(responseType,safeglobals.http_bad_request,safeglobals.MSG_NO_DEVTOKEN)
 
         forceRefresh = False
         if request.args.get("refresh"):
@@ -27,10 +27,10 @@ def notebooks(responseType):
         notebooks = list_notebooks(access_token,forceRefresh)
 
         # Returning response based on specified format
-        return send_response(notebooks,responseType,{libs.globals.TYPE_SELECT:"select.notebooks.html",libs.globals.TYPE_HTML:"list.notebooks.html"})
+        return send_response(notebooks,responseType,{safeglobals.TYPE_SELECT:"select.notebooks.html",safeglobals.TYPE_HTML:"list.notebooks.html"})
         
     except Exception as e:
-        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
+        return handle_exception(responseType,safeglobals.http_internal_server,str(e))
 
 @mod_notebook.route("/on/list/<string:responseType>",methods=["GET"])
 def list_onenote_notebooks(responseType):
@@ -41,9 +41,9 @@ def list_onenote_notebooks(responseType):
         
         # Checking the access token
         if is_access_token_valid() == False:
-            if responseType == libs.globals.TYPE_JSON:
-                return jsonify(status=libs.globals.http_unauthorized,message=libs.globals.MSG_NO_TOKENS)
-            elif responseType == libs.globals.TYPE_SELECT:
+            if responseType == safeglobals.TYPE_JSON:
+                return jsonify(status=safeglobals.http_unauthorized,message=safeglobals.MSG_NO_TOKENS)
+            elif responseType == safeglobals.TYPE_SELECT:
                 return send_response([{"guid":"","name":"Access token expired or doesn't exist"}],responseType,{"default":"onenote.select.notebooks.html"})
             else:
                 return render_template("onenote.token.expired.html")
@@ -56,7 +56,7 @@ def list_onenote_notebooks(responseType):
         return send_response(notebooks,responseType,{"default":"onenote.select.notebooks.html"})
         
     except Exception as e:
-        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
+        return handle_exception(responseType,safeglobals.http_internal_server,str(e))
 
 
 @mod_notebook.route("/on/sections/<string:guid>/<string:responseType>",methods=["GET"])
@@ -68,9 +68,9 @@ def list_on_sections(guid,responseType):
 
         # Listing the Onenote notebooks
         if is_access_token_valid() == False:
-            if responseType == libs.globals.TYPE_JSON:
-                return jsonify(status=libs.globals.http_unauthorized,message=libs.globals.MSG_NO_TOKENS)
-            elif responseType == libs.globals.TYPE_SELECT:
+            if responseType == safeglobals.TYPE_JSON:
+                return jsonify(status=safeglobals.http_unauthorized,message=safeglobals.MSG_NO_TOKENS)
+            elif responseType == safeglobals.TYPE_SELECT:
                 return send_response([{"guid":"","name":"Access token expired or doesn't exist"}],responseType,{"default":"select.sections.html"})
             else:
                 return render_template("onenote.token.expired.html"),401
@@ -83,4 +83,4 @@ def list_on_sections(guid,responseType):
         return send_response(sections,responseType,{"default":"select.sections.html"})
         
     except Exception as e:
-        return handle_exception(responseType,libs.globals.http_internal_server,str(e))
+        return handle_exception(responseType,safeglobals.http_internal_server,str(e))
