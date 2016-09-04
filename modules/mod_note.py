@@ -260,9 +260,70 @@ def decrypt_onenote_note():
         # Decrypting note content
         content = content[content.find(safeglobals.ENCRYPTED_PREFIX)+len(safeglobals.ENCRYPTED_PREFIX):content.find(safeglobals.ENCRYPTED_SUFFIX)].strip();
         content = decryptNote(safeglobals.ENCRYPTED_PREFIX + content + safeglobals.ENCRYPTED_SUFFIX,password)
+
+        # Decrypting downloaded resources and put them into TMP dir
+        path = safeglobals.path_note % (guid,"")
+        tmp_path = safeglobals.path_tmp
+        for filename in os.listdir(path):
+            if "content.json" not in filename:
+            
+                # Reading file data into variale
+                with open(path+filename,"rb") as f:
+                    data = f.read()
+
+                # Decrypting data
+                print password
+                data = decryptFileData(data,password)
+
+                # Writing data to temporary file
+                filename = filename.replace("%20","")
+                with open(tmp_path+filename,"wb") as f:
+                    f.write(data)                  
+
         
-        print content
-        return ""        
+        # Parsing the content and make it readable. First find <object> tags
+        document = BeautifulSoup(content,"html.parser")
+        matches = document.find_all(["object","img"])
+        for match in matches:
+            if "img" in match:
+                print "Image"
+            else:
+
+                # Creating root div
+                tag = document.new_tag("div",**{"class":"attachment"})
+
+                # Creating ICON span tag
+                icon_span_tag = document.new_tag("span",style="margin-left:10px")
+                icon_img_tag = document.new_tag("img",src="/static/images/"+getIcon(match['type']))
+                icon_span_tag.append(icon_img_tag)
+
+                # Creating text tag
+                text_span_tag = document.new_tag("span",style="margin-left:10px")
+                text_a_tag = document.new_tag("a",href="/static/tmp/"+match['data-attachment'])
+                text_a_tag.string = match['data-attachment']
+                text_span_tag.append(text_a_tag)
+
+                # Creating DIV with two spans
+                div_col_10 = document.new_tag("div",style="display:inline-block",**{"class":"col-md-10"})
+                div_col_10.append(icon_span_tag)
+                div_col_10.append(text_span_tag)
+
+                # Creating div(col-md-2)
+                div_col_2 = document.new_tag("div",**{"class":"col-md-2"})
+
+                # Creating div row
+                div_row = document.new_tag("div",**{"class":"row"})
+                div_row.append(div_col_10)
+                div_row.append(div_col_2)
+
+                # Combining all together
+                tag.append(div_row)
+
+                # Replace the match with the tag
+                match.replaceWith(tag)
+
+        #print document.prettify()
+        return document.prettify()
     except Exception as e:
         return handle_exception(safeglobals.TYPE_HTML,safeglobals.http_internal_server,str(e))
 
