@@ -65,6 +65,7 @@ def createnote():
         if "en-media" in content and not request.form['filelist']:
             return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
         fileList = json.loads(request.form['filelist'])
+        print fileList
 
         # Checking if mode is set to "OTP" and OTP password has been provided
 

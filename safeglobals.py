@@ -36,6 +36,7 @@ path_notes_evernote = "cache/notes_%s_%s.json"
 # Onenote URLs
 url_notebooks = "https://www.onenote.com/api/v1.0/me/notes/notebooks"
 url_sections = "https://www.onenote.com/api/v1.0/me/notes/notebooks/%s/sections"
+url_sections_all = "https://www.onenote.com/api/v1.0/me/notes/sections"
 url_notes = "https://www.onenote.com/api/v1.0/me/notes/sections/%s/pages"
 url_note = "https://www.onenote.com/api/v1.0/me/notes/pages/%s"
 url_note_content = "https://www.onenote.com/api/v1.0/me/notes/pages/%s/content"

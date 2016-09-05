@@ -99,7 +99,22 @@ def load_sections(accessToken,guid):
     # Saving sections
     cache_sections(guid,sections)
     return sections
-	
+
+def load_sections_all(access_token):
+
+    sections = []
+    # Creating a POST request
+    headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
+    r = requests.get(safeglobals.url_sections_all,headers=headers)
+    if (r.status_code == 401):
+        log_message(safeglobals.MSG_UNAUTHORIZED)
+        return sections
+
+    # Getting response
+    response = json.loads(r.text)
+    for section in response['value']:
+        sections.append({"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open","guid":section['id']})
+    return sections
 
 def cache_sections(guid,sections):
     f = open(safeglobals.path_sections % (guid),"w")
