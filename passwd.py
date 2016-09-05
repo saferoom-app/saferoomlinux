@@ -2,7 +2,7 @@ import os
 import getpass
 import time
 from libs.functions import encryptString, decryptString, generateKey
-import libs.globals
+import safeglobals
 import json
 import uuid
 import hashlib
@@ -20,24 +20,24 @@ def save_password(password):
 	# Generating unique ID
 	print ""
 	print("   Generating salt ......"),
-	salt = libs.globals.SALT
+	salt = safeglobals.SALT
 	print "[OK]"
 
 	# Encrypting password
 	print ""
 	print("   Encrypting password ......"),
-	encrypted_password = encryptString(password,generateKey(platform.system(),getpass.getuser(),libs.globals.SALT))
+	encrypted_password = encryptString(password,generateKey(platform.system(),getpass.getuser(),safeglobals.SALT))
 	print "[OK]"
 
 	# Saving password to a specified file
 	credentials = {"pass":encrypted_password}
 	print ""
 	print("   Saving password ......"),
-	with open(libs.globals.path_password,"w") as f:
+	with open(safeglobals.path_password,"w") as f:
 		f.write(json.dumps(credentials))
 	print "[OK]"
 	print ""
-	print "Your master password has been saved into ["+libs.globals.path_password+"] file. This password is encrypted, however if someone gets access to your machine, your master password can be easily decrypted. Please make sure that this file is protected from unauthorized use"
+	print "Your master password has been saved into ["+safeglobals.path_password+"] file. This password is encrypted, however if someone gets access to your machine, your master password can be easily decrypted. Please make sure that this file is protected from unauthorized use"
 
 def wait_for_password():
     passTrue = False
@@ -62,7 +62,7 @@ print "=============================================="
 print ""
 print "OS: "+platform.system()
 print "Current user: "+getpass.getuser()
-print "Salt: "+libs.globals.SALT
+print "Salt: "+safeglobals.SALT
 print ""
 print " ** Please note that these parameters will be used to generate the key, that will be used to encrypt your Master password. This key will not be stored anywhere and will be generated during the runtime"
 print ""
@@ -70,7 +70,7 @@ print ""
 print("   Checking if password already exists ......."),
 
 # Checking if password exists
-exists = os.path.isfile(libs.globals.path_password)
+exists = os.path.isfile(safeglobals.path_password)
 
 
 if (exists):

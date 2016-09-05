@@ -1,7 +1,7 @@
 # Import section
 import os
 import safeglobals
-from libs.functions import log_message,decryptString,generateKey
+from libs.functions import log_message,decryptString,generateKey,encryptString
 import platform
 import getpass
 import json
@@ -34,3 +34,9 @@ def set_password(mode,otp):
 		return otp
 	else:
 		return get_master_password()
+
+def save_password(password):
+    encrypted_password = encryptString(password,generateKey(platform.system(),getpass.getuser(),safeglobals.SALT))
+    credentials = {"pass":encrypted_password}
+    with open(safeglobals.path_password,"w") as f:
+        f.write(json.dumps(credentials))

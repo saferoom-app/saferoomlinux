@@ -111,8 +111,7 @@ def save_to_ini(config,section,d):
             section = k
             save_to_ini(config,section,v)
         else:
-            #print "Section: %s, Key: %s, Value: %s" (section,k,v)
-            print section+":"+k+":"+v
+            #print section+":"+k+":"+v
             config.set(section,k,v)
 
     # Saving config

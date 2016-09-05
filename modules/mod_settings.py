@@ -4,6 +4,7 @@ import safeglobals
 from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception
 import os
 from libs.ConfigManager import get_services,get_default_values,save
+from libs.PasswordManager import save_password
 
 
 
@@ -32,6 +33,11 @@ def save_config():
 
         # Saving configuration
         save(request.form['config'])
+
+        # If user sends the password, generate the master password file
+        if request.form.get('pass') != None:
+            if request.form['pass'] != "":
+                save_password(request.form['pass'])
 
         return jsonify(status=safeglobals.http_ok,message=safeglobals.MSG_CONFIG_OK)
 

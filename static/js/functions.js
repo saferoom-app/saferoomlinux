@@ -35,6 +35,7 @@ MSG_QUICKS_LOAD = "Loading a list of Quick Links ... Please wait";
 MSG_FAVS_ADD = "Adding to favourites ... Please wait";
 MSG_SECTIONS_LOAD = "Loading a list of sections ... Please wait";
 MSG_LOAD_NOTE	 = "Loading specified note ... Please wait"
+MSG_CONFIG_SAVE = "Saving configuration and starting the application ... Please wait";
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
 
 // HTTP Response codes

@@ -91,6 +91,10 @@ def user():
     return render_template('user.evernote.html',username=username,uid=uid,email=email,premiumStatus=premiumStatus,priv=privilegeLevel)
 
 
+@app.route("/install",methods=["GET"])
+def install_app():
+    return render_template("wizard.html",title="Saferoom :: Installation wizard")
+
 
 
 '''
