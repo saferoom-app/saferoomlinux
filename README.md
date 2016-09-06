@@ -191,6 +191,18 @@ This section contains instructions how to connect Saferoom app to your Onenote a
 ## Getting Client ID, Client Secret and Redirect URI
 Client ID, Client Secret and Redirect URI are required to authtenticate Saferoom app into your Onenote account. 
 
+Please follow the steps below to get Client ID, Client Secret and Redirect URI:
+
+1. Go to [Windows Live application management site](http://go.microsoft.com/fwlink/?LinkID=144070)
+2. Sign in with your Windows Live ID (Microsoft Account)
+3. If credentials are OK, you will be redirected to Application Registration portal
+4. Click **Add an app** button
+5. In the **New Application Registration** window type your Application Name
+6. When the application will be created, you will be redirected to Application configuration page
+7. **Client ID** will be in **Application ID** section
+8. In **Application Secrets** click **Generate new password**. New window with **Client Secret** opens
+
+
 
 
 
