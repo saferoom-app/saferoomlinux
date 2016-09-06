@@ -203,6 +203,7 @@ Please follow the steps below to get Client ID, Client Secret and Redirect URI:
 8. In **Application Secrets** click **Generate new password**. New window with **Client Secret** opens
 9. Click **Add Platform**. Then select **Web**
 10. In the Redirect URIs type your Redirect URI. This URI should match the following pattern: **https://[hostname]:5000/onenote/callback**. **"<hostname>"** can be any hostname, because it will be bound to **http://127.0.0.1** or **https://localhost**. By default app includes the certificates for **www.saferoomapp.com** hostname, so as the Redirect URI you can use the following URI: **http://www.saferoomapp.com:5000/onenote/callback**
+11. Click **Save** button in the page bottom
 
 
 
