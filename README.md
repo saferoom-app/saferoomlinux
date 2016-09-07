@@ -266,7 +266,7 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
 This sections contains steps, necessary to connect Saferoom application to Onenote account. The steps are the following:
 
 1. Start Saferoom app and navigate to its main page
-2. Click **Settings** button and check **Onenote** section. **Client ID** and **Client Secret** sections should be **OK** and Redirect URI field should contain your **Redirect URI**
+2. Click **Settings** button and check **Onenote** section. **Client ID** and **Client Secret** sections should be **OK** and Redirect URI field should contain your **Redirect URI**. Otherwise go to **https://[your_hostname]:5000/install** and configure all necessary values
 
 
 
