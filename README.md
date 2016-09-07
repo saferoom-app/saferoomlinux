@@ -229,14 +229,23 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
       127.0.0.1 www.saferoomapp.com
      ```
      
-2. Check that your hostname is resolved into 127.0.0.1 address. Open your terminal and type the following:
+2. Check that your hostname is resolved into 127.0.0.1 address. Open your terminal and ping your hostname. If everything is fine you should see the following output:
      
      ```
-     ping www.saferoomapp.com
+     PING www.saferoomapp.com (127.0.0.1) 56(84) bytes of data.
+     64 bytes from localhost (127.0.0.1): icmp_seq=1 ttl=64 time=0.041 ms
+     64 bytes from localhost (127.0.0.1): icmp_seq=2 ttl=64 time=0.045 ms
      ```
      
-3. If you're using **www.saferoomapp.com** as your hostname, then skip this section and go section **6**
-4. Using **OpenSSL** utility generate self-signed certificate based on [this instruction]()
+3. If you're using **www.saferoomapp.com** as your hostname, then skip this section and go section **5**
+4. Using **OpenSSL** utility generate self-signed certificate using the following command:
+     
+     ```
+     openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 -nodes
+     ```
+     This command will generate the certificate (server.pem) and private key (server.key). Option **-nodes** is used not to protect your private key with the password. Since you will be using these certificate and key only in local environment, you should not worry about security. 
+     
+     After you issue this command, system will prompt you to fill some values. Since this is just a local certificate, you can use default values. The most important is **CN** or **Common Name** field. For this field you should specify the hostname, you're using for your Redirect URI. For example, if you're using **www.myapp.com** as a hostname, so the **CN** value should be **www.myapp.com** or **\*.myapp.com**
 
 
 
