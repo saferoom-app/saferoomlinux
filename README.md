@@ -243,7 +243,7 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
      ```
      openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 -nodes
      ```
-     This command will generate the certificate (server.pem) and private key (server.key). Option **-nodes** is used not to protect your private key with the password. Since you will be using these certificate and key only in local environment, you should not worry about security. 
+     This command will generate the certificate (server.crt) and private key (server.key). Option **-nodes** is used not to protect your private key with the password. Since you will be using these certificate and key only in local environment, you should not worry about security. 
      
      After you issue this command, system will prompt you to fill some values. Since this is just a local certificate, you can use default values. The most important is **CN** or **Common Name** field. For this field you should specify the hostname, you're using for your Redirect URI. For example, if you're using **www.myapp.com** as a hostname, so the **CN** value should be **www.myapp.com** or **\*.myapp.com**
 
