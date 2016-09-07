@@ -225,14 +225,18 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
 1. Open **/etc/hosts** file and add your **hostname**. This hostname must be resolved into 127.0.0.1 address. For example:
      
      ```
+     vi /etc/hosts
       127.0.0.1 www.saferoomapp.com
      ```
      
 2. Check that your hostname is resolved into 127.0.0.1 address. Open your terminal and type the following:
+     
      ```
      ping www.saferoomapp.com
      ```
-3. If you're using **www.saferoomapp.com** as your hostname, then skip this section and go section **6**.  
+     
+3. If you're using **www.saferoomapp.com** as your hostname, then skip this section and go section **6**
+4. Using **OpenSSL** utility generate self-signed certificate based on [this instruction]()
 
 
 
