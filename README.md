@@ -205,6 +205,20 @@ Please follow the steps below to get Client ID, Client Secret and Redirect URI:
 10. In the Redirect URIs type your Redirect URI. This URI should match the following pattern: **https://[hostname]:5000/onenote/callback**. **"<hostname>"** can be any hostname, because it will be bound to **http://127.0.0.1** or **https://localhost**. By default app includes the certificates for **www.saferoomapp.com** hostname, so as the Redirect URI you can use the following URI: **http://www.saferoomapp.com:5000/onenote/callback**
 11. Click **Save** button in the page bottom
 
+Next step is to add these values to Saferoom configuration. It can be done in two ways:
+
+- Open **config.ini** file in the root folder and paste these values as the following:
+```
+[tokens]
+client_id = <your_client_id>
+client_secret = <your_client_secret>
+...
+[uris]
+redirect_uri = <your_redirect_uri>
+
+```
+- Start the Web server (**python server.py**), open your browser and type the following in the address bar: **http://<your_hostname>:5000/install**
+
 
 
 
