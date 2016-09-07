@@ -6,8 +6,6 @@ import os
 from libs.ConfigManager import get_services,get_default_values,save
 from libs.PasswordManager import save_password
 
-
-
 # Initializing the blueprint
 mod_settings = Blueprint("mod_settings",__name__)
 
@@ -105,15 +103,15 @@ def cache_status():
     return jsonify(response)
 
 
-@mod_settings.route("/clear",methods=["GET"])
+@mod_settings.route("/clear",methods=["POST"])
 def clear_data_cache():
 
     # Checking type
-    if not request.args.get('type'):
+    if not request.form['type']:
         return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
 
     # Clearing caches
-    if clear_cache(request.args.get('type')) == True:
+    if clear_cache(request.form['type']) == True:
         return jsonify(status=safeglobals.http_ok,message="")
     else:
         return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,safeglobals.MSG_INTERNAL_ERROR)

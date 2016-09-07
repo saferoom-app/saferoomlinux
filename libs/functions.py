@@ -10,6 +10,8 @@ import math
 import os
 import safeglobals
 from bs4 import BeautifulSoup, Tag
+import json
+import shutil
 
 def get_folder_size(start_path):
     total_size = 0
@@ -206,27 +208,41 @@ def parse_content(service,content):
     return note_content
 
 
-def clear_cache(data_type):
-    if data_type == "notebooks":
+def clear_cache(data_types):
+
+    types = json.loads(data_types)
+    if "notebooks" in types:
         try:
             os.remove(safeglobals.path_notebooks_evernote)
             os.remove(safeglobals.path_notebooks_onenote)
         except OSError:
             pass
-    elif data_type == "tags":
+    if "tags" in types:
         try:
             os.remove(safeglobals.path_tags)
         except OSError:
             pass        
-    elif data_type == "searches":
+    if "searches" in types:
         try:
             os.remove(safeglobals.path_searches)
         except OSError:
             pass
-    elif data_type == "sections":
-        return ""
-    elif data_type == "notes":
-        return ""
-    elif data_type == "tmp":
-        return ""
+    if "sections" in types:
+        try:
+            files = os.listdir(safeglobals.path_cache)
+            for file in files:
+                if "section" in file:
+                    os.remove(os.path.join(safeglobals.path_cache,file))
+        except OSError:
+            pass
+    if "notes" in types:
+        try:
+            files = os.listdir(safeglobals.path_cache)
+            for file in files:
+                if "notes_" in file:
+                    os.remove(os.path.join(safeglobals.path_cache,file))
+        except OSError:
+            pass
+    if "tmp" in types:
+        shutil.rmtree(safeglobals.path_tmp)
     return True

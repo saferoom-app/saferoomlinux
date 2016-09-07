@@ -7,7 +7,6 @@ $(document).ready(function(){
 	// Loading the cache information
 	CreateAJAX("/settings/cache","GET","json",{})
 	.done(function(response){
-		console.log(response);
 		for (var key in response){
 			$("td#cache_"+key).html(response[key]);
 		}
@@ -68,13 +67,14 @@ $(document).ready(function(){
 
 	// Attaching click handler to all buttons in the table
 	var td = null;
+	var types = new Array();
 	$("table#tblCache").find("button").click(function(){
 
 		// Displaying progress
         td = $(this).parent().parent().find("td[id='cache_"+this.id+"']");
         td.html("<img src=\"/static/images/103.gif\"/>");
-
-		CreateAJAX("/settings/clear","GET","json",{type:this.id})
+        types.push(this.id)
+		CreateAJAX("/settings/clear","POST","json",{"type":JSON.stringify(types)})
 		.done(function(response){
 			td.html("0B");
 		})
@@ -128,4 +128,18 @@ $(document).on("click","button#btnSave",function(){
 		showAlert(true,LEVEL_DANGER,parse_json_response(xhr.responseText));
 		scrollTop();
 	});
+});
+
+$(document).on("click","button#btnClearAll",function(){
+	types = new Array('notebooks','tags','sections','searches','tmp','notes');
+	CreateAJAX("/settings/clear","POST","json",{"type":JSON.stringify(types)})
+	.done(function(response){
+		for (i=0;i<types.length;i++){
+			$("td#cache_"+types[i]).html("0B");
+		}
+	})
+	.fail(function(xhr){
+		showToast(LEVEL_DANGER,xhr.responseText);		
+	});
+
 });
