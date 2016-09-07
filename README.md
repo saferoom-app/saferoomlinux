@@ -267,6 +267,8 @@ This sections contains steps, necessary to connect Saferoom application to Oneno
 
 1. Start Saferoom app and navigate to its main page
 2. Click **Settings** button and check **Onenote** section. **Client ID** and **Client Secret** sections should be **OK** and Redirect URI field should contain your **Redirect URI**. Otherwise go to **https://[your_hostname]:5000/install** and configure all necessary values
-
+3. Click the **Onenote** icon in the upper right corner of page. Onenote modal window appears
+4. Click **Login** button. Microsoft registration page opens
+5. Type your username and password. For some reason, you will the same the page with error message, that your password or username are not corrent. Ignore this and click **Sign In** once again. Saferoom wil authenticate into your Onenote account and get Access and Refresh Tokens. Since Access Token expires every 1 hour, Refresh token is used to get a new Access Token
 
 
