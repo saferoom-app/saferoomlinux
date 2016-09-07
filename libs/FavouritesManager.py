@@ -31,17 +31,20 @@ def add_to_favourites(item):
 		f.write(json.dumps(favourites))
 
 
-def remove_from_favourites(guid):
+def remove_from_favourites(delete_guids):
 
 	# Getting a list of favourites
 	favourites = list_favourites()
+	guids = json.loads(delete_guids)
 
 	# Removing the Favourite Item with selected ID
 	index = 0
 	for item in favourites:
-		if guid == item['guid']:
-			favourites.pop(0)
+		for guid in guids:
+			if guid == item['guid']:
+				favourites.pop(0)
 
+	print favourites
 	# Saving list of favourites back into file
 	with open(safeglobals.path_favourites,"w") as f:
 		f.write(json.dumps(favourites))

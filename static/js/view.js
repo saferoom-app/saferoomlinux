@@ -74,8 +74,9 @@ $(document).on("click","button#btnRemFav",function(){
 	displayProgress("Removing from favourites ... ",true)
 
 	// Sending request
-	item = {guid:$("#txtGuid").val()}
-	CreateAJAX("/favourites/remove","POST","json",item).
+	favourites = new Array();
+	favourites.push($("#txtGuid").val())
+	CreateAJAX("/favourites/remove","POST","json",{"delete":JSON.stringify(favourites)}).
 	done(function(response){
 		displayProgress("",false);
 		$("span#favRemove").hide();

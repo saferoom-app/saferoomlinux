@@ -15,3 +15,15 @@
 2016-09-05 01:44:41: Error while processing your request: 400: Bad Request
 2016-09-05 01:45:16: Error while processing your request: 400: Bad Request
 2016-09-05 01:46:08: Error while processing your request: 400: Bad Request
+2016-09-06 00:28:25: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:29:37: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:29:51: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:29:58: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:30:05: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:30:12: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:30:48: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:31:23: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:31:42: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:32:59: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:33:48: Error while processing your request: Developer token not found. Please make sure that correct Evernote developer token is specified in [config.ini]
+2016-09-06 00:37:02: Error while processing your request: EDAMUserException(errorCode=2, parameter=Note.guid)

@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-1">
-		<button type="button" class="btn btn-default" aria-label="Left Align">
+		<button type="button" id="btnDelFav" class="btn btn-default" aria-label="Left Align">
 			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
 	</div>
 	<div class="col-md-11">
@@ -17,7 +17,7 @@
 <tbody>
 	{% for fav in favourites %}
 		<tr class="itemRow">
-			<td><input type="checkbox"/></td>
+			<td><input id="{{fav.guid}}" type="checkbox"/></td>
 			<td style="text-align:center">
 				{% if fav.service == "1" %}
 					<img title="Onenote note" src="/static/images/icon_onenote.png"/>
@@ -25,7 +25,13 @@
 					<img title="Evernote note" src="/static/images/icon_evernote.png"/>
 				{%endif%}
 			</td>
-			<td><a target="_blank" href="/note/{{fav.guid}}">{{fav.title}}</a></td>
+			<td>
+				{% if fav.service == "1" %}
+					<a target="_blank" href="/note/on/{{fav.guid}}">{{fav.title}}</a>
+				{%else%}
+					<a target="_blank" href="/note/{{fav.guid}}">{{fav.title}}</a>
+				{%endif%}
+			</td>
 		</tr>
 	{%else%}
 		<tr>

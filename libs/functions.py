@@ -204,3 +204,29 @@ def parse_content(service,content):
         note_content = note_content.replace("> </object>","/>")        
         
     return note_content
+
+
+def clear_cache(data_type):
+    if data_type == "notebooks":
+        try:
+            os.remove(safeglobals.path_notebooks_evernote)
+            os.remove(safeglobals.path_notebooks_onenote)
+        except OSError:
+            pass
+    elif data_type == "tags":
+        try:
+            os.remove(safeglobals.path_tags)
+        except OSError:
+            pass        
+    elif data_type == "searches":
+        try:
+            os.remove(safeglobals.path_searches)
+        except OSError:
+            pass
+    elif data_type == "sections":
+        return ""
+    elif data_type == "notes":
+        return ""
+    elif data_type == "tmp":
+        return ""
+    return True

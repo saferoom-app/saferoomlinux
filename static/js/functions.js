@@ -108,6 +108,9 @@ function displayModal(modalID, title, content, applyButton){
 $(document).on("click","button#btnAlert",function(){
 	$(this).parent().hide();
 });
+$(document).on("click","img#iconHelp",function(){
+	$("div#modalHelp").modal('show');
+});
 
 function showAlert(display,type,message){
 	var alertPanel = $("div#operationResult");

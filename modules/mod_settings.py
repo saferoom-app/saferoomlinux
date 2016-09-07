@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 import getpass
 import safeglobals
-from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception
+from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception,send_response,clear_cache
 import os
 from libs.ConfigManager import get_services,get_default_values,save
 from libs.PasswordManager import save_password
@@ -42,7 +42,6 @@ def save_config():
         return jsonify(status=safeglobals.http_ok,message=safeglobals.MSG_CONFIG_OK)
 
     except Exception as e:
-        print e
         return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,str(e))
 
 
@@ -104,6 +103,22 @@ def cache_status():
     response['tmp'] = convert_size(size)
 
     return jsonify(response)
+
+
+@mod_settings.route("/clear",methods=["GET"])
+def clear_data_cache():
+
+    # Checking type
+    if not request.args.get('type'):
+        return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
+
+    # Clearing caches
+    if clear_cache(request.args.get('type')) == True:
+        return jsonify(status=safeglobals.http_ok,message="")
+    else:
+        return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,safeglobals.MSG_INTERNAL_ERROR)
+
+
 
 
 

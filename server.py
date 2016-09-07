@@ -1,5 +1,5 @@
 # Import section
-from flask import Flask,render_template,jsonify,request,abort
+from flask import Flask,render_template,jsonify,request,abort,send_from_directory
 from evernote.api.client import EvernoteClient
 from evernote.edam.notestore.ttypes import NoteFilter, NotesMetadataResultSpec
 from evernote.edam.type.ttypes import NoteSortOrder
@@ -65,6 +65,14 @@ def list():
 @app.route("/on/list")
 def on_list():
     return render_template("onenote.list.html",pageTitle="Application :: View")
+
+@app.route("/log")
+def server_log():
+    data = None
+    with open(safeglobals.path_logfile,"r") as f:
+        data = f.readlines()
+    return "\n".join(data)
+
 
 @app.route("/user")
 def user():

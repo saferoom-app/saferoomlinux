@@ -66,6 +66,23 @@ $(document).ready(function(){
 	// Loading a list of notebooks
 	select_onenote_notebooks({})
 
+	// Attaching click handler to all buttons in the table
+	var td = null;
+	$("table#tblCache").find("button").click(function(){
+
+		// Displaying progress
+        td = $(this).parent().parent().find("td[id='cache_"+this.id+"']");
+        td.html("<img src=\"/static/images/103.gif\"/>");
+
+		CreateAJAX("/settings/clear","GET","json",{type:this.id})
+		.done(function(response){
+			td.html("0B");
+		})
+		.fail(function(xhr){
+			td.html(xhr.responseText);			
+		});
+	});
+
 });
 
 $(document).on("click","button#btnRefreshNotebooks",function(){
@@ -112,4 +129,3 @@ $(document).on("click","button#btnSave",function(){
 		scrollTop();
 	});
 });
-

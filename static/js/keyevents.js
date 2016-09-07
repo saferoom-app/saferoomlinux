@@ -1,6 +1,6 @@
 linkRows = ""
 link = ""
-$(document).bind('keydown', function(event) { 
+$(document).bind('keydown', function(event) {
     if (event.which == 81 && event.ctrlKey){
         event.preventDefault();
         initModal("modalQuick");
@@ -28,9 +28,16 @@ $(document).bind('keydown', function(event) {
     	
     }
 
-    else if ( event.which == 76 && event.ctrlKey ){
-        alert("asdasdasdasd");
-    }
+    if ( event.which == 66 && event.ctrlKey ){
+        $("div#modalServer").modal('show');
+        CreateAJAX("/log","GET","html",{})
+        .done(function(response){
+            $("div#serverLog").html("<textarea rows='20' style='width:100%;height:100%'>"+response+"</textarea>");
+        })
+        .fail(function(xhr){
+            $("div#serverLog").html("<textarea style='width:100%;height:100%'>"+xhr.responseText+"</textarea>");            
+        });
+    }   
 });
 
 $(document).on("click","#btnApply",function(){

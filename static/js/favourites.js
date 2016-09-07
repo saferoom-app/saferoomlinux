@@ -26,3 +26,24 @@ $(document).on("keyup","input#txtSearch",function(){
 $(document).on("click","input#chkAll",function(){
   $('input:checkbox').not(this).prop('checked', this.checked);
 });
+$(document).on("click","button#btnDelFav",function(){
+  if ($("table tr.itemRow").find("input[type=checkbox]:checked").length == 0){
+    alert("Select at least one Favourite note");
+    return;
+  }
+  
+  favourites = new Array();
+  $("table tr.itemRow").find("input[type=checkbox]:checked").each(function(){
+    favourites.push($(this).prop("id"));
+  });
+
+  CreateAJAX("/favourites/remove","POST","html",{"delete":JSON.stringify(favourites)})
+  .done(function(response){
+    console.log(response);
+  })
+  .fail(function(xhr){
+
+  });
+
+
+});

@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links,list_favourites
 import safeglobals
+import json
 
 
 # Initializing the blueprint
@@ -44,17 +45,23 @@ def add_favourite():
     # Sending response
     return jsonify(status=200,msg="")
 
-@mod_favourites.route("/remove",methods=['POST'])
+@mod_favourites.route("/remove/<string:responseType>",methods=['POST'])
 def remove_favourites():
 
     # Validating request
-    if not request.form['guid']:
+    if not request.form['delete']:
         abort(400)
 
     # Removing from favourites
-    remove_from_favourites(request.form['guid'])
+    remove_from_favourites(request.form['delete'])
 
-    return jsonify(status=200,msg="")
+    # Getting a new list of favourites
+    favourites = list_favourites()
+
+    if responseType == safeglobals.TYPE_JSON:
+        return jsonify(status=200,msg="")
+    else:
+        return render_template("list.favourites.html",favourites=favourites)
 
 @mod_favourites.route("/quick/list",methods=['GET'])
 def list_qlinks():
@@ -92,7 +99,6 @@ def create_quick_link():
         return jsonify(status=200,msg=safeglobals.MSG_LINKCREATE_OK)
     except:
         raise
-
 
 @mod_favourites.route("/",methods=['GET'])
 def index():
