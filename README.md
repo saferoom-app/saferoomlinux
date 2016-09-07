@@ -247,7 +247,26 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
      
      After you issue this command, system will prompt you to fill some values. Since this is just a local certificate, you can use default values. The most important is **CN** or **Common Name** field. For this field you should specify the hostname, you're using for your Redirect URI. For example, if you're using **www.myapp.com** as a hostname, so the **CN** value should be **www.myapp.com** or **\*.myapp.com**
 
+5. Import **server.crt** into the list of Trusted Certificate Authorities. For every this procedure may vary. Here is the example, how to do in Chrome on Ubuntu Desktop:
+   1. Open your Chrome browser
+   2. Open **Settings** > **Show advanced settings** > ** Manage certificates **
+   3. Select **Authorities** tab. Click **Import**
+   4. Select your generated **server.crt** and import it to browser
+   5. Restart your browser
+   6. Start Saferoom app (python server.py) and type in your browser: **https://www.saferoomapp.com:5000/**. Theoretically you shouldn't see any security warnings. However on some browsers you can see Security Exception, because they just don't allow Self-Signed certificates. In such cases just confirm security exception and add it to Exceptions list
 
+6. Copy **server.py** and **server.key** to Saferoom root folder. Please don't change names, because they're hardcoded in the application code. However if you want use other names, then you need to open **server.py**, navigate to bottom and modify the following line:
+     
+     ```
+     context.load_cert_chain('server.crt', 'server.key')
+     ```
+
+
+## Connecting Saferoom app to your Onenote account
+This sections contains steps, necessary to connect Saferoom application to Onenote account. The steps are the following:
+
+1. Start Saferoom app and navigate to its main page
+2. Click **Settings** button and check **Onenote** section. **Client ID** and **Client Secret** sections should be **OK** and Redirect URI field should contain your **Redirect URI**
 
 
 
