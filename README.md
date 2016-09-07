@@ -205,6 +205,7 @@ Please follow the steps below to get Client ID, Client Secret and Redirect URI:
 10. In the Redirect URIs type your Redirect URI. This URI should match the following pattern: **https://[hostname]:5000/onenote/callback**. **"<hostname>"** can be any hostname, because it will be bound to **http://127.0.0.1** or **https://localhost**. By default app includes the certificates for **www.saferoomapp.com** hostname, so as the Redirect URI you can use the following URI: **http://www.saferoomapp.com:5000/onenote/callback**
 11. Click **Save** button in the page bottom
 
+## Configuring Saferoom application
 Next step is to add these values to Saferoom configuration. It can be done in two ways:
 
 - Open **config.ini** file in the root folder and paste these values as the following:
@@ -217,7 +218,20 @@ client_secret = <your_client_secret>
 redirect_uri = <your_redirect_uri>
 
 ```
-- Start the Web server (**python server.py**), open your browser and type the following in the address bar: **http://<your_hostname>:5000/install**
+
+## Configuring HTTPs
+Since the Onenote API requires that your Redirect URI should be only HTTPs connection, we need to configure your Redirect URI and HTTPs. If you're using the default hostname (https://www.saferoomapp.com), then you need to skip this section, because by default Saferoom includes two SSL certificates (**server.key** and **server.crt**) binded to **www.saferoomapp.com** hostname. If you're using custom hostname, then you need to generate the SSL certificate for your local server. Please follow these steps (for demonstration we will be using **www.saferoomapp.com** as a hostname):
+
+1. Open **/etc/hosts** file and add your **hostname**. This hostname must be resolved into 127.0.0.1 address. For example:
+```
+vi /etc/hosts
+127.0.0.1 www.saferoomapp.com
+```
+2. Check that your hostname is resolved into 127.0.0.1 address. Open your terminal and type the following:
+```
+ping www.saferoomapp.com
+```
+3. If you're using **www.saferoomapp.com** as your hostname, then skip this section and go section **6**.  
 
 
 
