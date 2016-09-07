@@ -271,4 +271,5 @@ This sections contains steps, necessary to connect Saferoom application to Oneno
 4. Click **Login** button. Microsoft registration page opens
 5. Type your username and password. For some reason, you will the same the page with error message, that your password or username are not corrent. Ignore this and click **Sign In** once again. Saferoom wil authenticate into your Onenote account and get Access and Refresh Tokens. Since Access Token expires every 1 hour, Refresh token is used to get a new Access Token
 
-
+## Demo
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/yyD4Dq3W2C0/0.jpg)](https://www.youtube.com/watch?v=yyD4Dq3W2C0)
