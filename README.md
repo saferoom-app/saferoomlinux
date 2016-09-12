@@ -255,6 +255,18 @@ Since the Onenote API requires that your Redirect URI should be only HTTPs conne
    5. Restart your browser
    6. Start Saferoom app (python server.py) and type in your browser: **https://www.saferoomapp.com:5000/**. Theoretically you shouldn't see any security warnings. However on some browsers you can see Security Exception, because they just don't allow Self-Signed certificates. In such cases just confirm security exception and add it to Exceptions list
 
+7. Open **server.py** file, navigate to bottom and comment this line:
+     
+     ```
+     app.run()
+     ```
+     Uncomment the following lines:
+     ```
+     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+     context.load_cert_chain('server.crt', 'server.key')
+     app.run(ssl_context=context)
+     ```
+
 6. Copy **server.crt** and **server.key** to Saferoom root folder. Please don't change names, because they're hardcoded in the application code. However if you want use other names, then you need to open **server.py**, navigate to bottom and modify the following line:
      
      ```
