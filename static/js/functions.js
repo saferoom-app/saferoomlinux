@@ -1,15 +1,15 @@
+// Path object to generate links
+path = new Array();
+var FINISHED = false;
 /*
 	Global variables section
 */
 
-var FINISHED = false;
-
 // HTML templates
 TPL_ATTACH = "<div class=\"attachment\"><div class=\"row\"><div class=\"col-md-10\" style=\"display:inline-block\"><span style=\"margin-left:10px\"><img src=\"/static/images/::fileicon::\"/></span><span style=\"margin-left:10px\"><a href=\"/tmp/::filename::\">::filename:: (Size: ::filesize::)</a></span><span id='enml'><en-media data-type=\"::filetype::\" data-hash=\"::filehash::\" data-filename=\"::filename::\"/></span></div><div class=\"col-md-2\"><span id='txtFilename' style='display:none'>::filename::</span><span class=\"pull-right\" style=\"margin-right:10px\"><span id='removeAttach' class=\"glyphicon glyphicon-remove link\" aria-hidden=\"true\"></span></span></div></div></div><br/>";
-
-TPL_IMAGE_ATTACH = "<img style='max-width:70%;max-height=70%' data-type='::fileType::' data-filename='::filename::' data-hash='::filehash::' src=\"/static/tmp/::filename::\"/>";
-
+TPL_IMAGE_ATTACH = "<img class='attach' style='max-width:70%;max-height=70%' data-type='::fileType::' data-filename='::filename::' data-hash='::filehash::' src=\"/static/tmp/::filename::\"/>";
 TPL_PAGE_ENCRYPTED = "<div class='row'><div class='col-md-12' style='text-align:center;padding:30px 30px 30px 30px'><div><img src='/static/images/::icon::'></div><div class='greyedText'>This ::pageType:: is encrypted. To see its contents, please decrypt it</div></div></div>"
+tpl_select_disabled = "<select id=\"::id::\" class='form-control' style='width:70%'><option value=''>::message::</option></select>";
 
 // Type of alerts
 LEVEL_INFO = 0;
@@ -38,20 +38,32 @@ MSG_LOAD_NOTE	 = "Loading specified note ... Please wait"
 MSG_CONFIG_SAVE = "Saving configuration and starting the application ... Please wait";
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
 MSG_FAVOURITES_DELETE = "Deleting favourite notes ... Please wait";
-
+MSG_SERVICE_DISABLED = "::service:: service is disabled. Please go to Settings and enable it";
+MSG_SERVICE_NOTRELEV = "Not relevant for the service"
+MSG_NO_CONTAINERID = "You should select container ID for selected service. For Evernote you should select the notebook, for Onenote - section"
 // HTTP Response codes
 HTTP_OK = "200";
 HTTP_UNAUTHORIZED = "401";
 HTTP_NOT_FOUND = "404"
 HTTP_FORBIDDEN = "403"
 
-// Path object to generate links
-path = new Array();
+// Supported MIMEs
+mime_pdf = "application/pdf";
+mime_doc = "application/msword";
+mime_docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+mime_xls = "application/vnd.ms-excel";
+mime_xls_2 = "application/xls";
+mime_xlsx = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+mime_ppt = "application/vnd.ms-powerpoint";
+mime_pptx = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+mime_jpeg = "image/jpeg";
+mime_gif = "image/gif";
+mime_png = "image/png"
+mime_jpg = "image/jpg"
 
 // Encrypted prefixes and suffixes
 encrypted_prefix = "TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"
 encrypted_suffix = "__TUFNTU9USEVOQ1JZUFRFRE5PVEU="
-
 
 function CreateAJAX(url,requestType,dataType,data){
 	return $.ajax({
@@ -157,28 +169,28 @@ function getIcon(mime){
 	switch (mime){
 
 		// PDF MIMEs
-		case "application/pdf":
+		case mime_pdf:
 			return "icon_pdf.png";
 
 		// Excel MIMEs
-		case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		case "application/vnd.ms-excel":
-		case "application/xls":
+		case mime_xls:
+		case mime_xls_2:
+		case mime_xlsx:
 			return "icon_excel.png";
 
-		case "application/msword":
-		case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+		case mime_doc:
+		case mime_docx:
 			return "icon_word.png";
 
-		case "application/vnd.ms-powerpoint":
-		case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+		case mime_ppt:
+		case mime_pptx:
 			return "icon_ppt.png";
 
 		// Image MIMEs
-		case "image/gif":
-		case "image/jpeg":
-		case "image/png":
-		case "image/jpg":
+		case mime_gif:
+		case mime_jpeg:
+		case mime_png:
+		case mime_jpg:
 			return "icon_image.png"
 
 		// Uknown document
@@ -286,7 +298,7 @@ function select_onenote_notebooks(filter){
 		select_sections($("select#txtONNotebook").val(),{});
 	})
 	.fail(function(xhr){
-		$("div#listONNotebooks").html(response);
+		$("div#listONNotebooks").html(xhr.responseText);
 	});
 }
 

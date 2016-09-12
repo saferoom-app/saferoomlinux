@@ -9,22 +9,11 @@ $(document).ready(function(){
 
 		// Setting configured values
 		config = response;
-		$("div[id*='Notebooks']").hide();
+		
+        
+        // Checking what service is enabled or disabled
 		$("select#txtService").val(config.system.default_service);
-		switch(true)
-		{
-			case (config.system.default_service === 0): // Evernote
-			    $("div#listNotebooks").show();
-			    select_notebooks({});
-			    $("div#listONSections").html("<select class='form-control' style='width:50%' id='txtSection'><option value=''>Not relevant for Evernote</option></select>");
-				break;
-			case (config.system.default_service === 1):
-				$("div#listONNotebooks").show();
-				select_onenote_notebooks({});
-				break;
-
-		}
-
+		init_notebooks_sections($("select#txtService").val());
 		array = config.evernote.default_tags.split(",");
 		if (array.length > 0){
 			for (i=0;i<array.length;i++){
@@ -204,30 +193,42 @@ $(document).on("click","button#btnOTPApply",function(){
 	$("div#modalOTP").modal("hide");
 	encrypt_note("otp",$("input#txtOTP").val());
 });
+$(document).on("change","select#txtService",function(){
+	init_notebooks_sections($("option:selected",this).val(),config.system);
+});
 
-function encrypt_note(mode,password)
-{
+function encrypt_note(mode,password){
+    
+    var container_id = ""; // Section or Notebook GUID to upload the note to
+    var noteContent = ""; // Note content
+    var tmpl = ""
+    var enml = "";
+    var htmlAttach = "";
+    var fileList = [];
+    var img;
+    var note = {}
+
 	showAlert(false,"","");
 		// Checking note title
 		if ($("input#txtTitle").val() == ""){$("input#txtTitle").focus();return;}
 
+		// Checking container ID
+		if (get_container_id(parseInt($("select#txtService").val())) == ""){
+			alert(MSG_NO_CONTAINERID);
+		}
+		
 		// Checking note content
-		var noteContent = $("#summernote").summernote('code');
+		noteContent = $("#summernote").summernote('code');
 		if (noteContent == ""){
 			alert("Note content cannot be empty");
 			return;
 		}	
 
 		// Before sending the content to server, let's format it
-		var tmpl = $("<div>"+noteContent+"</div>");
-		var enml = "";
-		var htmlAttach = "";
-		var fileList = []
-		var img;
+		tmpl = $("<div>"+noteContent+"</div>");
 		tmpl.find("p#saferoomAttach").each(function(){
-
 			// We have image
-			if ($(this).html().includes("img")){
+			if ($(this).html().includes("img class=\"attach\"")){
 				img = $(this).find("img");
 				fileList.push({name:img.attr("data-filename"),mime:img.attr("data-type"),hash:img.attr("data-hash")});				
 			}
@@ -244,12 +245,10 @@ function encrypt_note(mode,password)
 		fileList = clear_array(fileList);		
 		
 		// Creating note request
-		note = {}
 		note['service'] = $("select#txtService").val();
 		note['title'] = $("input#txtTitle").val();
 		note['tags'] = $("input#txtTags").val();
-		switch ($("select#txtService").val())
-		{
+		switch ($("select#txtService").val()){
 			case "0":
 				note['notebook_guid'] =$("select#txtNotebook option:selected").val()
 				break;
@@ -277,4 +276,53 @@ function encrypt_note(mode,password)
 			displayProgress("",false);
 			showAlert(true,LEVEL_DANGER,MSG_INTERNAL_ERROR);
 		});s
+}
+
+function init_notebooks_sections(selected_service){
+	$("div[id*='Notebooks']").hide();
+	switch(true){
+		case (parseInt(selected_service) === service_evernote): // Evernote
+			// Disabling sections
+			$("div#listONSections").html(tpl_select_disabled.replace("::id::","txtSection").replace("::message::",MSG_SERVICE_NOTRELEV));
+			$("div#listNotebooks").show();
+			if (config.evernote.status == true){
+				select_notebooks({});
+			}
+			else{
+				showToast(LEVEL_WARN,MSG_SERVICE_DISABLED.replace("::service::","Evernote"));
+				$("div#listNotebooks").html(tpl_select_disabled.replace("::id::","txtNotebook").replace("::message::",MSG_SERVICE_DISABLED.replace("::service::","Evernote")));
+			}
+			break;
+
+		case (parseInt(selected_service) === service_onenote):
+			$("div#listONNotebooks").show();
+			if (config.onenote.status == true){
+				select_onenote_notebooks({});
+			}
+			else{
+				$("div#listONNotebooks").html(tpl_select_disabled.replace("::id::","txtONNotebook").replace("::message::",MSG_SERVICE_DISABLED.replace("::service::","Onenote")));
+				$("div#listONSections").html(tpl_select_disabled.replace("::id::","txtONNotebook").replace("::message::",MSG_SERVICE_DISABLED.replace("::service::","Onenote")));
+					showToast(LEVEL_WARN,MSG_SERVICE_DISABLED.replace("::service::","Onenote"));
+			}
+			break;
+
+	}
+}
+
+function get_container_id(service)
+{
+	container_id = ""
+	switch (service)
+	{
+		case service_evernote:
+			container_id = $("select#txtNotebook option:selected").val();
+			break;
+		case service_onenote:
+			container_id = $("select#txtSection option:selected").val();
+			break;
+	}
+	if (container_id == null){
+		return "";
+	}
+	return container_id;
 }

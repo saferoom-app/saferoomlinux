@@ -38,13 +38,12 @@ def list_onenote_notebooks(responseType):
         forceRefresh = False
         if request.args.get("refresh"):
             forceRefresh = str_to_bool(request.args.get("refresh"))
-        
         # Checking the access token
         if is_access_token_valid() == False:
             if responseType == safeglobals.TYPE_JSON:
                 return jsonify(status=safeglobals.http_unauthorized,message=safeglobals.MSG_NO_TOKENS)
             elif responseType == safeglobals.TYPE_SELECT:
-                return send_response([{"guid":"","name":"Access token expired or doesn't exist"}],responseType,{"default":"onenote.select.notebooks.html"})
+                return send_response([{"guid":"","text":"Access token expired or doesn't exist"}],responseType,{"default":"onenote.select.notebooks.html"})
             else:
                 return render_template("onenote.token.expired.html")
 

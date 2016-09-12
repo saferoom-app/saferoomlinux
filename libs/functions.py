@@ -159,11 +159,12 @@ def handle_exception(responseType,code,message):
 
 def send_response(items,responseType,templates):
     if responseType == safeglobals.TYPE_JSON:
-        return jsonify(status=safeglobals.http_ok,message=items)
+        return jssonify(status=safeglobals.http_ok,message=items)
     else:
         try:
             return render_template(templates[responseType],items=items)
         except KeyError as e:
+            print items
             return render_template(templates['default'],items=items)
 
 
@@ -244,5 +245,11 @@ def clear_cache(data_types):
         except OSError:
             pass
     if "tmp" in types:
-        shutil.rmtree(safeglobals.path_tmp)
+        files = os.listdir(safeglobals.path_tmp)
+        for file in files:
+            if (os.path.isfile(os.path.join(safeglobals.path_tmp,file))):
+                if ".gitkeep" not in file:
+                    os.unlink(os.path.join(safeglobals.path_tmp,file))
+            else:
+                shutil.rmtree(os.path.join(safeglobals.path_tmp,file))
     return True
