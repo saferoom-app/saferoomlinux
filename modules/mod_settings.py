@@ -15,6 +15,11 @@ mod_settings = Blueprint("mod_settings",__name__)
 def show_page():
     return render_template("settings.html",title="Settings")
 
+@mod_settings.route("/services",methods=["GET"])
+def get_available_services():
+    return jsonify(get_services())
+
+
 @mod_settings.route("/config",methods=["GET"])
 def get_config():
     try:

@@ -38,16 +38,13 @@ def remove_from_favourites(delete_guids):
 	guids = json.loads(delete_guids)
 
 	# Removing the Favourite Item with selected ID
-	index = 0
-	for item in favourites:
-		for guid in guids:
-			if guid == item['guid']:
-				favourites.pop(0)
-
-	print favourites
+	new_favourites = [item for item in favourites if item['guid'] not in guids]
+	
 	# Saving list of favourites back into file
 	with open(safeglobals.path_favourites,"w") as f:
-		f.write(json.dumps(favourites))
+		f.write(json.dumps(new_favourites))
+
+	return new_favourites
 
 
 

@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>{{title}}</title>
+		<link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="/static/css/style.css"/>
+		<style>
+			html, body, .container-table {height: 100%;}
+			.container-table {display: table;}
+			.vertical-center-row {display: table-cell;vertical-align: middle;}
+		</style>
+	</head>
+	<body>
+		<div class="container container-table">
+			<div class="row vertical-center-row">
+				<div class="text-center col-md-4 col-md-offset-4">
+					<div class="row"><div class="col-md-12">
+						<img src="/static/images/icon_error.png" />			
+					</div></div><br/>
+					<div class="row"><div class="col-md-12 greyedText">
+						Service {{service}} is disabled. Please go to <strong>Settings</strong> and enable it
+					</div></div><br/>
+					<div class="row"><div class="col-md-12">
+						<button type="button" class="btn btn-default" id="btnClose"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Close this window</button>
+					</div></div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<footer></footer>
+	<script src="/static/js/jquery.js"></script>
+	<script>
+		$(document).on("click","button#btnClose",function(){
+			window.close();
+		});
+	</script>
+</html>

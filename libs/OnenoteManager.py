@@ -100,11 +100,27 @@ def load_sections(accessToken,guid):
     cache_sections(guid,sections)
     return sections
 
+
+def list_sections_all(access_token,forceRefresh):
+    sections = []
+    if forceRefresh == True:
+        sections = load_sections_all(access_token)
+        return sections
+
+    # Checking if notebooks are cached
+    try:
+        with open(safeglobals.path_sections % ("all"),"r") as f:
+            sections = json.loads(f.read())
+    except Exception as e:
+        sections = load_sections_all(access_token)
+    return sections
+
+
 def load_sections_all(access_token):
 
     sections = []
     # Creating a POST request
-    headers = {"Authorization":"Bearer "+accessToken,"Content-Type":"application/json"}
+    headers = {"Authorization":"Bearer "+access_token,"Content-Type":"application/json"}
     r = requests.get(safeglobals.url_sections_all,headers=headers)
     if (r.status_code == 401):
         log_message(safeglobals.MSG_UNAUTHORIZED)
@@ -113,13 +129,18 @@ def load_sections_all(access_token):
     # Getting response
     response = json.loads(r.text)
     for section in response['value']:
-        sections.append({"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open","guid":section['id']})
+        sections.append({"parent":section['parentNotebook']['name'],"text":"  "+section['name'],"href":"/on/list/"+section['id']+"/list","icon": "glyphicon glyphicon-folder-open","guid":section['id']})
+    
+    # Caching sections
+    cache_sections("all",sections)
+
     return sections
 
 def cache_sections(guid,sections):
     f = open(safeglobals.path_sections % (guid),"w")
     f.write(json.dumps(sections))
     f.close()
+
 
 
 
@@ -302,7 +323,6 @@ def create_on_note(access_token,title,content,guids,files,password):
     resources.append(('Presentation',(None,nBody,'text/html')))
 
     # Preparing POST request
-    print resources
     headers = {"Authorization":"Bearer "+access_token}
     r = requests.post(safeglobals.url_post_page % (guids['section']),headers=headers,files=resources)
     print r.text

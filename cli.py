@@ -5,15 +5,15 @@ CLI utility used to automate some procedures
 
 # Import section
 import argparse
-from libs.ConfigManager import get_developer_token
-from libs.PasswordManager import get_master_password
-from libs.OnenoteManager import is_access_token_valid
-from libs.functions import fileMD5,encryptData
 import os
 import safeglobals
+
+from libs.ConfigManager import get_developer_token
+from libs.PasswordManager import get_master_password
+from libs.functions import fileMD5,encryptData
 from shutil import copyfile
 from libs.EvernoteManager import list_notebooks,create_note
-from libs.OnenoteManager import list_on_notebooks,get_access_token,load_sections_all
+from libs.OnenoteManager import list_on_notebooks,get_access_token,list_sections_all,is_access_token_valid,create_on_note
 from libs.texttable import Texttable
 from mimetypes import MimeTypes
 
@@ -68,16 +68,16 @@ def list_items(service,type,refresh):
 
             # Collecting items
             for notebook in notebooks:
-                items.append({"name":notebook['name'].encode('utf-8'),"guid":notebook['guid'].encode('utf-8')})
+                items.append({"name":notebook['name'].encode('utf-8'),"guid":notebook['guid'].encode('utf-8'),"parent":"--"})
     elif (service == "onenote"):
         if type == "notebooks":
             notebooks = list_on_notebooks(get_access_token(),refresh)
             for notebook in notebooks:
-                items.append({"name":notebook['text'],"guid":notebook['guid']})
+                items.append({"name":notebook['text'],"guid":notebook['guid'],"parent":"--"})
         elif type == "sections":
-            sections = list_sections_all(get_access_token())
+            sections = list_sections_all(get_access_token(),refresh)
             for section in sections:
-                items.append({"name":section['text'],"guid":notebook['guid']})
+                items.append({"name":section['text'],"guid":section['guid'],"parent":section['parent']})
 
     # Return items
     return items
@@ -174,12 +174,28 @@ if option.which == "encrypt":
 
     # Creating a content
     content = []
-    data = None
-    for file in fileList:
-        content.append("<en-media type=\""+file['mime']+"\" hash=\""+file['hash']+"\"/><br/>")
 
     # Creating a note
-    create_note(get_developer_token(),option.title,"".join(content),option.container,fileList,[],password)
+    if option.service == "evernote":
+        
+        # Preparing content for Evernote
+        for file in fileList:
+            content.append("<en-media type=\""+file['mime']+"\" hash=\""+file['hash']+"\"/><br/>")
+        
+        # Creating note
+        create_note(get_developer_token(),option.title,"".join(content),option.container,fileList,[],password)
+
+    elif option.service == "onenote":
+        # Preparing content for Onenote
+        for file in fileList:
+            if "image" in file['mime']:
+                content.append("<img src='name:"+file['hash']+"' data-filename='"+file['name']+"' />")
+            else:
+                content.append("<object data-attachment='"+file['name']+"' data='name:"+file['hash']+"' type='"+file['mime']+"'/>")
+
+        create_on_note(get_access_token(),option.title,"".join(content),{"guid":"","section":option.container},fileList,password)
+
+
 
 elif option.which == "list":
     # Checking the developer token
@@ -198,18 +214,19 @@ elif option.which == "list":
 
     # Getting items
     items = list_items(option.service,option.type,option.refresh)
-    
+    filtered_items = filter(lambda d: option.name in d['name'], items)
+        
     # Displaying a table
+    parent = "--"
     table = Texttable()
-    table.set_cols_align(["c", "c"])
-    table.set_cols_valign(["m", "m"])
-    table.add_row(["Name", "GUID"])
-    for item in items:
-    	if (option.name != ""):
-    		if option.name in item['name'].encode("utf-8"):
-    			table.add_row([item['name'].encode("utf-8"),item['guid'].encode("utf-8")])
-    	else:
-    		table.add_row([item['name'].encode("utf-8"),item['guid'].encode("utf-8")])
+    table.set_cols_align(["c", "c","c"])
+    table.set_cols_valign(["m", "m","m"])
+    table.add_row(["Name", "GUID","Parent"])
+    for item in filtered_items:
+        table.add_row([item['name'].encode("utf-8"),\
+            item['guid'].encode("utf-8"),\
+            item['parent']])
+
     print table.draw()
 
 elif option.which == "decrypt":

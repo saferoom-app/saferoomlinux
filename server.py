@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup, Tag
 from libs.functions import decryptString,generateKey,send_response
 from libs.OnenoteManager import is_access_token_valid
 from libs.PasswordManager import get_master_password
-from libs.ConfigManager import get_developer_token,get_client_id,get_client_secret
+from libs.ConfigManager import get_developer_token,get_client_id,get_client_secret,get_services
 
 # Blueprint imports
 from modules.mod_favourites import mod_favourites
@@ -50,7 +50,10 @@ app.register_blueprint(mod_onenote,url_prefix="/onenote");
 
 @app.route("/")
 def index():
-	return render_template('index.html',pageTitle="Application :: Main")
+    
+    # Getting a list of activated services
+    services = get_services()
+    return render_template('index.html',pageTitle="Application :: Main",services=services)
 
 # This route will be used to display a page that will be used to create encrypted notes
 @app.route("/create")

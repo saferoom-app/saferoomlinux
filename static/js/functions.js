@@ -37,6 +37,7 @@ MSG_SECTIONS_LOAD = "Loading a list of sections ... Please wait";
 MSG_LOAD_NOTE	 = "Loading specified note ... Please wait"
 MSG_CONFIG_SAVE = "Saving configuration and starting the application ... Please wait";
 ERROR_NOTEBOOKS_LOAD = "Error loading the list of notebooks. Please check logs";
+MSG_FAVOURITES_DELETE = "Deleting favourite notes ... Please wait";
 
 // HTTP Response codes
 HTTP_OK = "200";
@@ -355,6 +356,7 @@ function show_encrypted_icon(service){
 
 
 // Loading external scripts
+$.getScript('/static/js/init.js',function(){});
 $.getScript('/static/js/evernote.js', function(){});
 $.getScript('/static/js/onenote.js', function(){});
 $.getScript('/static/js/keyevents.js', function(){});

@@ -12,8 +12,12 @@
   				<button type="button" style="font-size:1.5em;padding:20px 20px 20px 20px" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-book" style="margin-right:5px" aria-hidden="true"></span> Notebooks <span class="caret"></span>
   				</button>
   				<ul style="font-size:1.5em" class="dropdown-menu">
-				    <li id="linkEvernote" style="padding:10px 10px 10px 10px"><a href="#"><img style="margin-right:10px" src="/static/images/icon_evernote.png"/> Evernote</a></li>
-				    <li id="linkOnenote" style="padding:10px 10px 10px 10px"><a href="#"><img style="margin-right:10px" src="/static/images/icon_onenote.png"/> Onenote</a></li>
+  					{% if services.evernote == True%}
+				    	<li id="linkEvernote" style="padding:10px 10px 10px 10px"><a href="#"><img style="margin-right:10px" src="/static/images/icon_evernote.png"/> Evernote</a></li>
+				    {%endif%}
+				    {% if services.onenote == True%}
+				    	<li id="linkOnenote" style="padding:10px 10px 10px 10px"><a href="#"><img style="margin-right:10px" src="/static/images/icon_onenote.png"/> Onenote</a></li>
+				    {%endif%}
 				</ul>
 				</div>
 		</span>

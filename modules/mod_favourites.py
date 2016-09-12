@@ -46,7 +46,7 @@ def add_favourite():
     return jsonify(status=200,msg="")
 
 @mod_favourites.route("/remove/<string:responseType>",methods=['POST'])
-def remove_favourites():
+def remove_favourites(responseType):
 
     # Validating request
     if not request.form['delete']:

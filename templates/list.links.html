@@ -14,9 +14,13 @@
 	</thead>
 	<tbody>
 		{% for link in links %}
-		<tr class="itemRow">
-			<td><input type="checkbox"/></td>
-			<td><a href="{{link.link}}">{{link.name}}</a></td>
+			<tr class="itemRow">
+				<td><input type="checkbox"/></td>
+				<td><a href="{{link.link}}">{{link.name}}</a></td>
+		</tr>
+		{%else%}
+		<tr>
+			<td colspan="2" style="text-align:center">[ No Quick Links found ]</td>
 		</tr>
 		{% endfor %}
 	</tbody>

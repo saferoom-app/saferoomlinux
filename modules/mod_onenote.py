@@ -9,7 +9,7 @@ import os
 import datetime
 from libs.OnenoteManager import save_tokens
 from libs.functions import log_message
-from libs.ConfigManager import get_client_id, get_client_secret,get_scopes,get_redirect_uri
+from libs.ConfigManager import get_client_id, get_client_secret,get_scopes,get_redirect_uri,get_services
 
 # Initializing the blueprint
 mod_onenote = Blueprint("mod_onenote",__name__)
@@ -81,6 +81,14 @@ def callback():
 
 @mod_onenote.route("/user",methods=["GET"])
 def user():
+
+    # Getting service status
+    service = get_services()
+    
+    # If service is disabled, send the special template
+    if service['onenote'] == False:
+        return render_template("service.disabled.html",service="Onenote")
+
     tokens = {"access":False,"refresh":False,"expired":False,"expires_in":"n/a"}
     try:
         # Checking that file with tokens exists

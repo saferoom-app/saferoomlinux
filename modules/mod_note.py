@@ -65,10 +65,8 @@ def createnote():
         if "en-media" in content and not request.form['filelist']:
             return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
         fileList = json.loads(request.form['filelist'])
-        print fileList
 
         # Checking if mode is set to "OTP" and OTP password has been provided
-
         if not request.form['mode']:
             return handle_exception(safeglobals.TYPE_HTML,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
         if request.form['mode'] == "otp" and not request.form['pass']:
@@ -288,42 +286,48 @@ def decrypt_onenote_note():
         for match in matches:
             if "img" in match:
                 print "Image"
+            
             else:
 
-                # Creating root div
-                tag = document.new_tag("div",**{"class":"attachment"})
+                # If we have PDF we display the <embed>
+                if safeglobals.MIME_PDF in match['type']:
+                    tag = document.new_tag("embed",width="100%", height="500",src="/static/tmp/"+match['data-attachment']+"#page=1&zoom=50")
 
-                # Creating ICON span tag
-                icon_span_tag = document.new_tag("span",style="margin-left:10px")
-                icon_img_tag = document.new_tag("img",src="/static/images/"+getIcon(match['type']))
-                icon_span_tag.append(icon_img_tag)
+                else:
+                    # Creating root div
+                    tag = document.new_tag("div",**{"class":"attachment"})
 
-                # Creating text tag
-                text_span_tag = document.new_tag("span",style="margin-left:10px")
-                text_a_tag = document.new_tag("a",href="/static/tmp/"+match['data-attachment'])
-                text_a_tag.string = match['data-attachment']
-                text_span_tag.append(text_a_tag)
+                    # Creating ICON span tag
+                    icon_span_tag = document.new_tag("span",style="margin-left:10px")
+                    icon_img_tag = document.new_tag("img",src="/static/images/"+getIcon(match['type']))
+                    icon_span_tag.append(icon_img_tag)
 
-                # Creating DIV with two spans
-                div_col_10 = document.new_tag("div",style="display:inline-block",**{"class":"col-md-10"})
-                div_col_10.append(icon_span_tag)
-                div_col_10.append(text_span_tag)
+                    # Creating text tag
+                    text_span_tag = document.new_tag("span",style="margin-left:10px")
+                    text_a_tag = document.new_tag("a",href="/static/tmp/"+match['data-attachment'])
+                    text_a_tag.string = match['data-attachment']
+                    text_span_tag.append(text_a_tag)
 
-                # Creating div(col-md-2)
-                div_col_2 = document.new_tag("div",**{"class":"col-md-2"})
+                    # Creating DIV with two spans
+                    div_col_10 = document.new_tag("div",style="display:inline-block",**{"class":"col-md-10"})
+                    div_col_10.append(icon_span_tag)
+                    div_col_10.append(text_span_tag)
 
-                # Creating div row
-                div_row = document.new_tag("div",**{"class":"row"})
-                div_row.append(div_col_10)
-                div_row.append(div_col_2)
+                    # Creating div(col-md-2)
+                    div_col_2 = document.new_tag("div",**{"class":"col-md-2"})
 
-                # Combining all together
-                tag.append(div_row)
+                    # Creating div row
+                    div_row = document.new_tag("div",**{"class":"row"})
+                    div_row.append(div_col_10)
+                    div_row.append(div_col_2)
+
+                    # Combining all together
+                    tag.append(div_row)
 
                 # Replace the match with the tag
                 match.replaceWith(tag)
 
-        #print document.prettify()
+        print document.prettify()
         return document.prettify()
     except Exception as e:
         return handle_exception(safeglobals.TYPE_HTML,safeglobals.http_internal_server,str(e))

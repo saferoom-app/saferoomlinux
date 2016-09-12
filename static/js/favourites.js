@@ -37,12 +37,15 @@ $(document).on("click","button#btnDelFav",function(){
     favourites.push($(this).prop("id"));
   });
 
-  CreateAJAX("/favourites/remove","POST","html",{"delete":JSON.stringify(favourites)})
+  displayProgress(MSG_FAVOURITES_DELETE,true);
+  CreateAJAX("/favourites/remove/html","POST","html",{"delete":JSON.stringify(favourites)})
   .done(function(response){
-    console.log(response);
+    displayProgress("",false);
+    $("#favs").html(response);
   })
   .fail(function(xhr){
-
+    displayProgress("",false);
+    alert(xhr.responseText);
   });
 
 
