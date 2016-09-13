@@ -1,3 +1,4 @@
+var elem = null;
 $(document).ready(function(){
 
 	// Getting note GUID
@@ -37,72 +38,11 @@ $(document).ready(function(){
 		$("div#noteContent").html("Error loading the specified note. Please check logs");
 	});
 
+	// Register global button handler
+	$("button").on("click",{},buttonHandler);
 });
 
-$(document).on("click","button#btnDecrypt",function(){
-	decrypt_note("master","");	
-});
-
-$(document).on("click","button#btnOTPDecrypt",function(){
-	$("input#txtOTP").val("");
-	$("div#modalOTP").modal("show");
-});
-
-
-
-$(document).on("click","button#btnAddFav",function(){
-
-	// Displaying modal progress
-	displayProgress(MSG_FAVS_ADD,true)
-
-	// Sending request
-	item = {guid:$("#txtGuid").val(),"service":0,"title":$("span#noteTitle").html(),"updated":"","created":""}
-	CreateAJAX("/favourites/add","POST","json",item).
-	done(function(response){
-		displayProgress("",false);
-		$("span#favAdd").hide();
-		$("span#favRemove").show();
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		console.log(xhr);
-	});
-});
-
-$(document).on("click","button#btnRemFav",function(){
-	// Displaying modal progress
-	displayProgress("Removing from favourites ... ",true)
-
-	// Sending request
-	favourites = new Array();
-	favourites.push($("#txtGuid").val())
-	CreateAJAX("/favourites/remove","POST","json",{"delete":JSON.stringify(favourites)}).
-	done(function(response){
-		displayProgress("",false);
-		$("span#favRemove").hide();
-		$("span#favAdd").show();
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		console.log(xhr);
-	});
-});
-
-$(document).on("click","button#btnOTPApply",function(){
-	// Checking if the password has been specified
-	if ($("input#txtOTP").val() == ""){
-		$("input#txtOTP").focus();
-		return;
-	}
-
-	// Closing modal window and start decryption procedure
-	$("div#modalOTP").modal("hide");
-	decrypt_note("otp",$("input#txtOTP").val());
-});
-
-
-function decrypt_note(mode,password)
-{
+function decrypt_note(mode,password){
 	// Displaying progress
 	$("div#decryptedContent").html("")
 	$("#modalDecrypted").modal("show");
@@ -117,4 +57,58 @@ function decrypt_note(mode,password)
 		$("div#modalDecrypted span#loader").hide();
 		$("div#decryptedContent").html(xhr.responseText);
 	});
+}
+
+function buttonHandler(event){
+	var id = event.currentTarget.id
+	switch (id){
+		case "btnAddFav":
+			// Displaying modal progress
+			displayProgress(MSG_FAVS_ADD,true);
+			// Sending request
+			item = {guid:$("#txtGuid").val(),"service":0,"title":$("span#noteTitle").html(),"updated":"","created":""};
+			CreateAJAX("/favourites/add","POST","json",item).
+			done(function(response){
+				displayProgress("",false);
+				$("span#favAdd").hide();
+				$("span#favRemove").show();
+			})
+			.fail(function(xhr){
+				showToast(LEVEL_DANGER,xhr.responseText);
+				displayProgress("",false);				
+			});
+			break;
+		case "btnRemFav":
+			// Displaying modal progress
+			displayProgress(MSG_FAVS_REMOVE,true);
+
+			// Sending request
+			favourites = new Array();
+			favourites.push($("#txtGuid").val());
+			CreateAJAX("/favourites/remove","POST","json",{"delete":JSON.stringify(favourites)}).	done(function(response){
+				displayProgress("",false);
+				$("span#favRemove").hide();
+				$("span#favAdd").show();
+			})
+			.fail(function(xhr){
+				showToast(LEVEL_DANGER,xhr.responseText);
+				displayProgress("",false);
+			});
+			break;
+		case "btnOTPApply":
+			elem = $("input#txtOTP");
+			// Checking if the password has been specified
+			if (elem.val() == ""){elem.focus();return;}
+			// Closing modal window and start decryption procedure
+			$("div#modalOTP").modal("hide");
+			decrypt_note("otp",elem.val());
+			break;
+		case "btnOTPDecrypt":
+			$("input#txtOTP").val("");
+			$("div#modalOTP").modal("show");
+			break;
+		case "btnDecrypt":
+			decrypt_note("master","");
+			break;
+	}
 }

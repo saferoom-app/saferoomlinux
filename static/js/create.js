@@ -8,8 +8,7 @@ $(document).ready(function(){
 	.done(function(response){
 
 		// Setting configured values
-		config = response;
-		
+		config = response;	
         
         // Checking what service is enabled or disabled
 		$("select#txtService").val(config.system.default_service);
@@ -24,75 +23,18 @@ $(document).ready(function(){
 	})
 	.fail(function(xhr){
 
-	})
-
-	$("button#btnAttach").click(function(){
-		$("input#txtFiles").focus().trigger("click");
-		//insertFile();
-	});
-
-	$("button#btnClear").click(function(){
-		$("#summernote").summernote('reset');
-	});
-
-	$("button#btnEncrypt").click(function(){
-		encrypt_note("master","");
 	});	
 
+	// Regiuster the handler for all buttons
+	$("button").on("click",{},buttonHandler);
 
+	// Register the handler for all <selects>
+	$("select").on("change",{},selectHandler);
 });
-
-$(document).on("change","input#txtFiles",function(){
-	selectedFiles = $(this)[0].files;
-	if (selectedFiles.length == 0){return;}
-	var fd = new FormData();
-	// Processing the list of files
-	for (i=0;i<selectedFiles.length;i++){
-		fd.append("attach[]",selectedFiles[i]);
-	}
-	
-	// We need upload these files to temporary folder
-	displayProgress(MSG_FILES_ATTACH,true);
-	$.ajax({url : '/upload',type : 'POST',data : fd,
-       processData: false,  // tell jQuery not to process the data
-       contentType: false  // tell jQuery not to set contentType
-	})
-	.done(function(response){
-		displayProgress("",false);
-		for (i=0;i<selectedFiles.length;i++){
-			insertFile(selectedFiles[i],response[i])
-		}
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		alert(MSG_INTERNAL_ERROR);
-	})
-});
-
-$(document).on("click","span#removeAttach",function(){
-	$(this).parent().parent().parent().parent().remove();
-});
-$(document).on("click","button#btnRefreshNotebooks",function(){
-
-	// Displaying progress
-	displayProgress(MSG_NOTEBOOKS_REFRESH,true);
-
-	CreateAJAX("/notebooks/list/select","GET","html",{refresh:"True"})
-	.done(function(response){
-		displayProgress("",false);
-		$("div#listNotebooks").html(response);
-	})
-	.fail(function(xhr){
-		displayProgress("",false);
-		$("div#listNotebooks").html(ERROR_NOTEBOOKS_LOAD);
-	});
-
-});
-
 
 function insertFile(file,fileHash){
 	var node = document.createElement('p');
-	var tpl_attach
+	var tpl_attach = "";
 	node.setAttribute("id","saferoomAttach");
 	switch(file.type)
 	{
@@ -114,88 +56,7 @@ function insertFile(file,fileHash){
 	
 	$('#summernote').summernote('insertNode', node);
 	//$('#summernote').summernote('insertNode',document.createElement("br"))
-
 }
-
-
-
-$(document).on("click","button#btnTags",function(){
-
-	$("div#modalTags").modal('show');
-
-	// Loading a list of tags
-	CreateAJAX("/tags/list/","GET","html",{format:"select",refresh:"False"})
-	.done(function(response){
-		$("span#loader").hide();
-		$("div#listTags").html(response);
-		rows = $("table#tblTags tr");
-	})
-	.fail(function(xhr){
-		$("span#loader").hide();
-		$("div#listTags").html(xhr.responseText);
-	})
-});
-$(document).on("keyup","input#txtSearch",function(){
-	var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-	rows.show().filter(function() {
-		var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-		return !~text.indexOf(val);
-	}).hide();
-});
-$(document).on("click","button#btnRefresh",function(){
-	// Loading a list of tags
-	$("span#loader").show();
-	CreateAJAX("/tags/list/","GET","html",{format:"select",refresh:"True"})
-	.done(function(response){
-		$("span#loader").hide();
-		$("div#listTags").html(response);
-		rows = $("table#tblTags tr");
-	})
-	.fail(function(xhr){
-		$("span#loader").hide();
-		$("div#listTags").html(xhr.responseText);
-	})
-})
-
-$(document).on("click","input#chkAll",function(){
-	$('input:checkbox').not(this).prop('checked', this.checked);
-});
-
-$(document).on("click","button#btnApply",function(){
-	tagList = new Array();
-	$("table#tblTags tr").each(function(){
-		if ($(this).find("input").prop("checked") == true)
-		{
-			if ($(this).find("span").length != 0){
-				tagList.push($(this).find("span").html());
-			}
-		}
-	});
-
-	for (i=0;i<tagList.length;i++){
-		$("input#txtTags").tagsinput('add',tagList[i]);
-	}
-	$("div#modalTags").modal("hide");
-	$("div#listTags").html("");
-});
-$(document).on("click","button#btnOTPEncrypt",function(){
-	$("input#txtOTP").val("");
-	$("div#modalOTP").modal("show");
-});
-$(document).on("click","button#btnOTPApply",function(){
-	// Checking if the password has been specified
-	if ($("input#txtOTP").val() == ""){
-		$("input#txtOTP").focus();
-		return;
-	}
-
-	// Closing modal window and start decryption procedure
-	$("div#modalOTP").modal("hide");
-	encrypt_note("otp",$("input#txtOTP").val());
-});
-$(document).on("change","select#txtService",function(){
-	init_notebooks_sections($("option:selected",this).val(),config.system);
-});
 
 function encrypt_note(mode,password){
     
@@ -309,8 +170,7 @@ function init_notebooks_sections(selected_service){
 	}
 }
 
-function get_container_id(service)
-{
+function get_container_id(service){
 	container_id = ""
 	switch (service)
 	{
@@ -326,3 +186,153 @@ function get_container_id(service)
 	}
 	return container_id;
 }
+
+
+// Handlers
+function buttonHandler(event){
+	var id = event.currentTarget.id
+	switch (id)
+	{
+		// OTP Encrypt button handler
+		case "btnOTPEncrypt":
+			$("input#txtOTP").val("");
+			$("div#modalOTP").modal("show");
+			break;
+
+		// Button "Apply" in "Encrypt OTP" dialog
+		case "btnOTPApply":
+			// Checking if the password has been specified
+			if ($("input#txtOTP").val() == ""){
+				$("input#txtOTP").focus();
+				return;
+			}
+
+			// Closing modal window and start decryption procedure
+			$("div#modalOTP").modal("hide");
+			encrypt_note("otp",$("input#txtOTP").val());
+			break;
+
+		case "btnAttach":
+			$("input#txtFiles").focus().trigger("click");
+			break;
+
+		case "btnClear":
+			$("#summernote").summernote('reset');
+			break;
+
+		case "btnEncrypt":
+			encrypt_note("master","");
+			break;
+
+		case "btnRefresh":
+			// Loading a list of tags
+			$("span#loader").show();
+			CreateAJAX("/tags/list/","GET","html",{format:"select",refresh:"True"})
+			.done(function(response){
+				$("span#loader").hide();
+				$("div#listTags").html(response);
+				rows = $("table#tblTags tr");
+			})
+			.fail(function(xhr){
+				$("span#loader").hide();
+				$("div#listTags").html(xhr.responseText);
+			});
+			break;
+
+		case "btnApply":
+			tagList = new Array();
+			$("table#tblTags tr").each(function(){
+				if ($(this).find("input").prop("checked") == true){
+					if ($(this).find("span").length != 0){
+						tagList.push($(this).find("span").html());
+					}
+				}
+			});
+			for (i=0;i<tagList.length;i++){
+				$("input#txtTags").tagsinput('add',tagList[i]);
+			}
+			$("div#modalTags").modal("hide");
+			$("div#listTags").html("");
+			break;
+
+		case "btnTags":
+			$("div#modalTags").modal('show');
+			// Loading a list of tags
+			CreateAJAX("/tags/list/","GET","html",{format:"select",refresh:"False"})
+			.done(function(response){
+				$("span#loader").hide();
+				$("div#listTags").html(response);
+				rows = $("table#tblTags tr");
+			})
+			.fail(function(xhr){
+				$("span#loader").hide();
+				$("div#listTags").html(xhr.responseText);
+			});
+			break;
+
+		case "btnRefreshNotebooks":
+			// Displaying progress
+			displayProgress(MSG_NOTEBOOKS_REFRESH,true);
+			CreateAJAX("/notebooks/list/select","GET","html",{refresh:"True"})
+			.done(function(response){
+				displayProgress("",false);
+				$("div#listNotebooks").html(response);
+			})
+			.fail(function(xhr){
+				displayProgress("",false);
+				$("div#listNotebooks").html(ERROR_NOTEBOOKS_LOAD);
+			});
+			break;
+	}
+}
+
+function selectHandler(event){
+	var id = event.currentTarget.id;
+	switch (id){
+		case "txtService":
+			init_notebooks_sections($("option:selected",this).val(),config.system);
+			break;
+	}
+}
+
+$(document).on("keyup","input#txtSearch",function(){
+	var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+	rows.show().filter(function() {
+		var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+		return !~text.indexOf(val);
+	}).hide();
+});
+
+$(document).on("click","input#chkAll",function(){
+	$('input:checkbox').not(this).prop('checked', this.checked);
+});
+$(document).on("change","input#txtFiles",function(){
+	selectedFiles = $(this)[0].files;
+	if (selectedFiles.length == 0){return;}
+	var fd = new FormData();
+	// Processing the list of files
+	for (i=0;i<selectedFiles.length;i++){
+		fd.append("attach[]",selectedFiles[i]);
+	}
+	
+	// We need upload these files to temporary folder
+	displayProgress(MSG_FILES_ATTACH,true);
+	$.ajax({url : '/upload',type : 'POST',data : fd,
+       processData: false,  // tell jQuery not to process the data
+       contentType: false  // tell jQuery not to set contentType
+	})
+	.done(function(response){
+		displayProgress("",false);
+		for (i=0;i<selectedFiles.length;i++){
+			insertFile(selectedFiles[i],response[i])
+		}
+	})
+	.fail(function(xhr){
+		displayProgress("",false);
+		alert(MSG_INTERNAL_ERROR);
+	})
+});
+
+$(document).on("click","span#removeAttach",function(){
+	$(this).parent().parent().parent().parent().remove();
+});

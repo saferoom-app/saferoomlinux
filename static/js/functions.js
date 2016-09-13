@@ -41,6 +41,7 @@ MSG_FAVOURITES_DELETE = "Deleting favourite notes ... Please wait";
 MSG_SERVICE_DISABLED = "::service:: service is disabled. Please go to Settings and enable it";
 MSG_SERVICE_NOTRELEV = "Not relevant for the service"
 MSG_NO_CONTAINERID = "You should select container ID for selected service. For Evernote you should select the notebook, for Onenote - section"
+MSG_FAVS_REMOVE = "Removing from favourites ... ";
 // HTTP Response codes
 HTTP_OK = "200";
 HTTP_UNAUTHORIZED = "401";
