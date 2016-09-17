@@ -2,6 +2,6 @@
 config.ini
 .tokens
 .password
-log/*
+logs/*
 cache/*
 static/tmp/*
