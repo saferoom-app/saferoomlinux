@@ -1,0 +1,7 @@
+# Files to exclude
+config.ini
+.tokens
+.password
+log/*
+cache/*
+static/tmp/*
