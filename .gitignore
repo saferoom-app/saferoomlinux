@@ -1,7 +1,7 @@
 # Files to exclude
 config.ini
 .tokens
-.password
+.saferoompwd
 logs/*
 cache/*
 static/tmp/*
