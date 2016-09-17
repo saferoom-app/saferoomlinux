@@ -3,8 +3,7 @@
 Script is used to automate the procedure to install all necessary components for Saferoom app. Installation procedure consists of the following steps:
 
 1. OS detection: the script detects what OS you're using
-2. Python version checking
-3. PIP and git installation
+2. PIP and git installation
 4. PIP verification
 5. Flask, Requests and PyCrypto installation
 6. Installing Evernote SDK

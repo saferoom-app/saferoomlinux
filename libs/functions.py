@@ -159,12 +159,11 @@ def handle_exception(responseType,code,message):
 
 def send_response(items,responseType,templates):
     if responseType == safeglobals.TYPE_JSON:
-        return jssonify(status=safeglobals.http_ok,message=items)
+        return jsonify(status=safeglobals.http_ok,message=items)
     else:
         try:
             return render_template(templates[responseType],items=items)
         except KeyError as e:
-            print items
             return render_template(templates['default'],items=items)
 
 
