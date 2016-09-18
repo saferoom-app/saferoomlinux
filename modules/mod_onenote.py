@@ -7,7 +7,7 @@ import json
 import time
 import os
 import datetime
-from libs.OnenoteManager import save_tokens
+from libs.OnenoteManager import save_tokens,get_access_token,is_token_expired
 from libs.functions import log_message
 from libs.ConfigManager import get_client_id, get_client_secret,get_scopes,get_redirect_uri,get_services
 
@@ -118,38 +118,92 @@ def user():
         return render_template("user.onenote.html",tokens=tokens)
 
 
-@mod_onenote.route("/token/refresh")
+@mod_onenote.route("/token/refresh",methods=["GET","POST"])
 def refresh():
     try:
-        
-        # Checking if we have the developer token
-        if os.path.exists(safeglobals.path_tokens) == False:
-            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")
-
-        # Checking if refresh token is configured
-        with open(safeglobals.path_tokens,"r") as f:
-        	data = json.loads(f.read())
-        
-        if not data['refresh']:
-        	return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")
 
         # Getting Client ID, Client Secret and Scopes
         client_id = get_client_id()
         client_secret = get_client_secret()
         redirect_uri = get_redirect_uri()
 
-        # Checking mandatory data
-        if client_id == "" or client_secret == "" or redirect_uri == "":
-            return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_ONDATA_MISSING,title="Onenote result")
+        if request.method == "POST":
+            
+            # Checking necessary data
+            if client_id == "" or client_secret == "" or redirect_uri == "":
+                log_message(safeglobals.MSG_ONDATA_MISSING)
+                abort(400)
 
-        # If "Refresh Token" exists, then we need to update the access token
-        r = requests.post(safeglobals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
+            # Getting refresh token
+            data = request.get_json()
+            if data['refresh'] is None:
+                abort(400)
+            
+            # Sending request to update tokens
+            r = requests.post(safeglobals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
+ 
+            # Saving tokens and send response
+            save_tokens(json.loads(r.text))
+            return jsonify(status=safeglobals.http_ok)
 
-        # Saving tokens
-        save_tokens(json.loads(r.text))
+
+        else:
+            # Checking if we have the developer token
+            if os.path.exists(safeglobals.path_tokens) == False:
+                return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")
+            # Checking if refresh token is configured
+            with open(safeglobals.path_tokens,"r") as f:
+                data = json.loads(f.read())
         
-        return render_template("dialog.onenote.result.html",success=True,message=safeglobals.MSG_TOKENREFRESH_OK,title="Onenote result")
+            if not data['refresh']:
+        	    return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_NO_TOKENS,title="Onenote result")            
+
+            # Checking mandatory data
+            if client_id == "" or client_secret == "" or redirect_uri == "":
+                 return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_ONDATA_MISSING,title="Onenote result")
+
+            # If "Refresh Token" exists, then we need to update the access token
+            r = requests.post(safeglobals.on_token_url, data={'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret,'redirect_uri':redirect_uri,'refresh_token':data['refresh']})
+
+            # Saving tokens
+            save_tokens(json.loads(r.text))        
+            return render_template("dialog.onenote.result.html",success=True,message=safeglobals.MSG_TOKENREFRESH_OK,title="Onenote result")
 
     except Exception as e:
     	log_message(str(e))
     	return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_INTERNAL_ERROR,title="Onenote result")
+
+@mod_onenote.route("/token/check",methods=["GET"])
+def check_token():
+
+    # Checking if service is enabled
+    services = get_services()
+    if services['onenote'] == False:
+        abort(501)
+
+    # Checking if Access Token has been configured
+    if get_access_token() == "":
+        abort(501)
+
+    # Checking if token expired
+    try:
+        with open(safeglobals.path_tokens,"r") as f:
+            tokens = json.loads(f.read())
+        
+        # Checking that token exists and has somve values
+        if not tokens['access']:
+            abort(501)
+
+        # Checking "expires" key
+        if not tokens['expires']:
+            abort(501)
+
+        # Checking that Access Token didn't expire
+        if is_token_expired(tokens['expires']) == False:
+            abort(501)
+
+        return jsonify(status=safeglobals.http_ok,token=tokens['refresh'])
+
+    except Exception as e:
+        log_message(str(e))
+        abort(500)

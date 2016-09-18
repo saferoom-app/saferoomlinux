@@ -136,7 +136,6 @@ def generateKey(os,user,salt):
     return m.hexdigest()
 
 def log_message(message):
-
     try:
         with open(safeglobals.path_logfile,"a") as f:
             f.write(strftime("%Y-%m-%d %H:%M:%S")+": "+message+"\n")

@@ -1,10 +1,11 @@
 from flask import Blueprint, jsonify,abort,request,render_template
 import getpass
 import safeglobals
-from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception,send_response,clear_cache
+from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception,send_response,clear_cache,log_message
 import os
 from libs.ConfigManager import get_services,get_default_values,save
 from libs.PasswordManager import save_password
+
 
 # Initializing the blueprint
 mod_settings = Blueprint("mod_settings",__name__)
@@ -120,8 +121,3 @@ def clear_data_cache():
         return jsonify(status=safeglobals.http_ok,message="")
     else:
         return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,safeglobals.MSG_INTERNAL_ERROR)
-
-
-
-
-

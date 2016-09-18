@@ -43,6 +43,11 @@ MSG_SERVICE_NOTRELEV = "Not relevant for the service"
 MSG_NO_CONTAINERID = "You should select container ID for selected service. For Evernote you should select the notebook, for Onenote - section"
 MSG_FAVS_REMOVE = "Removing from favourites ... ";
 MSG_NOTE_UPDATE = "Updating the note content ... Please wait"
+MSG_TOKEN_UPDATE = "Updating access token"
+MSG_TOKEN_UPDATE_OK = "Onenote access token has been successfully updated"
+MSG_TOKEN_UPDATE_ERR = "Error while updating access token. Please check server logs"
+
+
 // HTTP Response codes
 HTTP_OK = "200";
 HTTP_UNAUTHORIZED = "401";
@@ -475,6 +480,15 @@ function show_encrypted_icon(service){
 	}
 }
 
+function update_access_token(token){
+	CreateAJAX("/onenote/token/refresh","POST","json",JSON.stringify({refresh:token}))
+	.done(function(response){
+		showToast(LEVEL_SUCCESS,MSG_TOKEN_UPDATE_OK);
+	})
+	.fail(function(xhr){
+		showToast(LEVEL_DANGER,MSG_TOKEN_UPDATE_ERR);
+	});
+}
 
 // Loading external scripts
 $.getScript('/static/js/init.js',function(){});

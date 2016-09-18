@@ -156,10 +156,6 @@ def internal_server_error(e):
 def page_not_found(e):
 	return render_template('404.html'),404
 
-@app.errorhandler(501)
-def bad_request(e):
-	return render_template('501.html'),501
-
 @app.after_request
 def add_header(response):
     """

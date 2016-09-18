@@ -281,7 +281,7 @@ def decrypt_onenote_note():
 
                 # Writing data to temporary file
                 filename = filename.replace("%20","")
-                with open(os.path.join(tmp_path,filename),"wb") as f:
+                with open(tmp_path+filename,"wb") as f:
                     f.write(data)             
 
         
