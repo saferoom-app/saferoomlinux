@@ -7,6 +7,7 @@ import requests
 from libs.functions import log_message,stringMD5,log_message,encryptNote, encryptData
 from bs4 import BeautifulSoup
 import uuid
+from libs.FavouritesManager import is_favourite
 
 '''
   ============================================================
@@ -283,7 +284,7 @@ def download_resources(access_token,noteContent,guid):
         content = match.decode_contents(formatter="html")
         break
 
-    return {"title":soup.title.string,"content":content,"service":safeglobals.service_onenote}
+    return {"title":soup.title.string,"content":content,"service":safeglobals.service_onenote,"favourite":is_favourite(guid)}
 
 def create_on_note(access_token,title,content,guids,files,password):
 

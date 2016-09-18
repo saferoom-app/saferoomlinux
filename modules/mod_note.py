@@ -256,6 +256,13 @@ def decrypt_onenote_note():
         with open(safeglobals.path_note % (guid,"content.json"),"r") as f:
             content = f.read()
 
+        # Before decrypting the note, we need to find all images to get their filenames
+        images = []
+        document = BeautifulSoup(content,"html.parser")
+        matches = document.find_all("img")
+        for match in matches:
+            images.append(stringMD5(match['src']))
+
         # Decrypting note content
         content = content[content.find(safeglobals.ENCRYPTED_PREFIX)+len(safeglobals.ENCRYPTED_PREFIX):content.find(safeglobals.ENCRYPTED_SUFFIX)].strip();
         content = decryptNote(safeglobals.ENCRYPTED_PREFIX + content + safeglobals.ENCRYPTED_SUFFIX,password)
@@ -269,26 +276,24 @@ def decrypt_onenote_note():
                 # Reading file data into variale
                 with open(path+filename,"rb") as f:
                     data = f.read()
-
                 # Decrypting data
-                print password
                 data = decryptFileData(data,password)
 
                 # Writing data to temporary file
                 filename = filename.replace("%20","")
-                with open(tmp_path+filename,"wb") as f:
-                    f.write(data)                  
+                with open(os.path.join(tmp_path,filename),"wb") as f:
+                    f.write(data)             
 
         
         # Parsing the content and make it readable. First find <object> tags
+        index = 0
         document = BeautifulSoup(content,"html.parser")
         matches = document.find_all(["object","img"])
         for match in matches:
-            if "img" in match:
-                print "Image"
-            
+            if "img" in str(match):
+                tag = document.new_tag('img',style="width:100%",src="/static/tmp/"+images[index])
+                index = index + 1            
             else:
-
                 # If we have PDF we display the <embed>
                 if safeglobals.MIME_PDF in match['type']:
                     tag = document.new_tag("embed",width="100%", height="500",src="/static/tmp/"+match['data-attachment']+"#page=1&zoom=50")
@@ -324,8 +329,8 @@ def decrypt_onenote_note():
                     # Combining all together
                     tag.append(div_row)
 
-                # Replace the match with the tag
-                match.replaceWith(tag)
+            # Replace the match with the tag
+            match.replaceWith(tag)
 
         print document.prettify()
         return document.prettify()
@@ -336,7 +341,6 @@ def decrypt_onenote_note():
 @mod_note.route("/<string:GUID>",methods=['POST','GET'])
 def note(GUID):
     try:
-        responseType = "html"
         if not GUID or GUID == "":
             return handle_exception(responseType,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
             
@@ -344,18 +348,22 @@ def note(GUID):
             return render_template("view.html",title="Application :: View note",guid=GUID)
         else:
             # Getting note
-            responseType = "json"
-
+            forceRefresh = False
+            data = request.get_json()
+            if data['refresh'] is not None:
+                forceRefresh = str_to_bool(data['refresh'])
+            
             # Checking developer token
             access_token = get_developer_token()
             if access_token == "":
-                return handle_exception(responseType,safeglobals.http_bad_request,safeglobals.MSG_NO_DEVTOKEN)
+                return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_NO_DEVTOKEN)
 
             # Getting note    
-            note = get_note(access_token,GUID,False)
+            note = get_note(access_token,GUID,forceRefresh)
             return jsonify(status=safeglobals.http_ok,message=note)
+    
     except Exception as e:
-        return handle_exception(responseType,safeglobals.http_internal_server,str(e))
+        return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,str(e))
 
 
 @mod_note.route("/save",methods=["GET"])
@@ -388,22 +396,21 @@ def get_onenote_note(guid):
             forceRefresh = False
             if not guid or guid == "":
                 return handle_exception(lib.globals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_MANDATORY_MISSING)
-            if request.args.get("refresh"):
-                forceRefresh = str_to_bool(request.args.get("refresh"))
-            
+            data = request.get_json()
+            forceRefresh = data['refresh']            
+                        
             # Getting access token
             access_token = get_access_token()
             if (access_token == ""):
                 log_message(safeglobals.MSG_NO_TOKENS)
-                return handle_exception(responseType,safeglobals.http_bad_request,safeglobals.MSG_NO_TOKENS)               
+                return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_bad_request,safeglobals.MSG_NO_TOKENS)               
 
             # Downloading note
-            note = get_on_note(access_token,guid,forceRefresh)
+            note_content = get_on_note(access_token,guid,forceRefresh)           
 
             # Downloading resources and processing the note content for proper display
-            note = download_resources(access_token,note,guid)
+            note = download_resources(access_token,note_content,guid)
             return jsonify(status=safeglobals.http_ok,message=note);
 
     except Exception as e:
-        return handle_exception(responseType,safeglobals.http_internal_server,str(e))
-    return guid
+        return handle_exception(safeglobals.TYPE_JSON,safeglobals.http_internal_server,str(e))

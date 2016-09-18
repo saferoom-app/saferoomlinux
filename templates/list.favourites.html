@@ -19,14 +19,14 @@
 		<tr class="itemRow">
 			<td><input id="{{fav.guid}}" type="checkbox"/></td>
 			<td style="text-align:center">
-				{% if fav.service == "1" %}
+				{% if fav.service == 1 %}
 					<img title="Onenote note" src="/static/images/icon_onenote.png"/>
 				{%else%}
 					<img title="Evernote note" src="/static/images/icon_evernote.png"/>
 				{%endif%}
 			</td>
 			<td>
-				{% if fav.service == "1" %}
+				{% if fav.service == 1 %}
 					<a target="_blank" href="/note/on/{{fav.guid}}">{{fav.title}}</a>
 				{%else%}
 					<a target="_blank" href="/note/{{fav.guid}}">{{fav.title}}</a>

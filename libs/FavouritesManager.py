@@ -18,24 +18,24 @@ def list_favourites():
 	return favourites
 
 
-def add_to_favourites(item):
+def add_to_favourites(items):
 
 	# Getting a list of favourites
 	favourites = list_favourites()
 
 	# Adding new item
-	favourites.append(item)
-
+	for item in items:
+		favourites.append(item)
+	
 	# Saving new list of favourites
 	with open(safeglobals.path_favourites,"w") as f:
 		f.write(json.dumps(favourites))
 
 
-def remove_from_favourites(delete_guids):
+def remove_from_favourites(guids):
 
 	# Getting a list of favourites
 	favourites = list_favourites()
-	guids = json.loads(delete_guids)
 
 	# Removing the Favourite Item with selected ID
 	new_favourites = [item for item in favourites if item['guid'] not in guids]

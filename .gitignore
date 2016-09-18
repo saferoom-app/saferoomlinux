@@ -5,3 +5,4 @@ config.ini
 logs/*
 cache/*
 static/tmp/*
+notes/favourites/*

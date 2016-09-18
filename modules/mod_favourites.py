@@ -29,39 +29,33 @@ def list():
 def add_favourite():
 
     # Validating request
-    if not request.form['guid']:
-        abort(400)
-    if not request.form['title']:
-        abort(400)
-    if not request.form['service']:
+    favourites = request.get_json()
+    if favourites is None:
         abort(400)
 
-    # Generating item
-    item = {"guid":request.form['guid'],"title":request.form['title'],"service":request.form['service'],"updated":request.form['updated'],"created":request.form['created']}
-    
     # Saving to favourites
-    add_to_favourites(item)
+    add_to_favourites(favourites)
 
     # Sending response
     return jsonify(status=200,msg="")
 
-@mod_favourites.route("/remove/<string:responseType>",methods=['POST'])
-def remove_favourites(responseType):
+@mod_favourites.route("/remove",methods=['POST'])
+def remove_favourites():
 
     # Validating request
-    if not request.form['delete']:
+    favourites = request.get_json()
+    if favourites is None:
         abort(400)
 
     # Removing from favourites
-    remove_from_favourites(request.form['delete'])
+    remove_from_favourites(favourites)
 
     # Getting a new list of favourites
     favourites = list_favourites()
 
-    if responseType == safeglobals.TYPE_JSON:
-        return jsonify(status=200,msg="")
-    else:
-        return render_template("list.favourites.html",favourites=favourites)
+    # Sending response
+    return jsonify(status=200,msg="")
+    
 
 @mod_favourites.route("/quick/list",methods=['GET'])
 def list_qlinks():

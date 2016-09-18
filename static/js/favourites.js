@@ -33,15 +33,13 @@ $(document).on("click","button#btnDelFav",function(){
   }
   
   favourites = new Array();
-  $("table tr.itemRow").find("input[type=checkbox]:checked").each(function(){
-    favourites.push($(this).prop("id"));
-  });
-
+  var rows = $("table tr.itemRow").find("input[type=checkbox]:checked");
+  rows.each(function(){favourites.push($(this).prop("id"));});
   displayProgress(MSG_FAVOURITES_DELETE,true);
-  CreateAJAX("/favourites/remove/html","POST","html",{"delete":JSON.stringify(favourites)})
+  CreateAJAX("/favourites/remove","POST","json",JSON.stringify(favourites))
   .done(function(response){
     displayProgress("",false);
-    $("#favs").html(response);
+    rows.each(function(){$(this).parent().parent().remove();});    
   })
   .fail(function(xhr){
     displayProgress("",false);

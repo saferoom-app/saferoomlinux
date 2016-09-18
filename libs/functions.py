@@ -38,7 +38,7 @@ def millisToDate(timestamp):
 def str_to_bool(s):
     if s == 'True' or s == "true":
         return True
-    elif s == 'False' or s == "False":
+    elif s == 'False' or s == "false":
         return False
 
 def stringMD5(source):

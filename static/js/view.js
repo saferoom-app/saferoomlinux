@@ -3,40 +3,9 @@ $(document).ready(function(){
 
 	// Getting note GUID
 	GUID = $("input#txtGuid").val();
-	// Displaying modal window
-	displayProgress(MSG_LOAD_NOTE,true);
 	
-	// Loading note content
-	CreateAJAX("/note/"+GUID,"POST","json",{})
-	.done(function(response){
-		displayProgress("",false);
-		if (response.status != HTTP_OK){
-			showToast(LEVEL_DANGER,response.message);
-			$("div#noteContent").html("n/a");
-			$("span#noteTitle").html("n/a");
-			return;
-		}
-		$("span#noteTitle").html(response.message.title);
-		if (response.message.content.includes(encrypted_prefix) && response.message.content.includes(encrypted_suffix) ){
-			$("div#noteContent").html(show_encrypted_icon(service_evernote));
-		}
-		else{
-			$("div#noteContent").html(response.message.content);
-		}
-		if (response.message.favourite == true){
-			$("span#favAdd").hide();
-			$("span#favRemove").show();
-		}
-		else{
-			$("span#favAdd").show();
-			$("span#favRemove").hide();
-		}
-	})
-	.fail(function(xhr){
-		$("div#modalLoading").modal('hide');
-		$("span#noteTitle").html("n/a");
-		$("div#noteContent").html("Error loading the specified note. Please check logs");
-	});
+	// Getting note
+	get_note(GUID,service_evernote,false);	
 
 	// Register global button handler
 	$("button").on("click",{},buttonHandler);
@@ -63,37 +32,10 @@ function buttonHandler(event){
 	var id = event.currentTarget.id
 	switch (id){
 		case "btnAddFav":
-			// Displaying modal progress
-			displayProgress(MSG_FAVS_ADD,true);
-			// Sending request
-			item = {guid:$("#txtGuid").val(),"service":0,"title":$("span#noteTitle").html(),"updated":"","created":""};
-			CreateAJAX("/favourites/add","POST","json",item).
-			done(function(response){
-				displayProgress("",false);
-				$("span#favAdd").hide();
-				$("span#favRemove").show();
-			})
-			.fail(function(xhr){
-				showToast(LEVEL_DANGER,xhr.responseText);
-				displayProgress("",false);				
-			});
+			add_to_favourites($("#txtGuid").val(),$("span#noteTitle").html(),service_evernote);
 			break;
 		case "btnRemFav":
-			// Displaying modal progress
-			displayProgress(MSG_FAVS_REMOVE,true);
-
-			// Sending request
-			favourites = new Array();
-			favourites.push($("#txtGuid").val());
-			CreateAJAX("/favourites/remove","POST","json",{"delete":JSON.stringify(favourites)}).	done(function(response){
-				displayProgress("",false);
-				$("span#favRemove").hide();
-				$("span#favAdd").show();
-			})
-			.fail(function(xhr){
-				showToast(LEVEL_DANGER,xhr.responseText);
-				displayProgress("",false);
-			});
+			remove_from_favourites("json");
 			break;
 		case "btnOTPApply":
 			elem = $("input#txtOTP");
@@ -109,6 +51,10 @@ function buttonHandler(event){
 			break;
 		case "btnDecrypt":
 			decrypt_note("master","");
+			break;
+
+		case "btnUpdate":
+			update_note(guid,service);
 			break;
 	}
 }

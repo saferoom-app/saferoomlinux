@@ -42,6 +42,7 @@ MSG_SERVICE_DISABLED = "::service:: service is disabled. Please go to Settings a
 MSG_SERVICE_NOTRELEV = "Not relevant for the service"
 MSG_NO_CONTAINERID = "You should select container ID for selected service. For Evernote you should select the notebook, for Onenote - section"
 MSG_FAVS_REMOVE = "Removing from favourites ... ";
+MSG_NOTE_UPDATE = "Updating the note content ... Please wait"
 // HTTP Response codes
 HTTP_OK = "200";
 HTTP_UNAUTHORIZED = "401";
@@ -67,11 +68,25 @@ encrypted_prefix = "TUFNTU9USEVOQ1JZUFRFRE5PVEU=__"
 encrypted_suffix = "__TUFNTU9USEVOQ1JZUFRFRE5PVEU="
 
 function CreateAJAX(url,requestType,dataType,data){
+    
+    contentType = ""
+    switch (requestType)
+    {
+    	case "GET":
+    		contentType = "text/html";
+    		break;
+    	case "POST":
+    		if (dataType == "json"){contentType = "application/json; charset=utf-8";}
+    		else{contentType = "application/x-www-form-urlencoded; charset=utf-8";}
+    		break;
+    }
+
 	return $.ajax({
      	// The URL for the request
     	url: url, 
     	data: data,
     	type: requestType,
+    	contentType: contentType,
     	// The type of data we expect back
     	dataType : dataType
 	});
@@ -231,6 +246,99 @@ function listFavourites(contentID){
 	.fail(function(xhr){
 		displayProgress("",false);
 		alert(MSG_INTERNAL_ERROR);
+	});
+
+}
+
+function remove_from_favourites(type){
+	// Displaying modal progress
+	displayProgress(MSG_FAVS_REMOVE,true);
+
+	// Sending request
+	var favourites = new Array();
+	favourites.push($("#txtGuid").val());
+	CreateAJAX("/favourites/remove","POST","json",JSON.stringify(favourites)).
+	done(function(response){
+		displayProgress("",false);
+		$("span#favRemove").hide();
+		$("span#favAdd").show();
+	})
+	.fail(function(xhr){
+		showToast(LEVEL_DANGER,xhr.responseText);
+		displayProgress("",false);
+	});
+}
+
+function add_to_favourites(guid,title,service){
+
+	// Displaying modal progress
+	displayProgress(MSG_FAVS_ADD,true);
+	var favourites = new Array();
+
+	// Sending request
+	favourites.push({guid:guid,"service":service,"title":title,"updated":"","created":""});
+	CreateAJAX("/favourites/add","POST","json",JSON.stringify(favourites)).
+	done(function(response){
+		displayProgress("",false);
+		$("span#favAdd").hide();
+		$("span#favRemove").show();
+	})
+	.fail(function(xhr){
+		showToast(LEVEL_DANGER,xhr.responseText);
+		displayProgress("",false);
+	});
+}
+
+function get_note(guid,service,refresh){
+
+    var url = "";
+    data = new Array();
+    data.push({"refresh":refresh})
+	// Displaying progress
+	displayProgress(MSG_LOAD_NOTE,true);
+
+
+	// Generating URL
+	switch (service)
+	{
+		case service_evernote:
+			url = "/note/"+guid
+			break;
+		case service_onenote:
+			url = "/note/on/"+guid
+			break;
+	}
+
+	// Loading note content
+	CreateAJAX(url,"POST","json",JSON.stringify({"refresh":refresh}))
+	.done(function(response){
+		displayProgress("",false);
+		if (response.status != HTTP_OK){
+			showToast(LEVEL_DANGER,response.message);
+			$("div#noteContent").html("n/a");
+			$("span#noteTitle").html("n/a");
+			return;
+		}
+		$("span#noteTitle").html(response.message.title);
+		if (response.message.content.includes(encrypted_prefix) && response.message.content.includes(encrypted_suffix) ){
+			$("div#noteContent").html(show_encrypted_icon(service));
+		}
+		else{
+			$("div#noteContent").html(response.message.content);
+		}
+		if (response.message.favourite == true){
+			$("span#favAdd").hide();
+			$("span#favRemove").show();
+		}
+		else{
+			$("span#favAdd").show();
+			$("span#favRemove").hide();
+		}
+	})
+	.fail(function(xhr){
+		$("div#modalLoading").modal('hide');
+		$("span#noteTitle").html("n/a");
+		$("div#noteContent").html("Error loading the specified note. Please check logs");
 	});
 
 }
