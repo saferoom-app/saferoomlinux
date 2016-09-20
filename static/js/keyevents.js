@@ -53,9 +53,9 @@ $(document).on("click","#btnApply",function(){
                 return false;
             }
 
+            jsonString = JSON.stringify({"name":$("input#txtquickName").val(),"link":$("input#txtquickLink").val()});
             // Creating new Quick Link
-            CreateAJAX("/favourites/quick/create","POST","json",
-                {"name":$("input#txtquickName").val(),"link":$("input#txtquickLink").val()})
+            CreateAJAX("/favourites/quick/create","POST","json",jsonString)
             .done(function(response){$("div#modalQuick").modal("hide");})
             .fail(function(xhr){alert(xhr.responseText);})
 

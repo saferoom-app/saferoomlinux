@@ -77,14 +77,13 @@ def server_log():
     return "\n".join(data)
 
 
-@app.route("/user")
+@app.route("/user",methods=["GET"])
 def user():
 
 	# Checking Access Token
     access_token = get_developer_token()
     if (access_token == ""):
-        abort(501)
-        exit()
+        return safeglobals.MSG_NO_DEVTOKEN
 
     client = EvernoteClient(token=access_token,sandbox=False)
     userStore = client.get_user_store()

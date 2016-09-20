@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify,abort,request,render_template
 from libs.FavouritesManager import add_to_favourites,remove_from_favourites,add_quick_link,list_quick_links,list_favourites
 import safeglobals
 import json
+from libs.functions import log_message
 
 
 # Initializing the blueprint
@@ -82,17 +83,17 @@ def add_to_quick():
 @mod_favourites.route("/quick/create",methods=['POST'])
 def create_quick_link():
 
-    if not request.form['name']:
+    # Getting JSON request
+    data = request.get_json()
+    if data['name'] is None or data['link'] is None:
         abort(400)
-    if not request.form['link']:
-        abort(400)
-
     try:
         # Creating a link
-        add_quick_link(request.form['name'],request.form['link'])
+        add_quick_link(data['name'],data['link'])
         return jsonify(status=200,msg=safeglobals.MSG_LINKCREATE_OK)
-    except:
-        raise
+    except Exception as e:
+        log_message(str(e))
+        abort(500)
 
 @mod_favourites.route("/",methods=['GET'])
 def index():

@@ -269,20 +269,6 @@ function buttonHandler(event){
 				$("div#listTags").html(xhr.responseText);
 			});
 			break;
-
-		case "btnRefreshNotebooks":
-			// Displaying progress
-			displayProgress(MSG_NOTEBOOKS_REFRESH,true);
-			CreateAJAX("/notebooks/list/select","GET","html",{refresh:"True"})
-			.done(function(response){
-				displayProgress("",false);
-				$("div#listNotebooks").html(response);
-			})
-			.fail(function(xhr){
-				displayProgress("",false);
-				$("div#listNotebooks").html(ERROR_NOTEBOOKS_LOAD);
-			});
-			break;
 	}
 }
 
@@ -335,4 +321,10 @@ $(document).on("change","input#txtFiles",function(){
 
 $(document).on("click","span#removeAttach",function(){
 	$(this).parent().parent().parent().parent().remove();
+});
+$(document).on("click","button#btnRefreshNotebooks",function(){
+	select_notebooks({refresh:"True"});
+});
+$(document).on("click","button#btnRefreshONNotebooks",function(){
+	select_onenote_notebooks({refresh:"True"});
 });

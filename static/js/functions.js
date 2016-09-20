@@ -495,3 +495,4 @@ $.getScript('/static/js/init.js',function(){});
 $.getScript('/static/js/evernote.js', function(){});
 $.getScript('/static/js/onenote.js', function(){});
 $.getScript('/static/js/keyevents.js', function(){});
+

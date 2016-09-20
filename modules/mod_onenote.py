@@ -187,6 +187,10 @@ def check_token():
 
     # Checking if token expired
     try:
+        
+        if os.path.exists(safeglobals.path_tokens) == False:
+            abort(501)
+
         with open(safeglobals.path_tokens,"r") as f:
             tokens = json.loads(f.read())
         
