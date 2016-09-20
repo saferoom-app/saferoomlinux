@@ -2,6 +2,22 @@
 Encryption extension to Evernote and Onenote platforms
 
 # Installation
+
+## Quickstart
+
+To quickly start Saferoom app on your CentOS/Ubuntu desktop, do the following:
+
+```
+cd ~
+wget https://raw.githubusercontent.com/saferoom-app/saferoomlinux/master/install.py
+python install.py
+git clone https://github.com/saferoom-app/saferoomlinux
+cd saferoomlinux
+python server.py
+```
+
+If something goes wrong, please check the detailed installation procedures below
+
 ## Ubuntu
 This section contains the instructions for installing the environment required by Saferoom app. This procedure was tested on **Ubuntu desktop 16.04**. Below we assume that everything is done under **root** user. If you're using non-root user, every command should be preceeded by **sudo**
 ### Checking Python version
