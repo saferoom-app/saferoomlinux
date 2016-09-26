@@ -18,7 +18,7 @@ python server.py
 
 If something goes wrong, please check the detailed installation procedures below
 
-Open your browser and type **http://127.0.0.1:5000/**. If everything is OK, you should see the main Saferoom page. Then go to section **Generating master password** section.
+Open your browser and type **http://127.0.0.1:5000/**. If everything is OK, you should see the main Saferoom page. Then go to **Generating master password** section.
 
 
 
