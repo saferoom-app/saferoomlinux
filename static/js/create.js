@@ -2,7 +2,18 @@ var rows;
 var config;
 $(document).ready(function(){
 	$("[rel=tooltip]").tooltip({ placement: 'right'});
-	$('#summernote').summernote({height:300});
+	$('#summernote').summernote({height:400,
+		toolbar:[
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['font', ['strikethrough', 'superscript', 'subscript']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['height', ['height']],
+			['table', ['table']],
+			['help', ['help']]
+		]
+	});
 	// Getting current config
 	CreateAJAX("/settings/config","GET","json",{})
 	.done(function(response){
