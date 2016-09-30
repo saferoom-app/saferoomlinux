@@ -1,8 +1,12 @@
 // Getting service status
 CreateAJAX("/settings/services","GET","json",{})
 .done(function(response){
-	$("#iconOnenote").toggle(response.onenote);
-	$("#iconEvernote").toggle(response.evernote);
+	console.log(response);
+	$("#iconOnenote").toggle(response.services.onenote);
+	$("#iconEvernote").toggle(response.services.evernote);
+	if (response.master == false){
+		showToast(LEVEL_WARN,MSG_NO_PASSWORD);
+	}
 })
 .fail(function(xhr){
 	alert(xhr.responseText);

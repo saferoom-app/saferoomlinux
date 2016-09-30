@@ -4,7 +4,7 @@ import safeglobals
 from libs.functions import encryptString, decryptString,convert_size,get_folder_size,handle_exception,send_response,clear_cache,log_message
 import os
 from libs.ConfigManager import get_services,get_default_values,save
-from libs.PasswordManager import save_password
+from libs.PasswordManager import save_password, get_master_password
 
 
 # Initializing the blueprint
@@ -18,7 +18,14 @@ def show_page():
 
 @mod_settings.route("/services",methods=["GET"])
 def get_available_services():
-    return jsonify(get_services())
+    
+    response = {}
+    # Getting a list of services
+    response['services'] = get_services()
+    
+    # Checking the master password
+    response['master'] = (get_master_password() != "")
+    return jsonify(response);
 
 
 @mod_settings.route("/config",methods=["GET"])

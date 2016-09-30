@@ -42,10 +42,11 @@ MSG_SERVICE_DISABLED = "::service:: service is disabled. Please go to Settings a
 MSG_SERVICE_NOTRELEV = "Not relevant for the service"
 MSG_NO_CONTAINERID = "You should select container ID for selected service. For Evernote you should select the notebook, for Onenote - section"
 MSG_FAVS_REMOVE = "Removing from favourites ... ";
-MSG_NOTE_UPDATE = "Updating the note content ... Please wait"
-MSG_TOKEN_UPDATE = "Updating access token"
-MSG_TOKEN_UPDATE_OK = "Onenote access token has been successfully updated"
-MSG_TOKEN_UPDATE_ERR = "Error while updating access token. Please check server logs"
+MSG_NOTE_UPDATE = "Updating the note content ... Please wait";
+MSG_TOKEN_UPDATE = "Updating access token";
+MSG_TOKEN_UPDATE_OK = "Onenote access token has been successfully updated";
+MSG_TOKEN_UPDATE_ERR = "Error while updating access token. Please check server logs";
+MSG_NO_PASSWORD = "Master password not found. Please create it using 'passwd.py' utility"
 
 
 // HTTP Response codes

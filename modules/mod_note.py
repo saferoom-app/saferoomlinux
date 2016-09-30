@@ -222,6 +222,7 @@ def decrypt_note():
         return noteContent
 
     except Exception as e:
+        print e
     	return handle_exception(safeglobals.TYPE_HTML,safeglobals.http_internal_server,str(e))
 
 
