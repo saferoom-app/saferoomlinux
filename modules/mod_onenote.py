@@ -48,6 +48,7 @@ def callback():
     try:
         if not request.args.get("code"):
             return render_template("dialog.onenote.result.html",success=False,message=safeglobals.MSG_MANDATORY_MISSING,title="Onenote result")
+        
         # Getting the authorization code
         code = request.args.get("code")
 

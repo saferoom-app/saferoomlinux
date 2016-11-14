@@ -134,14 +134,15 @@ function encrypt_note(mode,password){
 		note['mode'] = mode
 		note['pass'] = password
 		displayProgress(MSG_NOTE_UPLOAD,true);
-		CreateAJAX("/note/create","POST","json",note).done(function(response){
+		CreateAJAX("/note/create","POST","html",note).done(function(response){
 			displayProgress("",false);
-			if (response.status != HTTP_OK){
-				showAlert(true,LEVEL_DANGER,response.message);
+			result = jQuery.parseJSON(response);
+			if (result.status != HTTP_OK){			
+				showAlert(true,LEVEL_DANGER,result.message);
 				scrollTop();
 				return;
 			}
-			showAlert(true,LEVEL_SUCCESS,response.message);
+			showAlert(true,LEVEL_SUCCESS,result.message);
 			scrollTop();
 		})
 		.fail(function(xhr){
