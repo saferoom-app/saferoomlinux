@@ -7,3 +7,6 @@ cache/*
 static/tmp/*
 notes/favourites/*
 error.log
+*.pyc
+modules/*.pyc
+libs/*.pyc
