@@ -133,20 +133,6 @@ def upload():
 
 @app.route("/demo/",methods=['GET'])
 def demo():
-    from libs.Safenote import Safenote
-    from libs.EvernoteManager import get_note_store,upload_note,get_raw_note
-    from libs.ConfigManager import get_access_token
-
-    # Getting access token
-    access_token = get_access_token()
-    guid = "5812709e-717f-45ee-a639-3be06bbeea0b";
-    page_guid = "0-1281889f6000406cb8a78499a3c29959!1-F54C66CABCD50318!156"
-    #note_store = get_note_store(access_token)
-    #note = get_raw_note(access_token,guid,note_store)
-    #note.__class__ = Safenote
-    print Safenote.to_html(page_guid,safeglobals.service_onenote)
-
-    
     return ""
         
 
