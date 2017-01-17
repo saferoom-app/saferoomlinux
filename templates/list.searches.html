@@ -1,6 +1,0 @@
-<div class="list-group" id="listSearches" style="margin:10px 0px 10px 10px">
-    <input class="form-control" id="txtFilter" placeholder="Type word to filter the searches" />
-	{% for search in items %}
-		<button type="button" id="{{search.guid}}" class="list-group-item"><span style="margin-right:10px"class="glyphicon glyphicon-search" aria-hidden="true"></span> {{search.name}}<input type="hidden" id="query" value="{{search.query}}" /></button>
-	{% endfor %}
-</div>

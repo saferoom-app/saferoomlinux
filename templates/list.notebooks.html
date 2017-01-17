@@ -1,6 +1,0 @@
-<div class="list-group" id="listNotebooks" style="margin:10px 0px 10px 10px">
-	<input class="form-control" id="txtFilter" placeholder="Type word to filter the notebooks" />
-	{% for notebook in items %}
-		<button type="button" id="{{notebook.guid}}" class="list-group-item"><span style="margin-right:10px"class="glyphicon glyphicon-book" aria-hidden="true"></span> {{notebook.name}}</button>
-	{% endfor %}
-</div>

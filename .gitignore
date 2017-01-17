@@ -1,8 +1,0 @@
-# Files to exclude
-config.ini
-.tokens
-.saferoompwd
-error.log
-*.pyc
-modules/*.pyc
-libs/*.pyc
