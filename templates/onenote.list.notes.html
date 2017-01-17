@@ -1,0 +1,27 @@
+<div class="input-group">
+	<span  class="input-group-btn">
+        <button title="Click to update the list of notes" type="button" class="btn btn-default" aria-label="Left Align" id="btnNoteRefresh">
+        	<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
+        </button>
+   </span>
+   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtONSearch">
+   
+</div><hr/>
+<table id="tblNotes" class="table table-striped">
+<thead>
+	<tr>
+		<th>Title</th>
+		<th>Created</th>
+		<th>Updated</th>
+	</tr>
+</thead>
+<tbody>
+	{% for note in items %}
+		<tr class="itemRow">
+			<td style="width:50%"><a target="_blank" href="/note/on/{{note.guid}}">{{note.title}}</a></td>
+			<td style="width:25%">{{note.created}}</td>
+			<td style="width:25%">{{note.updated}}</td>
+		</tr>
+	{% endfor %}
+</tbody>
+</table>

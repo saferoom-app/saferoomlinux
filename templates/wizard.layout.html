@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+	<title>{{pageTitle}}</title>
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/fawesome/css/font-awesome.min.css">
+	{% block css %}{% endblock %}
+</head>
+<body>
+	<div class="row">
+		<div class="col-md-10" style="padding-left:50px">
+			<h1><a class="nolink" href="/"><img src="/static/images/72.png"/> <span style="margin-left:10px">Saferoom</span></a></h1>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<hr/>
+	<!-- Page content  -->
+	{% block body %}{% endblock %}
+
+    <!-- Scripts section  -->
+	<script type="text/javascript" src="/static/js/jquery.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/static/js/functions.js"></script>
+	{% block scripts %}{% endblock %}
+	{% block dialogs %}{% endblock %}	
+</body>
+</html>

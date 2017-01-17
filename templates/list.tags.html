@@ -1,0 +1,6 @@
+<div class="list-group" id="listTags" style="margin:10px 0px 10px 10px">
+	<input class="form-control" id="txtFilter" placeholder="Type word to filter the tags" />
+	{% for tag in items %}
+		<button type="button" id="{{tag.guid}}" class="list-group-item"><span style="margin-right:10px"class="glyphicon glyphicon-tag" aria-hidden="true"></span> {{tag.name}}</button>
+	{% endfor %}
+</div>

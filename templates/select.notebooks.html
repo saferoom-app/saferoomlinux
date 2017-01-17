@@ -1,0 +1,8 @@
+<select id="txtNotebook" class="form-control">
+	{% for notebook in items %}
+		<option value="{{notebook.guid}}">{{notebook.name}}</option>
+	{% endfor %}
+</select>
+<span class="input-group-btn">
+    <button title="Refresh the list of notebooks" id="btnRefreshNotebooks" class="btn btn-default" type="button" tabindex="-1"><span class="glyphicon glyphicon-refresh"  aria-hidden="true"></span></button>
+</span>
