@@ -1,0 +1,27 @@
+<div class="row">
+	<div class="col-md-1">
+		<button type="button" class="btn btn-default" aria-label="Left Align">
+			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
+	</div>
+	<div class="col-md-11">
+		<input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtSearch">
+	</div>
+</div><hr/>
+<table id="tblLinks" class="table table-striped">
+	<thead>
+		<th><input type="checkbox" id="chkAll"/></th>
+		<th style="width:90%">Link name</th>
+	</thead>
+	<tbody>
+		{% for link in links %}
+			<tr class="itemRow">
+				<td><input type="checkbox"/></td>
+				<td><a href="{{link.link}}">{{link.name}}</a></td>
+		</tr>
+		{%else%}
+		<tr>
+			<td colspan="2" style="text-align:center">[ No Quick Links found ]</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

@@ -1,0 +1,20 @@
+{%extends "layout.html"%}
+{%block css%}
+{%endblock%}
+{% block body %}
+
+<!-- Title section -->
+{%include "title.html"%}
+
+<!-- Content section -->
+{%include "favourites.content.html"%}
+
+{%endblock%}
+{%block scripts%}
+	<script type="text/javascript" src="/static/js/favourites.js"></script>
+{% endblock %}
+{%block dialogs%}
+<!-- include some dialogs -->
+{% include "dialog_evernote.html" %}
+{% include "dialog_loading.html" %}
+{%endblock%}

@@ -1,0 +1,22 @@
+{%extends "layout.html"%}
+{% block body %}
+
+<!-- Title section -->
+{%include "title.html"%}
+{% block css %}
+		<link rel="stylesheet" type="text/css" href="/static/fawesome/css/font-awesome.min.css">
+{% endblock %}
+
+<!-- Content section -->
+{%include "view.content.html"%}
+
+{%endblock%}
+{%block scripts%}
+	<script type="text/javascript" src="/static/js/view.js"></script>
+{% endblock %}
+{%block dialogs%}
+<!-- include some dialogs -->
+{% include "dialog_loading.html" %}
+{% include "dialog.decrypted.html" %}
+{% include "dialog.otp.html"%}
+{%endblock%}

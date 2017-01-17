@@ -1,0 +1,43 @@
+<div class="row">
+	<div class="col-md-11" style="padding-left:50px">
+		<h3><span style="margin-right:20px" id="noteTitle"><img src="/static/images/103.gif" ></span>
+		<span>
+			<button style="margin-left:10px" type="button" id="btnEncrypt" title="Encrypt using master password" class="btn btn-default btn-md"><i class="fa fa-lock" aria-hidden="true"></i> Encrypt</button>
+		</span>
+		<span>
+			<button style="margin-left:10px" type="button" id="btnOTPEncrypt" title="Encrypt using OTP password" class="btn btn-default btn-md"><i class="fa fa-lock" aria-hidden="true"></i> OTP Encrypt</button>
+		</span>
+		<span>
+			<button style="margin-left:10px" type="button" id="btnDecrypt" title="Decrypt using master password" class="btn btn-default btn-md"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Decrypt</button>
+		</span>
+		<span>
+			<button style="margin-left:10px" type="button" id="btnOTPDecrypt" title="Decrypt using OTP password" class="btn btn-default btn-md"><i class="fa fa-unlock-alt" aria-hidden="true"></i> OTP Decrypt</button>
+		</span>
+		<span id="favAdd">
+			<button style="margin-left:10px" type="button" id="btnAddFav" title="Add note to favourites" class="btn btn-default btn-md"><i class="fa fa-star-o" aria-hidden="true"></i> Add to Favourites</button>
+		</span>
+		<span style="display:none" id="favRemove">
+			<button style="margin-left:10px" type="button"  id="btnRemFav" title="Remove note to favourites" class="btn btn-default btn-md"><i class="fa fa-star" aria-hidden="true"></i> Remove from Favourites</button>
+		</span>
+		<span>
+			<button style="margin-left:10px" type="button" id="btnUpdate" title="Sync note with Onenote server" class="btn btn-default btn-md"><i class="fa fa-refresh" aria-hidden="true"></i> Update</button>
+		</span>
+		</h3><hr/>
+	</div>
+	<div class="col-md-1" style="padding-left:50px">
+		
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-11" style="padding-left:50px">
+		<div id="noteContent" class="wordwrap">
+			<iframe id="content" style="width:100%;height:800px;border-style:none">
+				<img src="/static/images/103.gif">
+			</iframe>
+		</div><hr/>
+		<div>
+		</div>
+	</div>
+	<div class="col-md-1" style="padding-left:50px"></div>
+</div>
+<input type="hidden" id="txtGuid" value="{{guid}}"/>

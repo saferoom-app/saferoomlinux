@@ -1,0 +1,22 @@
+<div class="input-group">
+	<span  class="input-group-btn">
+		<button title="Click to update the list of tags" type="button" class="btn btn-default" aria-label="Left Align" id="btnRefresh">
+			<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
+		</button>
+   </span>
+   <input style="margin-left:10px;width:60%" placeholder="Type text to search" type="text" class="form-control" id="txtSearch">   
+</div><hr/>
+<table id="tblTags" class="table table-striped">
+	<thead>
+		<th ><input id="chkAll" type="checkbox"/></th>
+		<th>Tag name</th>
+	</thead>
+	<tbody>
+		{% for tag in items %}
+		<tr>
+			<td><input id="{{tag.guid}}" type="checkbox"/></td>
+			<td><span>{{tag.name}}</span></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
