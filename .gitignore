@@ -1,0 +1,7 @@
+# Files to exclude
+.tokens
+.saferoompwd
+error.log
+*.pyc
+modules/*.pyc
+libs/*.pyc

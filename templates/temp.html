@@ -1,0 +1,35 @@
+{%extends "layout.html"%}
+{%block body%}
+
+
+ 
+ <h3 id="status"> [ Getting current status ] </h3> 
+ <div id="encrypted_list">
+	<ul class="list-group" id="notes">
+	{%for note in notes%}
+		<li id="{{note.guid}}" class="list-group-item">{{note.title}} <span class="pull-right" id="isDone"><img src="/static/images/103.gif"/></span></li>
+	{% endfor %}
+	</ul>
+</div>
+
+{%endblock%}
+{%block scripts%}
+<script>
+	key = "encrypted_notes"
+	function get_status(){
+		html = 
+		CreateAJAX("/status/encryption/"+key,"GET","json",{})
+		.done(function(response){
+			$("h3#status").html(response.status);	
+			$.each(response.items,function(index,value){
+				//console.log(value);
+				$("ul li#"+value.toString()).find("span#isDone").html("[OK]");
+			});
+		})
+		.fail(function(xhr){
+
+		});
+	}
+	setInterval(get_status,3000);
+	</script>
+{%endblock%}

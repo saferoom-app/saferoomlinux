@@ -1,0 +1,8 @@
+<select id="txtSection" class="form-control">
+	{% for section in items %}
+		<option value="{{section.guid}}">{{section.text}}</option>
+	{% endfor %}
+</select>
+<span class="input-group-btn">
+    <button title="Refresh the list of sections" id="btnRefreshSections" class="btn btn-default" type="button" tabindex="-1"><span class="glyphicon glyphicon-refresh"  aria-hidden="true"></span></button>
+</span>

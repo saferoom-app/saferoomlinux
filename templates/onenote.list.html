@@ -1,0 +1,18 @@
+{%extends "layout.html"%}
+{% block body %}
+
+<!-- Title section -->
+{%include "title.html"%}
+
+<!-- Content section -->
+{%include "onenote.list.content.html"%}
+
+{%endblock%}
+{%block scripts%}
+	<script type="text/javascript" src="/static/js/onenote.list.js"></script>
+	<script type="text/javascript" src="/static/js/treeview.js"></script>
+{% endblock %}
+{%block dialogs%}
+<!-- include some dialogs -->
+{% include "dialog_loading.html" %}
+{%endblock%}
