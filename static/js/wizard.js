@@ -39,9 +39,12 @@ $(document).ready(function(){
 		config['defaults']['default_onenote_section'] = "";
 		config['uris']['redirect_uri'] = $("input#txtRedirectUri").val();
 
+		// Setting the password
+		config['password'] = $("input#txtPassword").val();
+
 		displayProgress(MSG_CONFIG_SAVE,true);
 		// Getting
-		CreateAJAX("/settings/save","POST","json",{"config":JSON.stringify(config),"pass":$("input#txtPassword").val()})
+		CreateAJAX("/settings/save","POST","json",JSON.stringify(config))
 		.done(function(response){
 			displayProgress("",false);
 			if (response.status != HTTP_OK){

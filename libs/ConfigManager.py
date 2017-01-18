@@ -109,6 +109,8 @@ def save_to_ini(config,section,d):
             save_to_ini(config,section,v)
         else:
             #print section+":"+k+":"+v
+            if "password" in k:
+                continue
             config.set(section,k,v)
 
     # Saving config

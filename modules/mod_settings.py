@@ -48,9 +48,9 @@ def save_config():
     save(data)
 
     # If user sends the password, generate the master password file
-    if "pass" in data:
-        if data['pass'] != "":
-            save_password(data['pass'])
+    if "password" in data:
+        if data['password'] != "":
+            save_password(data['password'])
 
     return jsonify(status=safeglobals.http_ok,message=safeglobals.MSG_CONFIG_OK)
 
