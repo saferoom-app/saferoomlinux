@@ -21,6 +21,12 @@ If something goes wrong, please check the detailed installation procedures below
 Open your browser and type **http://127.0.0.1:5000/**. If everything is OK, you should see the main Saferoom page. Then go to **Generating master password** section.
 
 
+## Docker
+
+Now, you can run the Saferoom app on any platform using Saferoom docker image. Go to [Saferoom Docker page](https://hub.docker.com/r/azelenkin/saferoom/) and follow the instructions.
+
+
+
 
 ## Ubuntu
 This section contains the instructions for installing the environment required by Saferoom app. This procedure was tested on **Ubuntu desktop 16.04**. Below we assume that everything is done under **root** user. If you're using non-root user, every command should be preceeded by **sudo**
